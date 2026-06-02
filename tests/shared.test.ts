@@ -2,11 +2,16 @@ import { describe, expect, it } from "vitest";
 import {
   applyPatch,
   defaultFiles,
+  aircraftAssetMetadataSchema,
   sanitizePatch,
+  sceneDslSchema,
   streamEventSchema,
   type PatchEvent,
 } from "../packages/shared/src/index";
 import { mergeCompactSummary, parseModelFileBlocks } from "../apps/api/src/agent";
+import { listAircraftAssets } from "../apps/api/src/aircraftAssets";
+import { searchAircraftKnowledge } from "../apps/api/src/aircraftRetrieval";
+import { composeScene, createRuntimePatch, parseSemanticIntent, renderSceneToFiles } from "../apps/api/src/sceneRuntime";
 import { selectSkillContext, selectSkillContextDynamic } from "../apps/api/src/skills";
 import { defaultSettings, resolveModelConfig } from "../apps/api/src/settings";
 
@@ -229,5 +234,62 @@ FILE: src/App.tsx
     });
 
     expect(event.type).toBe("coder_input_summary");
+  });
+
+  it("能校验飞机资产 metadata schema", () => {
+    const asset = aircraftAssetMetadataSchema.parse({
+      id: "turbofan-test",
+      category: "engine",
+      title: "测试涡扇",
+      description: "测试资产",
+      tags: ["engine"],
+      assetPath: "assets/aircraft/engines/turbofan-test/model.glb",
+      previewPath: "assets/aircraft/engines/turbofan-test/preview.webp",
+    });
+
+    expect(asset.category).toBe("engine");
+    expect(asset.pivot).toBe("center");
+  });
+
+  it("能读取本地飞机资产库并检索发动机资产", () => {
+    const assets = listAircraftAssets();
+    const search = searchAircraftKnowledge({ query: "发动机 正面 黑线白图", topK: 5 });
+
+    expect(assets.some((asset) => asset.id === "turbofan-front-v1")).toBe(true);
+    expect(search.results.some((result) => result.id === "turbofan-front-v1")).toBe(true);
+  });
+
+  it("Scene DSL 可以渲染为合法 Sandpack 文件", () => {
+    const scene = sceneDslSchema.parse({
+      sceneType: "engine_showcase",
+      cameraPreset: "front",
+      lightingPreset: "engineering_white",
+      renderStyle: "technical_lines",
+      objects: [{ id: "engine", primitive: "turbofan_front" }],
+    });
+    const rendered = renderSceneToFiles({ scene });
+
+    expect(rendered.files["src/App.tsx"]).toContain("import * as THREE");
+    expect(rendered.files["src/App.tsx"]).toContain("buildTurbofanFront");
+    expect(rendered.files["src/styles.css"]).toContain("background: #ffffff");
+  });
+
+  it("Runtime Composer 能从用户请求生成安全 patch", () => {
+    const request = {
+      sessionId: "test-runtime",
+      message: "画出发动机正面3d图，黑线白图",
+      images: [],
+      files: defaultFiles,
+      runtimeErrors: [],
+      history: [],
+    };
+    const intent = parseSemanticIntent(request);
+    const scene = composeScene({ intent, retrievalResults: searchAircraftKnowledge({ query: request.message }).results });
+    const runtime = createRuntimePatch(request);
+
+    expect(intent.category).toBe("engine");
+    expect(scene.objects[0]?.primitive).toBe("turbofan_front");
+    expect(runtime.patch.operations.map((operation) => operation.path)).toEqual(["src/App.tsx", "src/styles.css"]);
+    expect(() => sanitizePatch(runtime.patch)).not.toThrow();
   });
 });

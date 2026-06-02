@@ -1,0 +1,15 @@
+{
+  "id": "fuselage-section-v1",
+  "category": "fuselage",
+  "title": "机身局部筒段",
+  "description": "用于展示机身局部曲面、舱窗和截面结构的飞机机身筒段语义资产。",
+  "tags": ["fuselage", "cabin", "section", "aircraft", "technical-lines"],
+  "assetPath": "assets/aircraft/fuselage/fuselage-section-v1/model.glb",
+  "previewPath": "assets/aircraft/fuselage/fuselage-section-v1/preview.webp",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": ["black_line", "pbr_metal"],
+  "compatibleWith": ["commercial_aircraft", "component_detail"]
+}

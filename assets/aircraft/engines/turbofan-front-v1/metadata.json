@@ -1,0 +1,15 @@
+{
+  "id": "turbofan-front-v1",
+  "category": "engine",
+  "title": "涡扇发动机正面组件",
+  "description": "适合正面技术图、黑线白图和PPT截图的涡轮风扇发动机进气口资产。包含厚外环、放射状风扇叶片和中心整流锥语义。",
+  "tags": ["engine", "turbofan", "fan-blades", "front-view", "technical-lines", "aircraft"],
+  "assetPath": "assets/aircraft/engines/turbofan-front-v1/model.glb",
+  "previewPath": "assets/aircraft/engines/turbofan-front-v1/preview.webp",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": ["fan_spin"],
+  "materials": ["black_line", "pbr_metal"],
+  "compatibleWith": ["commercial_aircraft", "engine_showcase", "front_technical_view"]
+}

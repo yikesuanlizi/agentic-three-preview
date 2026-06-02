@@ -1,0 +1,15 @@
+{
+  "id": "commercial-wing-panel-v1",
+  "category": "wing",
+  "title": "商用飞机机翼面板",
+  "description": "用于机翼局部结构展示、工程线稿和拆解视图的基础机翼面板资产语义。",
+  "tags": ["wing", "airfoil", "panel", "commercial", "technical-lines"],
+  "assetPath": "assets/aircraft/wings/commercial-wing-panel-v1/model.glb",
+  "previewPath": "assets/aircraft/wings/commercial-wing-panel-v1/preview.webp",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": ["black_line", "pbr_metal"],
+  "compatibleWith": ["commercial_aircraft", "component_detail", "exploded_view"]
+}

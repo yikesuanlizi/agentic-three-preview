@@ -72,6 +72,93 @@ export const skillInstallRequestSchema = z.object({
   url: z.string().url(),
 });
 
+export const aircraftAssetCategorySchema = z.enum([
+  "engine",
+  "wing",
+  "fuselage",
+  "landing_gear",
+  "cockpit",
+  "material",
+  "environment",
+]);
+
+export const aircraftAssetMetadataSchema = z.object({
+  id: z.string().min(2).max(96).regex(/^[a-z0-9-]+$/),
+  category: aircraftAssetCategorySchema,
+  title: z.string().min(1).max(120),
+  description: z.string().min(1).max(1000),
+  tags: z.array(z.string()).default([]),
+  assetPath: z.string().min(1),
+  previewPath: z.string().min(1),
+  scale: z.number().positive().default(1),
+  pivot: z.enum(["center", "origin", "bottom"]).default("center"),
+  forward: z.enum(["+Z", "-Z", "+X", "-X"]).default("+Z"),
+  polycount: z.number().int().nonnegative().optional(),
+  animations: z.array(z.string()).default([]),
+  materials: z.array(z.string()).default([]),
+  compatibleWith: z.array(z.string()).default([]),
+});
+
+export const renderStyleSchema = z.enum(["technical_lines", "realistic", "engineering_white", "ppt_clean"]);
+export const sceneTypeSchema = z.enum(["engine_showcase", "front_technical_view", "exploded_view", "component_detail"]);
+export const cameraPresetSchema = z.enum(["front", "three_quarter", "top", "side", "cinematic_closeup"]);
+export const lightingPresetSchema = z.enum(["engineering_white", "studio_soft", "hangar_dark"]);
+
+export const semanticIntentSchema = z.object({
+  domain: z.literal("aircraft").default("aircraft"),
+  subject: z.string().default("aircraft component"),
+  category: aircraftAssetCategorySchema.optional(),
+  view: cameraPresetSchema.default("front"),
+  renderStyle: renderStyleSchema.default("technical_lines"),
+  requestedOutputs: z.array(z.string()).default([]),
+  constraints: z.array(z.string()).default([]),
+  ocrText: z.string().default(""),
+});
+
+export const sceneDslObjectSchema = z.object({
+  id: z.string().min(1),
+  assetId: z.string().min(1).optional(),
+  primitive: z.enum(["turbofan_front", "wing_panel", "fuselage_section", "landing_gear", "generic_part"]).default("generic_part"),
+  position: z.tuple([z.number(), z.number(), z.number()]).default([0, 0, 0]),
+  rotation: z.tuple([z.number(), z.number(), z.number()]).default([0, 0, 0]),
+  scale: z.number().positive().default(1),
+  animation: z.string().optional(),
+});
+
+export const sceneDslSchema = z.object({
+  sceneType: sceneTypeSchema.default("engine_showcase"),
+  cameraPreset: cameraPresetSchema.default("front"),
+  lightingPreset: lightingPresetSchema.default("engineering_white"),
+  renderStyle: renderStyleSchema.default("technical_lines"),
+  objects: z.array(sceneDslObjectSchema).min(1),
+  annotations: z.array(z.string()).default([]),
+  animations: z.array(z.string()).default([]),
+});
+
+export const retrievalSearchRequestSchema = z.object({
+  query: z.string().min(1),
+  topK: z.number().int().min(1).max(20).default(5),
+  categories: z.array(aircraftAssetCategorySchema).default([]),
+});
+
+export const retrievalSearchResultSchema = z.object({
+  kind: z.enum(["asset", "template", "wiki"]),
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  score: z.number(),
+  tags: z.array(z.string()).default([]),
+});
+
+export const sceneComposeRequestSchema = z.object({
+  intent: semanticIntentSchema,
+  retrievalResults: z.array(retrievalSearchResultSchema).default([]),
+});
+
+export const sceneRenderRequestSchema = z.object({
+  scene: sceneDslSchema,
+});
+
 export const fileMapSchema = z.record(z.string()).superRefine((files, ctx) => {
   for (const path of Object.keys(files)) {
     if (!ALLOWED_FILE_PATHS.includes(path as AllowedFilePath)) {
@@ -142,6 +229,14 @@ export type AppSettings = z.infer<typeof appSettingsSchema>;
 export type SkillCreateRequest = z.infer<typeof skillCreateRequestSchema>;
 export type SkillInferRequest = z.infer<typeof skillInferRequestSchema>;
 export type SkillInstallRequest = z.infer<typeof skillInstallRequestSchema>;
+export type AircraftAssetCategory = z.infer<typeof aircraftAssetCategorySchema>;
+export type AircraftAssetMetadata = z.infer<typeof aircraftAssetMetadataSchema>;
+export type SemanticIntent = z.infer<typeof semanticIntentSchema>;
+export type SceneDsl = z.infer<typeof sceneDslSchema>;
+export type RetrievalSearchRequest = z.infer<typeof retrievalSearchRequestSchema>;
+export type RetrievalSearchResult = z.infer<typeof retrievalSearchResultSchema>;
+export type SceneComposeRequest = z.infer<typeof sceneComposeRequestSchema>;
+export type SceneRenderRequest = z.infer<typeof sceneRenderRequestSchema>;
 
 export const screenshotSaveRequestSchema = z.object({
   sessionId: z.string().min(1),

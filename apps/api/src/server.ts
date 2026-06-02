@@ -3,15 +3,22 @@ import cors from "@fastify/cors";
 import Fastify from "fastify";
 import {
   type AgentTurnRequest,
+  aircraftAssetCategorySchema,
   appSettingsSchema,
   agentTurnRequestSchema,
   applyPatch,
   defaultFiles,
   ndjson,
+  retrievalSearchRequestSchema,
   screenshotSaveRequestSchema,
+  sceneComposeRequestSchema,
+  sceneRenderRequestSchema,
 } from "@agentic-three/shared";
 import { runAgent } from "./agent.js";
+import { listAircraftAssets } from "./aircraftAssets.js";
+import { searchAircraftKnowledge } from "./aircraftRetrieval.js";
 import { createSkill, inferSkill, installSkillsFromUrl, listLocalTools, listSkills } from "./skills.js";
+import { composeScene, renderSceneToFiles } from "./sceneRuntime.js";
 import { listRecentInputImages, readOutputFile, saveInputImageArtifacts, saveScreenshotArtifact } from "./artifacts.js";
 import { envStatus, getAppSettings, saveAppSettings } from "./settings.js";
 import {
@@ -64,6 +71,31 @@ app.post("/api/skills/install", async (request) => ({
 app.get("/api/tools", async () => ({
   tools: listLocalTools(),
 }));
+
+app.get("/api/assets", async (request) => {
+  const query = request.query as { category?: string };
+  const category = query.category ? aircraftAssetCategorySchema.parse(query.category) : undefined;
+  return {
+    assets: listAircraftAssets(category),
+  };
+});
+
+app.post("/api/retrieval/search", async (request) => {
+  const parsed = retrievalSearchRequestSchema.parse(request.body);
+  return searchAircraftKnowledge(parsed);
+});
+
+app.post("/api/scene/compose", async (request) => {
+  const parsed = sceneComposeRequestSchema.parse(request.body);
+  return {
+    scene: composeScene(parsed),
+  };
+});
+
+app.post("/api/scene/render", async (request) => {
+  const parsed = sceneRenderRequestSchema.parse(request.body);
+  return renderSceneToFiles(parsed);
+});
 
 app.get("/api/default-files", async () => ({
   files: defaultFiles,
