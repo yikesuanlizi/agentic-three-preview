@@ -18,6 +18,7 @@ import { listAircraftAssets } from "../apps/api/src/aircraftAssets";
 import { searchAircraftKnowledge } from "../apps/api/src/aircraftRetrieval";
 import { composeScene, createRuntimePatch, parseSemanticIntent, renderSceneToFiles } from "../apps/api/src/sceneRuntime";
 import { reviseScene, superviseQuality } from "../apps/api/src/quality";
+import { resolveRagSource } from "../apps/api/src/rag";
 import { selectSkillContext, selectSkillContextDynamic } from "../apps/api/src/skills";
 import { defaultSettings, resolveModelConfig } from "../apps/api/src/settings";
 
@@ -337,10 +338,27 @@ FILE: src/App.tsx
       tags: ["engine"],
       assetPath: "assets/aircraft/engines/turbofan-test/model.glb",
       previewPath: "assets/aircraft/engines/turbofan-test/preview.webp",
+      viewImages: [
+        {
+          view: "front",
+          imagePath: "assets/aircraft/engines/turbofan-test/views/front.webp",
+          title: "正面参考",
+          description: "用于识别进气口、叶片和中心整流锥。",
+          tags: ["front", "fan-blades"],
+        },
+      ],
     });
 
     expect(asset.category).toBe("engine");
     expect(asset.pivot).toBe("center");
+    expect(asset.viewImages[0]?.view).toBe("front");
+  });
+
+  it("RAG source resolver 只返回源码指针或本地资产，不从向量库取源码正文", () => {
+    const source = resolveRagSource({ kind: "template", id: "template:engine_showcase" });
+
+    expect(source.sourcePath).toBe("apps/api/src/sceneRuntime.ts");
+    expect(JSON.stringify(source.source)).toContain("向量库只存模板指针");
   });
 
   it("能读取本地飞机资产库并检索发动机资产", () => {

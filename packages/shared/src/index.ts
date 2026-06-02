@@ -94,6 +94,16 @@ export const aircraftAssetCategorySchema = z.enum([
   "environment",
 ]);
 
+export const aircraftViewSchema = z.enum(["front", "back", "left", "right", "top", "bottom", "three_quarter", "detail"]);
+
+export const aircraftAssetViewImageSchema = z.object({
+  view: aircraftViewSchema,
+  imagePath: z.string().min(1),
+  title: z.string().min(1).max(120),
+  description: z.string().min(1).max(1000),
+  tags: z.array(z.string()).default([]),
+});
+
 export const aircraftAssetMetadataSchema = z.object({
   id: z.string().min(2).max(96).regex(/^[a-z0-9-]+$/),
   category: aircraftAssetCategorySchema,
@@ -109,6 +119,7 @@ export const aircraftAssetMetadataSchema = z.object({
   animations: z.array(z.string()).default([]),
   materials: z.array(z.string()).default([]),
   compatibleWith: z.array(z.string()).default([]),
+  viewImages: z.array(aircraftAssetViewImageSchema).default([]),
 });
 
 export const renderStyleSchema = z.enum(["technical_lines", "realistic", "engineering_white", "ppt_clean"]);
@@ -154,12 +165,34 @@ export const retrievalSearchRequestSchema = z.object({
 });
 
 export const retrievalSearchResultSchema = z.object({
-  kind: z.enum(["asset", "template", "wiki"]),
+  kind: z.enum(["asset", "asset_view", "template", "wiki"]),
   id: z.string(),
   title: z.string(),
   description: z.string(),
   score: z.number(),
   tags: z.array(z.string()).default([]),
+  sourceKind: z.enum(["asset", "template", "wiki", "renderer"]).optional(),
+  sourceId: z.string().optional(),
+  sourcePath: z.string().optional(),
+  view: aircraftViewSchema.optional(),
+  imagePath: z.string().optional(),
+  metadata: z.record(z.unknown()).default({}),
+});
+
+export const ragIngestResultSchema = z.object({
+  ok: z.boolean(),
+  documentCount: z.number().int().nonnegative(),
+  mode: z.enum(["pgvector", "fallback"]),
+  message: z.string().default(""),
+});
+
+export const ragSearchRequestSchema = retrievalSearchRequestSchema.extend({
+  useVector: z.boolean().default(true),
+});
+
+export const ragSourceResolveRequestSchema = z.object({
+  kind: z.enum(["asset", "asset_view", "template", "wiki"]),
+  id: z.string().min(1),
 });
 
 export const sceneComposeRequestSchema = z.object({
@@ -299,11 +332,16 @@ export type SkillCreateRequest = z.infer<typeof skillCreateRequestSchema>;
 export type SkillInferRequest = z.infer<typeof skillInferRequestSchema>;
 export type SkillInstallRequest = z.infer<typeof skillInstallRequestSchema>;
 export type AircraftAssetCategory = z.infer<typeof aircraftAssetCategorySchema>;
+export type AircraftView = z.infer<typeof aircraftViewSchema>;
+export type AircraftAssetViewImage = z.infer<typeof aircraftAssetViewImageSchema>;
 export type AircraftAssetMetadata = z.infer<typeof aircraftAssetMetadataSchema>;
 export type SemanticIntent = z.infer<typeof semanticIntentSchema>;
 export type SceneDsl = z.infer<typeof sceneDslSchema>;
 export type RetrievalSearchRequest = z.infer<typeof retrievalSearchRequestSchema>;
 export type RetrievalSearchResult = z.infer<typeof retrievalSearchResultSchema>;
+export type RagIngestResult = z.infer<typeof ragIngestResultSchema>;
+export type RagSearchRequest = z.infer<typeof ragSearchRequestSchema>;
+export type RagSourceResolveRequest = z.infer<typeof ragSourceResolveRequestSchema>;
 export type SceneComposeRequest = z.infer<typeof sceneComposeRequestSchema>;
 export type SceneRenderRequest = z.infer<typeof sceneRenderRequestSchema>;
 export type QualityInspectionRequest = z.infer<typeof qualityInspectionRequestSchema>;

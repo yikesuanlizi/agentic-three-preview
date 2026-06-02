@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: agentic-three-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: agentic_three
+      POSTGRES_USER: agentic_three
+      POSTGRES_PASSWORD: agentic_three_dev
+    ports:
+      - "54329:5432"
+    volumes:
+      - agentic_three_pgdata:/var/lib/postgresql/data
+      - ./rag/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agentic_three -d agentic_three"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  agentic_three_pgdata:

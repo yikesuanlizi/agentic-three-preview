@@ -11,7 +11,7 @@ import { listAircraftAssets } from "./aircraftAssets.js";
 
 const WIKI_PATH = resolve(projectRoot, "knowledge", "aircraft-wiki.md");
 
-const SCENE_TEMPLATES: RetrievalSearchResult[] = [
+export const SCENE_TEMPLATES: RetrievalSearchResult[] = [
   {
     kind: "template",
     id: "engine_showcase",
@@ -19,6 +19,10 @@ const SCENE_TEMPLATES: RetrievalSearchResult[] = [
     description: "用于涡扇发动机正面或三分之四视图展示，支持黑线白图和PPT截图。",
     score: 0,
     tags: ["engine", "turbofan", "front-view", "technical-lines"],
+    sourceKind: "renderer",
+    sourceId: "engine_showcase",
+    sourcePath: "apps/api/src/sceneRuntime.ts",
+    metadata: { source: "runtime_renderer" },
   },
   {
     kind: "template",
@@ -27,6 +31,10 @@ const SCENE_TEMPLATES: RetrievalSearchResult[] = [
     description: "白底黑线、隐藏网格、正交感相机，适合截图贴入PPT。",
     score: 0,
     tags: ["technical-lines", "front-view", "ppt"],
+    sourceKind: "renderer",
+    sourceId: "front_technical_view",
+    sourcePath: "apps/api/src/sceneRuntime.ts",
+    metadata: { source: "runtime_renderer" },
   },
   {
     kind: "template",
@@ -35,6 +43,10 @@ const SCENE_TEMPLATES: RetrievalSearchResult[] = [
     description: "用于机翼、机身、起落架等局部部件的近景结构展示。",
     score: 0,
     tags: ["component", "detail", "aircraft"],
+    sourceKind: "renderer",
+    sourceId: "component_detail",
+    sourcePath: "apps/api/src/sceneRuntime.ts",
+    metadata: { source: "runtime_renderer" },
   },
 ];
 
@@ -51,6 +63,11 @@ export function searchAircraftKnowledge(input: unknown): { results: RetrievalSea
       description: asset.description,
       score: scoreText(query, [asset.id, asset.title, asset.description, asset.category, ...asset.tags]),
       tags: asset.tags,
+      sourceKind: "asset" as const,
+      sourceId: asset.id,
+      sourcePath: asset.assetPath,
+      imagePath: asset.previewPath,
+      metadata: { category: asset.category, previewPath: asset.previewPath, hasModel: asset.hasModel },
     }));
 
   const templateResults = SCENE_TEMPLATES.map((template) => ({
@@ -65,6 +82,10 @@ export function searchAircraftKnowledge(input: unknown): { results: RetrievalSea
     description: chunk.body,
     score: scoreText(query, [chunk.title, chunk.body]),
     tags: ["wiki", "aircraft"],
+    sourceKind: "wiki" as const,
+    sourceId: `aircraft-wiki-${index + 1}`,
+    sourcePath: WIKI_PATH,
+    metadata: {},
   }));
 
   const results = [...assetResults, ...templateResults, ...wikiResults]

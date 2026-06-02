@@ -9,6 +9,9 @@ import {
   applyPatch,
   defaultFiles,
   ndjson,
+  ragIngestResultSchema,
+  ragSearchRequestSchema,
+  ragSourceResolveRequestSchema,
   retrievalSearchRequestSchema,
   screenshotSaveRequestSchema,
   sceneComposeRequestSchema,
@@ -22,6 +25,8 @@ import { searchAircraftKnowledge } from "./aircraftRetrieval.js";
 import { createSkill, inferSkill, installSkillsFromUrl, listLocalTools, listSkills } from "./skills.js";
 import { composeScene, renderSceneToFiles } from "./sceneRuntime.js";
 import { inspectQuality, reviseScene } from "./quality.js";
+import { ingestAircraftRag, resolveRagSource, searchAircraftRag } from "./rag.js";
+import { isRagDatabaseReady, ragDatabaseUrl } from "./ragDb.js";
 import { listRecentInputImages, readOutputFile, saveInputImageArtifacts, saveScreenshotArtifact } from "./artifacts.js";
 import { envStatus, getAppSettings, saveAppSettings } from "./settings.js";
 import {
@@ -85,7 +90,27 @@ app.get("/api/assets", async (request) => {
 
 app.post("/api/retrieval/search", async (request) => {
   const parsed = retrievalSearchRequestSchema.parse(request.body);
-  return searchAircraftKnowledge(parsed);
+  const result = await searchAircraftRag(parsed);
+  return result.mode === "fallback" ? searchAircraftKnowledge(parsed) : result;
+});
+
+app.get("/api/rag/status", async () => ({
+  ready: await isRagDatabaseReady(),
+  databaseUrl: ragDatabaseUrl.replace(/:\/\/([^:]+):([^@]+)@/, "://$1:***@"),
+}));
+
+app.post("/api/rag/ingest", async () => ({
+  result: ragIngestResultSchema.parse(await ingestAircraftRag()),
+}));
+
+app.post("/api/rag/search", async (request) => {
+  const parsed = ragSearchRequestSchema.parse(request.body);
+  return searchAircraftRag(parsed);
+});
+
+app.post("/api/rag/source", async (request) => {
+  const parsed = ragSourceResolveRequestSchema.parse(request.body);
+  return resolveRagSource(parsed);
 });
 
 app.post("/api/scene/compose", async (request) => {

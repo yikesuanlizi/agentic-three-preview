@@ -11,5 +11,49 @@
   "forward": "+Z",
   "animations": ["fan_spin"],
   "materials": ["black_line", "pbr_metal"],
-  "compatibleWith": ["commercial_aircraft", "engine_showcase", "front_technical_view"]
+  "compatibleWith": ["commercial_aircraft", "engine_showcase", "front_technical_view"],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/engines/turbofan-front-v1/views/front.webp",
+      "title": "涡扇发动机正面六视图参考",
+      "description": "正面可见厚外环、内环、中心整流锥和放射状叶片，是生成黑线白图和PPT截图的主参考方向。",
+      "tags": ["front", "engine", "fan-blades", "technical-lines"]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/engines/turbofan-front-v1/views/back.webp",
+      "title": "涡扇发动机背面参考",
+      "description": "背面用于校验外壳厚度、尾部喷口轮廓和环形结构连续性。",
+      "tags": ["back", "engine", "nozzle"]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/engines/turbofan-front-v1/views/left.webp",
+      "title": "涡扇发动机左侧参考",
+      "description": "侧面用于判断发动机短舱长度、进气口唇口厚度和圆筒轴向比例。",
+      "tags": ["left", "side", "nacelle"]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/engines/turbofan-front-v1/views/right.webp",
+      "title": "涡扇发动机右侧参考",
+      "description": "右侧参考用于补全非对称挂点、管线或附件位置。",
+      "tags": ["right", "side", "nacelle"]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/engines/turbofan-front-v1/views/top.webp",
+      "title": "涡扇发动机俯视参考",
+      "description": "俯视用于控制外壳椭圆投影、挂架接口和整体包络。",
+      "tags": ["top", "engine", "outline"]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/engines/turbofan-front-v1/views/bottom.webp",
+      "title": "涡扇发动机仰视参考",
+      "description": "仰视用于确认底部附件、短舱下缘和支撑结构，不作为默认截图方向。",
+      "tags": ["bottom", "engine", "attachments"]
+    }
+  ]
 }
