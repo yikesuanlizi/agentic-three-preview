@@ -13,6 +13,7 @@ import {
   semanticIntentSchema,
 } from "@agentic-three/shared";
 import { defaultRetrievalForIntent } from "./aircraftRetrieval.js";
+import { searchAircraftRag } from "./rag.js";
 
 export function parseSemanticIntent(request: AgentTurnRequest): SemanticIntent {
   const text = request.message.toLowerCase();
@@ -36,18 +37,19 @@ export function parseSemanticIntent(request: AgentTurnRequest): SemanticIntent {
 
 export function composeScene(input: unknown): SceneDsl {
   const { intent, retrievalResults } = sceneComposeRequestSchema.parse(input);
-  const bestAsset = retrievalResults.find((item) => item.kind === "asset");
+  const bestAsset = retrievalResults.find((item) => item.kind === "asset_view" || item.kind === "asset");
   const bestTemplate = retrievalResults.find((item) => item.kind === "template");
   const primitive = intent.category === "engine" ? "turbofan_front" : intent.category === "wing" ? "wing_panel" : "generic_part";
+  const templateId = normalizeRetrievalId(bestTemplate?.id);
   return sceneDslSchema.parse({
-    sceneType: bestTemplate?.id === "front_technical_view" ? "front_technical_view" : intent.category === "engine" ? "engine_showcase" : "component_detail",
+    sceneType: templateId === "front_technical_view" ? "front_technical_view" : intent.category === "engine" ? "engine_showcase" : "component_detail",
     cameraPreset: intent.view,
     lightingPreset: "engineering_white",
     renderStyle: intent.renderStyle,
     objects: [
       {
         id: "primary-aircraft-component",
-        assetId: bestAsset?.id,
+        assetId: bestAsset?.sourceId ?? normalizeRetrievalId(bestAsset?.id),
         primitive,
         position: [0, 0, 0],
         rotation: [0, 0, 0],
@@ -76,6 +78,33 @@ export function renderSceneToFiles(input: unknown): { files: FileMap; summary: s
 export function createRuntimePatch(request: AgentTurnRequest): { patch: PatchEvent; intent: SemanticIntent; scene: SceneDsl; retrievalResults: RetrievalSearchResult[] } {
   const intent = parseSemanticIntent(request);
   const retrievalResults = defaultRetrievalForIntent(`${request.message} ${intent.subject}`, intent.category);
+  return createRuntimePatchFromRetrieval(request, intent, retrievalResults);
+}
+
+export async function createRuntimePatchWithRag(request: AgentTurnRequest): Promise<{
+  patch: PatchEvent;
+  intent: SemanticIntent;
+  scene: SceneDsl;
+  retrievalResults: RetrievalSearchResult[];
+  retrievalMode: "pgvector" | "fallback";
+}> {
+  const intent = parseSemanticIntent(request);
+  const retrieval = await searchAircraftRag({
+    query: `${request.message} ${intent.subject} ${intent.constraints.join(" ")}`,
+    categories: intent.category ? [intent.category] : [],
+    topK: 6,
+  });
+  return {
+    ...createRuntimePatchFromRetrieval(request, intent, retrieval.results),
+    retrievalMode: retrieval.mode,
+  };
+}
+
+function createRuntimePatchFromRetrieval(
+  request: AgentTurnRequest,
+  intent: SemanticIntent,
+  retrievalResults: RetrievalSearchResult[],
+): { patch: PatchEvent; intent: SemanticIntent; scene: SceneDsl; retrievalResults: RetrievalSearchResult[] } {
   const scene = composeScene({ intent, retrievalResults } satisfies SceneComposeRequest);
   const rendered = renderSceneToFiles({ scene });
   const operations = (["src/App.tsx", "src/styles.css"] as const).map((path) => ({
@@ -93,6 +122,10 @@ export function createRuntimePatch(request: AgentTurnRequest): { patch: PatchEve
       operations,
     },
   };
+}
+
+function normalizeRetrievalId(id?: string): string | undefined {
+  return id?.replace(/^(asset|asset-view|template|wiki):/, "").split(":")[0];
 }
 
 function renderAppTsx(scene: SceneDsl): string {

@@ -16,7 +16,7 @@ import {
 import { mergeCompactSummary, parseModelFileBlocks } from "../apps/api/src/agent";
 import { listAircraftAssets } from "../apps/api/src/aircraftAssets";
 import { searchAircraftKnowledge } from "../apps/api/src/aircraftRetrieval";
-import { composeScene, createRuntimePatch, parseSemanticIntent, renderSceneToFiles } from "../apps/api/src/sceneRuntime";
+import { composeScene, createRuntimePatch, createRuntimePatchWithRag, parseSemanticIntent, renderSceneToFiles } from "../apps/api/src/sceneRuntime";
 import { reviseScene, superviseQuality } from "../apps/api/src/quality";
 import { resolveRagSource } from "../apps/api/src/rag";
 import { selectSkillContext, selectSkillContextDynamic } from "../apps/api/src/skills";
@@ -400,6 +400,23 @@ FILE: src/App.tsx
     expect(intent.category).toBe("engine");
     expect(scene.objects[0]?.primitive).toBe("turbofan_front");
     expect(runtime.patch.operations.map((operation) => operation.path)).toEqual(["src/App.tsx", "src/styles.css"]);
+    expect(() => sanitizePatch(runtime.patch)).not.toThrow();
+  });
+
+  it("Runtime Composer 主链路可以通过 RAG 检索生成安全 patch", async () => {
+    const request = {
+      sessionId: "test-runtime-rag",
+      message: "画出发动机正面3d图，黑线白图，参考六视图",
+      images: [],
+      files: defaultFiles,
+      runtimeErrors: [],
+      history: [],
+    };
+    const runtime = await createRuntimePatchWithRag(request);
+
+    expect(["pgvector", "fallback"]).toContain(runtime.retrievalMode);
+    expect(runtime.retrievalResults.length).toBeGreaterThan(0);
+    expect(runtime.scene.objects[0]?.primitive).toBe("turbofan_front");
     expect(() => sanitizePatch(runtime.patch)).not.toThrow();
   });
 

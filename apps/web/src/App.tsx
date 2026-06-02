@@ -963,6 +963,15 @@ function SettingsDialog({
       models: settings.models.map((model, modelIndex) => (modelIndex === index ? { ...model, ...patch } : model)),
     });
   };
+  const updateRuntimeComposer = (patch: Partial<RuntimeComposerConfig>) => {
+    onChange({
+      ...settings,
+      runtimeComposer: {
+        ...settings.runtimeComposer,
+        ...patch,
+      },
+    });
+  };
   const toggleSkill = (skillId: string) => {
     const enabled = new Set(settings.enabledSkillIds);
     if (enabled.has(skillId)) enabled.delete(skillId);
@@ -1066,6 +1075,89 @@ function SettingsDialog({
               </div>
             ))}
           </div>
+          <section className="settings-skills">
+            <div className="settings-section-title">
+              <strong>Runtime Composer</strong>
+              <span>控制自动截图质检和多轮修订</span>
+            </div>
+            <div className="runtime-settings-grid">
+              <label>
+                <span>启用 Runtime Composer</span>
+                <input
+                  type="checkbox"
+                  checked={settings.runtimeComposer.enabled}
+                  onChange={(event) => updateRuntimeComposer({ enabled: event.target.checked })}
+                />
+              </label>
+              <label>
+                <span>自动截图质检</span>
+                <input
+                  type="checkbox"
+                  checked={settings.runtimeComposer.autoCaptureAfterPatch}
+                  onChange={(event) => updateRuntimeComposer({ autoCaptureAfterPatch: event.target.checked })}
+                />
+              </label>
+              <label>
+                <span>要求视觉质检</span>
+                <input
+                  type="checkbox"
+                  checked={settings.runtimeComposer.requireVisualInspection}
+                  onChange={(event) => updateRuntimeComposer({ requireVisualInspection: event.target.checked })}
+                />
+              </label>
+              <label>
+                <span>允许 coder fallback</span>
+                <input
+                  type="checkbox"
+                  checked={settings.runtimeComposer.fallbackToCoder}
+                  onChange={(event) => updateRuntimeComposer({ fallbackToCoder: event.target.checked })}
+                />
+              </label>
+              <label>
+                <span>最大修订轮数</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="8"
+                  value={settings.runtimeComposer.maxRevisionRounds}
+                  onChange={(event) => updateRuntimeComposer({ maxRevisionRounds: Number(event.target.value) })}
+                />
+              </label>
+              <label>
+                <span>通过分数阈值</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={settings.runtimeComposer.minQualityScore}
+                  onChange={(event) => updateRuntimeComposer({ minQualityScore: Number(event.target.value) })}
+                />
+              </label>
+              <label>
+                <span>截图延迟 ms</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="10000"
+                  step="100"
+                  value={settings.runtimeComposer.captureDelayMs}
+                  onChange={(event) => updateRuntimeComposer({ captureDelayMs: Number(event.target.value) })}
+                />
+              </label>
+              <label>
+                <span>非空像素阈值</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={settings.runtimeComposer.nonBlankPixelThreshold}
+                  onChange={(event) => updateRuntimeComposer({ nonBlankPixelThreshold: Number(event.target.value) })}
+                />
+              </label>
+            </div>
+          </section>
           <section className="settings-skills">
             <div className="settings-section-title">
               <strong>Skills</strong>

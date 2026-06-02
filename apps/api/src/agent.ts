@@ -17,7 +17,7 @@ import {
 } from "@agentic-three/shared";
 import { selectSkillContextDynamic } from "./skills.js";
 import { getAppSettings, resolveModelConfig } from "./settings.js";
-import { createRuntimePatch } from "./sceneRuntime.js";
+import { createRuntimePatchWithRag } from "./sceneRuntime.js";
 
 type Usage = { inputTokens?: number; outputTokens?: number };
 type ChatMessageContent =
@@ -127,12 +127,13 @@ const plannerAgent = async (state: AgentStateType) => {
 
 const coderAgent = async (state: AgentStateType) => {
   try {
-    const runtime = createRuntimePatch(state.request);
+    const runtime = await createRuntimePatchWithRag(state.request);
     logAgent("runtime_renderer.patch_created", {
       runId: state.runId,
       intent: runtime.intent,
       sceneType: runtime.scene.sceneType,
       renderStyle: runtime.scene.renderStyle,
+      retrievalMode: runtime.retrievalMode,
       retrievalIds: runtime.retrievalResults.map((item) => `${item.kind}:${item.id}`),
       paths: runtime.patch.operations.map((operation) => operation.path),
     });
@@ -141,7 +142,7 @@ const coderAgent = async (state: AgentStateType) => {
       scene: runtime.scene,
       assistantMessage:
         "已使用 Aircraft Runtime Composer 生成 Scene DSL，并通过程序化 three.js renderer 输出可预览场景。旧的从零代码生成仅作为 fallback 保留。",
-      reasoningSummary: `${state.reasoningSummary}\n语义解析: ${runtime.intent.subject} / ${runtime.intent.renderStyle}。\n检索: ${runtime.retrievalResults.map((item) => item.id).join(", ") || "无"}。\n场景编排: ${runtime.scene.sceneType} DSL 已渲染为 Sandpack 文件。`,
+      reasoningSummary: `${state.reasoningSummary}\n语义解析: ${runtime.intent.subject} / ${runtime.intent.renderStyle}。\n检索: ${runtime.retrievalMode} 命中 ${runtime.retrievalResults.map((item) => item.id).join(", ") || "无"}。\n场景编排: ${runtime.scene.sceneType} DSL 已渲染为 Sandpack 文件。`,
     };
   } catch (runtimeError) {
     logAgent("runtime_renderer.failed", {

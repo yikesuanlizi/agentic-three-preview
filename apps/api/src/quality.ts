@@ -11,8 +11,9 @@ import {
   runtimeComposerConfigSchema,
   sceneRevisionRequestSchema,
   sceneRevisionResultSchema,
+  sceneDslSchema,
 } from "@agentic-three/shared";
-import { resolveModelConfig } from "./settings.js";
+import { getAppSettings, resolveModelConfig } from "./settings.js";
 
 export async function inspectQuality(input: unknown, settings: AppSettings): Promise<QualityInspectionResult> {
   const request = qualityInspectionRequestSchema.parse(input);
@@ -42,6 +43,15 @@ export function superviseQuality(result: QualityInspectionResult, config: Runtim
 
 export async function reviseScene(input: unknown): Promise<SceneRevisionResult> {
   const request = sceneRevisionRequestSchema.parse(input);
+  const modelResult = await reviseSceneWithModel(request).catch((error) => {
+    console.warn("[agentic-three:quality] scene revise fallback", error instanceof Error ? error.message : String(error));
+    return undefined;
+  });
+  if (modelResult) return modelResult;
+  return reviseSceneWithHeuristics(request);
+}
+
+function reviseSceneWithHeuristics(request: SceneRevisionRequest): SceneRevisionResult {
   const text = `${request.userGoal}\n${request.quality.issues.join("\n")}\n${request.quality.revisionHints.join("\n")}`.toLowerCase();
   const scene = structuredClone(request.scene);
   scene.renderStyle = "technical_lines";
@@ -76,10 +86,48 @@ export async function reviseScene(input: unknown): Promise<SceneRevisionResult> 
   });
 }
 
+async function reviseSceneWithModel(request: SceneRevisionRequest): Promise<SceneRevisionResult | undefined> {
+  if (shouldSkipExternalModelCall()) return undefined;
+  const settings = getAppSettings();
+  const modelConfig = resolveModelConfig("summary", settings);
+  const apiKey = process.env[modelConfig.apiKeyEnvName];
+  if (!apiKey) return undefined;
+  const client = new OpenAI({
+    baseURL: modelConfig.baseURL,
+    apiKey,
+    defaultHeaders: { "X-Failover-Enabled": "true" },
+  });
+  const response = await client.chat.completions.create({
+    model: modelConfig.model,
+    stream: false,
+    temperature: 0.2,
+    max_tokens: Math.min(modelConfig.maxTokens, 1800),
+    messages: [
+      {
+        role: "system",
+        content:
+          "你是 Scene DSL 修订 Agent。只输出 JSON 对象，不要 Markdown。你只能修改 Scene DSL，不写 three.js 源码。输出字段: scene, summary。",
+      },
+      {
+        role: "user",
+        content: `用户目标:\n${request.userGoal}\n\n当前 Scene DSL:\n${JSON.stringify(request.scene, null, 2)}\n\n质检报告:\n${JSON.stringify(request.quality, null, 2)}\n\n修订要求:\n- 保持 schema 合法。\n- 黑线白图/PPT 场景优先 renderStyle=technical_lines、lightingPreset=engineering_white。\n- 正面图优先 cameraPreset=front。\n- 发动机/螺旋桨/叶片相关优先 engine_showcase + turbofan_front。\n- 输出 JSON: { "scene": ..., "summary": "..." }`,
+      },
+    ],
+  });
+  const content = response.choices[0]?.message?.content;
+  if (!content) return undefined;
+  const parsed = parseJsonObject(content) as { scene?: unknown; summary?: unknown };
+  return sceneRevisionResultSchema.parse({
+    scene: sceneDslSchema.parse(parsed.scene),
+    summary: typeof parsed.summary === "string" ? parsed.summary : `已由模型修订第 ${request.round} 轮 Scene DSL。`,
+  });
+}
+
 async function inspectWithVisionModel(
   request: QualityInspectionRequest,
   settings: AppSettings,
 ): Promise<QualityInspectionResult | undefined> {
+  if (shouldSkipExternalModelCall()) return undefined;
   const modelConfig = resolveModelConfig("coder_agent", settings);
   const apiKey = process.env[modelConfig.apiKeyEnvName];
   if (!apiKey) return undefined;
@@ -165,4 +213,8 @@ function parseJsonObject(content: string): unknown {
   const end = trimmed.lastIndexOf("}");
   if (start < 0 || end < start) throw new Error("质检模型没有返回 JSON 对象。");
   return JSON.parse(trimmed.slice(start, end + 1));
+}
+
+function shouldSkipExternalModelCall(): boolean {
+  return Boolean(process.env.VITEST) && process.env.ENABLE_LLM_TESTS !== "1";
 }
