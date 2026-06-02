@@ -13,7 +13,7 @@ import {
   workflowFinalizeRequestSchema,
   type PatchEvent,
 } from "../packages/shared/src/index";
-import { mergeCompactSummary, parseModelFileBlocks } from "../apps/api/src/agent";
+import { mergeCompactSummary } from "../apps/api/src/agent";
 import { listAircraftAssets } from "../apps/api/src/aircraftAssets";
 import { searchAircraftKnowledge } from "../apps/api/src/aircraftRetrieval";
 import { composeScene, createRuntimePatch, createRuntimePatchWithRag, parseSemanticIntent, renderSceneToFiles } from "../apps/api/src/sceneRuntime";
@@ -103,61 +103,6 @@ export default function App() {
     expect(coder.model).toBe("Qwen3.5-122B-A10B");
     expect(summary.model).toBe("DeepSeek-V4-Flash");
     expect(coder.apiKeyEnvName).toBe("GITEE_API_KEY");
-  });
-
-  it("能解析文件块协议中的源码内容", () => {
-    const parsed = parseModelFileBlocks(`SUMMARY:
-更新场景
-
-ASSISTANT:
-已生成线稿
-
-FILE: src/App.tsx
-\`\`\`tsx
-import * as THREE from "three";
-
-export default function App() {
-  const label = \`line "one"\\path\`;
-  return <div>{label}</div>;
-}
-\`\`\`
-
-FILE: src/styles.css
-\`\`\`css
-body { background: white; }
-\`\`\``);
-
-    expect(parsed.summary).toBe("更新场景");
-    expect(parsed.operations).toHaveLength(2);
-    expect(parsed.operations[0]?.content).toContain("line \"one\"\\path");
-  });
-
-  it("文件块协议拒绝非白名单路径", () => {
-    expect(() =>
-      parseModelFileBlocks(`SUMMARY:
-坏路径
-
-FILE: ../server.ts
-\`\`\`ts
-export const x = 1;
-\`\`\``),
-    ).toThrow(/非白名单/);
-  });
-
-  it("兼容模型误输出的 CODE_EDIT_BLOCK 文件块", () => {
-    const parsed = parseModelFileBlocks(`SUMMARY:
-线稿
-
-ASSISTANT:
-已生成
-
-FILE: src/App.tsx
-\`\`\`tsx|CODE_EDIT_BLOCK|/src/App.tsx|import * as THREE from "three";\\nexport default function App() {\\n  return <div />;\\n}
-\`\`\``);
-
-    expect(parsed.operations).toHaveLength(1);
-    expect(parsed.operations[0]?.content).toContain("import * as THREE");
-    expect(parsed.operations[0]?.content).toContain("return <div />");
   });
 
   it("技能上下文会被限制在轻量范围内", () => {

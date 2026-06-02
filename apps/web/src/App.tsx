@@ -1276,14 +1276,6 @@ function SettingsDialog({
                 />
               </label>
               <label>
-                <span>允许 coder fallback</span>
-                <input
-                  type="checkbox"
-                  checked={settings.runtimeComposer.fallbackToCoder}
-                  onChange={(event) => updateRuntimeComposer({ fallbackToCoder: event.target.checked })}
-                />
-              </label>
-              <label>
                 <span>最大修订轮数</span>
                 <input
                   type="number"

@@ -57,7 +57,6 @@ export const runtimeComposerConfigSchema = z.object({
   minQualityScore: z.number().min(0).max(1).default(0.75),
   autoCaptureAfterPatch: z.boolean().default(true),
   requireVisualInspection: z.boolean().default(true),
-  fallbackToCoder: z.boolean().default(true),
   captureDelayMs: z.number().int().min(0).max(10000).default(1200),
   nonBlankPixelThreshold: z.number().min(0).max(1).default(0.02),
 });

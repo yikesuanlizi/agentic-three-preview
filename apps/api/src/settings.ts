@@ -21,7 +21,6 @@ export const defaultSettings: AppSettings = appSettingsSchema.parse({
     minQualityScore: 0.75,
     autoCaptureAfterPatch: true,
     requireVisualInspection: true,
-    fallbackToCoder: true,
     captureDelayMs: 1200,
     nonBlankPixelThreshold: 0.02,
   },
