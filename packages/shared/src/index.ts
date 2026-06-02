@@ -51,10 +51,22 @@ export const modelConfigSchema = z.object({
 
 export const screenshotModeSchema = z.enum(["download", "save", "both"]);
 
+export const runtimeComposerConfigSchema = z.object({
+  enabled: z.boolean().default(true),
+  maxRevisionRounds: z.number().int().min(1).max(8).default(3),
+  minQualityScore: z.number().min(0).max(1).default(0.75),
+  autoCaptureAfterPatch: z.boolean().default(true),
+  requireVisualInspection: z.boolean().default(true),
+  fallbackToCoder: z.boolean().default(true),
+  captureDelayMs: z.number().int().min(0).max(10000).default(1200),
+  nonBlankPixelThreshold: z.number().min(0).max(1).default(0.02),
+});
+
 export const appSettingsSchema = z.object({
   models: z.array(modelConfigSchema),
   screenshotMode: screenshotModeSchema.default("download"),
   enabledSkillIds: z.array(z.string()).default([]),
+  runtimeComposer: runtimeComposerConfigSchema.default({}),
 });
 
 export const skillCreateRequestSchema = z.object({
@@ -159,6 +171,50 @@ export const sceneRenderRequestSchema = z.object({
   scene: sceneDslSchema,
 });
 
+export const qualityInspectionRequestSchema = z.object({
+  sessionId: z.string().min(1),
+  runId: z.string().optional(),
+  round: z.number().int().min(1),
+  userGoal: z.string().default(""),
+  referenceImages: z.array(imageInputSchema).default([]),
+  screenshotDataUrl: z.string().startsWith("data:image/png;base64,"),
+  scene: sceneDslSchema,
+  runtimeErrors: z.array(runtimeErrorSchema).default([]),
+});
+
+export const qualityInspectionStatusSchema = z.enum(["pass", "revise", "ask_user", "fallback"]);
+
+export const qualityInspectionResultSchema = z.object({
+  status: qualityInspectionStatusSchema,
+  score: z.number().min(0).max(1),
+  issues: z.array(z.string()).default([]),
+  revisionHints: z.array(z.string()).default([]),
+  bestEffortReason: z.string().default(""),
+});
+
+export const sceneRevisionRequestSchema = z.object({
+  scene: sceneDslSchema,
+  quality: qualityInspectionResultSchema,
+  userGoal: z.string().default(""),
+  round: z.number().int().min(1),
+});
+
+export const sceneRevisionResultSchema = z.object({
+  scene: sceneDslSchema,
+  summary: z.string(),
+});
+
+export const workflowRevisionEventSchema = z.object({
+  sessionId: z.string().min(1),
+  runId: z.string().optional(),
+  round: z.number().int().min(1),
+  screenshotPath: z.string().optional(),
+  score: z.number().min(0).max(1).optional(),
+  status: qualityInspectionStatusSchema.optional(),
+  issues: z.array(z.string()).default([]),
+  selectedBest: z.boolean().default(false),
+});
+
 export const fileMapSchema = z.record(z.string()).superRefine((files, ctx) => {
   for (const path of Object.keys(files)) {
     if (!ALLOWED_FILE_PATHS.includes(path as AllowedFilePath)) {
@@ -205,6 +261,8 @@ export const streamEventSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("snapshot_saved"), runId: z.string(), label: z.string(), stable: z.boolean() }),
   z.object({ type: z.literal("reasoning_summary"), message: z.string() }),
   z.object({ type: z.literal("coder_input_summary"), message: z.string() }),
+  z.object({ type: z.literal("workflow_config"), config: runtimeComposerConfigSchema }),
+  z.object({ type: z.literal("scene_dsl"), scene: sceneDslSchema }),
   patchEventSchema,
   z.object({ type: z.literal("assistant_message"), message: z.string() }),
   z.object({ type: z.literal("error"), message: z.string() }),
@@ -225,6 +283,7 @@ export type CompactSummary = z.infer<typeof compactSummarySchema>;
 export type ModelNode = z.infer<typeof modelNodeSchema>;
 export type ModelConfig = z.infer<typeof modelConfigSchema>;
 export type ScreenshotMode = z.infer<typeof screenshotModeSchema>;
+export type RuntimeComposerConfig = z.infer<typeof runtimeComposerConfigSchema>;
 export type AppSettings = z.infer<typeof appSettingsSchema>;
 export type SkillCreateRequest = z.infer<typeof skillCreateRequestSchema>;
 export type SkillInferRequest = z.infer<typeof skillInferRequestSchema>;
@@ -237,6 +296,12 @@ export type RetrievalSearchRequest = z.infer<typeof retrievalSearchRequestSchema
 export type RetrievalSearchResult = z.infer<typeof retrievalSearchResultSchema>;
 export type SceneComposeRequest = z.infer<typeof sceneComposeRequestSchema>;
 export type SceneRenderRequest = z.infer<typeof sceneRenderRequestSchema>;
+export type QualityInspectionRequest = z.infer<typeof qualityInspectionRequestSchema>;
+export type QualityInspectionStatus = z.infer<typeof qualityInspectionStatusSchema>;
+export type QualityInspectionResult = z.infer<typeof qualityInspectionResultSchema>;
+export type SceneRevisionRequest = z.infer<typeof sceneRevisionRequestSchema>;
+export type SceneRevisionResult = z.infer<typeof sceneRevisionResultSchema>;
+export type WorkflowRevisionEvent = z.infer<typeof workflowRevisionEventSchema>;
 
 export const screenshotSaveRequestSchema = z.object({
   sessionId: z.string().min(1),

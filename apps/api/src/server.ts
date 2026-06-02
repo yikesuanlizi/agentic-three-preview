@@ -13,12 +13,14 @@ import {
   screenshotSaveRequestSchema,
   sceneComposeRequestSchema,
   sceneRenderRequestSchema,
+  workflowRevisionEventSchema,
 } from "@agentic-three/shared";
 import { runAgent } from "./agent.js";
 import { listAircraftAssets } from "./aircraftAssets.js";
 import { searchAircraftKnowledge } from "./aircraftRetrieval.js";
 import { createSkill, inferSkill, installSkillsFromUrl, listLocalTools, listSkills } from "./skills.js";
 import { composeScene, renderSceneToFiles } from "./sceneRuntime.js";
+import { inspectQuality, reviseScene } from "./quality.js";
 import { listRecentInputImages, readOutputFile, saveInputImageArtifacts, saveScreenshotArtifact } from "./artifacts.js";
 import { envStatus, getAppSettings, saveAppSettings } from "./settings.js";
 import {
@@ -95,6 +97,22 @@ app.post("/api/scene/compose", async (request) => {
 app.post("/api/scene/render", async (request) => {
   const parsed = sceneRenderRequestSchema.parse(request.body);
   return renderSceneToFiles(parsed);
+});
+
+app.post("/api/quality/inspect", async (request) => ({
+  result: await inspectQuality(request.body, getAppSettings()),
+}));
+
+app.post("/api/scene/revise", async (request) => ({
+  result: await reviseScene(request.body),
+}));
+
+app.post("/api/workflow/revision-event", async (request) => {
+  const parsed = workflowRevisionEventSchema.parse(request.body);
+  if (parsed.runId) {
+    appendRunEvent(parsed.runId, parsed.sessionId, "workflow.revision", parsed);
+  }
+  return { ok: true };
 });
 
 app.get("/api/default-files", async () => ({

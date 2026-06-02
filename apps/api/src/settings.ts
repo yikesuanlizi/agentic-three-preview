@@ -15,6 +15,16 @@ dotenv.config({ path: resolve(projectRoot, ".env") });
 export const defaultSettings: AppSettings = appSettingsSchema.parse({
   screenshotMode: "download",
   enabledSkillIds: ["three-scene", "camera-light", "material-animation", "performance-safety", "webgpu"],
+  runtimeComposer: {
+    enabled: true,
+    maxRevisionRounds: 3,
+    minQualityScore: 0.75,
+    autoCaptureAfterPatch: true,
+    requireVisualInspection: true,
+    fallbackToCoder: true,
+    captureDelayMs: 1200,
+    nonBlankPixelThreshold: 0.02,
+  },
   models: [
     nodeConfig("coder_agent", "Qwen3.5-122B-A10B", 0.2, 8192),
     nodeConfig("planner_agent", "DeepSeek-V4-Flash", 0.2, 1024),
@@ -43,6 +53,10 @@ function normalizeSettings(settings: AppSettings): AppSettings {
   const allowedNodes = new Set(modelNodeSchema.options);
   return appSettingsSchema.parse({
     ...settings,
+    runtimeComposer: {
+      ...defaultSettings.runtimeComposer,
+      ...settings.runtimeComposer,
+    },
     models: settings.models
       .filter((model) => allowedNodes.has(model.node))
       .map((model) =>

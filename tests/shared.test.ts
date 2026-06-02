@@ -3,6 +3,10 @@ import {
   applyPatch,
   defaultFiles,
   aircraftAssetMetadataSchema,
+  appSettingsSchema,
+  qualityInspectionRequestSchema,
+  qualityInspectionResultSchema,
+  runtimeComposerConfigSchema,
   sanitizePatch,
   sceneDslSchema,
   streamEventSchema,
@@ -12,6 +16,7 @@ import { mergeCompactSummary, parseModelFileBlocks } from "../apps/api/src/agent
 import { listAircraftAssets } from "../apps/api/src/aircraftAssets";
 import { searchAircraftKnowledge } from "../apps/api/src/aircraftRetrieval";
 import { composeScene, createRuntimePatch, parseSemanticIntent, renderSceneToFiles } from "../apps/api/src/sceneRuntime";
+import { reviseScene, superviseQuality } from "../apps/api/src/quality";
 import { selectSkillContext, selectSkillContextDynamic } from "../apps/api/src/skills";
 import { defaultSettings, resolveModelConfig } from "../apps/api/src/settings";
 
@@ -236,6 +241,71 @@ FILE: src/App.tsx
     expect(event.type).toBe("coder_input_summary");
   });
 
+  it("Runtime Composer 默认配置会被 settings schema 补齐", () => {
+    const settings = appSettingsSchema.parse({
+      models: defaultSettings.models,
+      screenshotMode: "save",
+      enabledSkillIds: [],
+    });
+    const config = runtimeComposerConfigSchema.parse(settings.runtimeComposer);
+
+    expect(config.enabled).toBe(true);
+    expect(config.maxRevisionRounds).toBe(3);
+    expect(config.minQualityScore).toBe(0.75);
+    expect(config.nonBlankPixelThreshold).toBe(0.02);
+  });
+
+  it("支持 workflow_config 和 scene_dsl 流事件", () => {
+    const scene = sceneDslSchema.parse({
+      sceneType: "engine_showcase",
+      cameraPreset: "front",
+      lightingPreset: "engineering_white",
+      renderStyle: "technical_lines",
+      objects: [{ id: "engine", primitive: "turbofan_front" }],
+    });
+
+    expect(streamEventSchema.parse({ type: "workflow_config", config: defaultSettings.runtimeComposer }).type).toBe(
+      "workflow_config",
+    );
+    expect(streamEventSchema.parse({ type: "scene_dsl", scene }).type).toBe("scene_dsl");
+  });
+
+  it("质检 schema 能表达截图、参考图和 DSL", () => {
+    const scene = sceneDslSchema.parse({
+      sceneType: "engine_showcase",
+      cameraPreset: "front",
+      lightingPreset: "engineering_white",
+      renderStyle: "technical_lines",
+      objects: [{ id: "engine", primitive: "turbofan_front" }],
+    });
+    const request = qualityInspectionRequestSchema.parse({
+      sessionId: "quality-test",
+      round: 1,
+      userGoal: "画发动机正面黑线白图",
+      screenshotDataUrl: "data:image/png;base64,aaaa",
+      scene,
+    });
+
+    expect(request.referenceImages).toEqual([]);
+    expect(request.scene.objects[0]?.primitive).toBe("turbofan_front");
+  });
+
+  it("质检 supervisor 按阈值决定 pass 或 revise", () => {
+    const config = runtimeComposerConfigSchema.parse({ minQualityScore: 0.75 });
+    const pass = superviseQuality(
+      qualityInspectionResultSchema.parse({ status: "revise", score: 0.82, issues: [], revisionHints: [] }),
+      config,
+    );
+    const revise = superviseQuality(
+      qualityInspectionResultSchema.parse({ status: "pass", score: 0.4, issues: ["主体太小"], revisionHints: [] }),
+      config,
+    );
+
+    expect(pass.status).toBe("pass");
+    expect(revise.status).toBe("revise");
+    expect(revise.revisionHints.length).toBeGreaterThan(0);
+  });
+
   it("能校验飞机资产 metadata schema", () => {
     const asset = aircraftAssetMetadataSchema.parse({
       id: "turbofan-test",
@@ -291,5 +361,31 @@ FILE: src/App.tsx
     expect(scene.objects[0]?.primitive).toBe("turbofan_front");
     expect(runtime.patch.operations.map((operation) => operation.path)).toEqual(["src/App.tsx", "src/styles.css"]);
     expect(() => sanitizePatch(runtime.patch)).not.toThrow();
+  });
+
+  it("Scene revise 只修改 DSL，不直接生成 three.js", async () => {
+    const scene = sceneDslSchema.parse({
+      sceneType: "component_detail",
+      cameraPreset: "three_quarter",
+      lightingPreset: "studio_soft",
+      renderStyle: "realistic",
+      objects: [{ id: "part", primitive: "generic_part" }],
+    });
+    const revised = await reviseScene({
+      scene,
+      userGoal: "画发动机正面3d图，黑线白图",
+      round: 1,
+      quality: {
+        status: "revise",
+        score: 0.45,
+        issues: ["不像发动机", "不是正面"],
+        revisionHints: ["增加叶片", "调整到正面", "改成白底黑线"],
+      },
+    });
+
+    expect(revised.scene.sceneType).toBe("engine_showcase");
+    expect(revised.scene.cameraPreset).toBe("front");
+    expect(revised.scene.renderStyle).toBe("technical_lines");
+    expect(revised.scene.objects[0]?.primitive).toBe("turbofan_front");
   });
 });

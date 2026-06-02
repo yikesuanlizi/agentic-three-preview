@@ -16,6 +16,9 @@ import {
   type ImageInput,
   type ModelConfig,
   type PatchEvent,
+  type QualityInspectionResult,
+  type RuntimeComposerConfig,
+  type SceneDsl,
   type ScreenshotMode,
   type SkillCreateRequest,
   type StreamEvent,
@@ -123,6 +126,9 @@ function Workspace() {
   const [envStatus, setEnvStatus] = useState<Record<string, boolean>>({});
   const [apiKeyDraft, setApiKeyDraft] = useState("");
   const [screenshotMode, setScreenshotMode] = useState<ScreenshotMode>("download");
+  const [workflowConfig, setWorkflowConfig] = useState<RuntimeComposerConfig | null>(null);
+  const [latestSceneDsl, setLatestSceneDsl] = useState<SceneDsl | null>(null);
+  const [isQualityRunning, setIsQualityRunning] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: crypto.randomUUID(),
@@ -245,6 +251,8 @@ function Workspace() {
     setPast([]);
     setFuture([]);
     setCurrentRunId(undefined);
+    setLatestSceneDsl(null);
+    setWorkflowConfig(null);
     applySnapshot(defaultFiles);
   };
 
@@ -356,6 +364,181 @@ function Workspace() {
     }
   };
 
+  const runQualityWorkflow = useCallback(
+    async (options: {
+      scene: SceneDsl;
+      config: RuntimeComposerConfig;
+      userGoal: string;
+      runId?: string;
+      referenceImages: ImageInput[];
+      runtimeErrors: RuntimeError[];
+    }) => {
+      if (!options.config.enabled || !options.config.autoCaptureAfterPatch) return;
+      setIsQualityRunning(true);
+      let currentScene = options.scene;
+      let best: { round: number; score: number; path: string; result: QualityInspectionResult } | undefined;
+      setMessages((items) => [
+        ...items,
+        {
+          id: crypto.randomUUID(),
+          role: "system",
+          content: `已进入 Runtime Composer 多轮质检，最多 ${options.config.maxRevisionRounds} 轮。`,
+        },
+      ]);
+      try {
+        for (let round = 1; round <= options.config.maxRevisionRounds; round += 1) {
+          await delay(options.config.captureDelayMs);
+          const screenshotDataUrl = await requestPreviewCapture(postPreviewCommand);
+          const nonBlankRatio = await estimateNonBlankPixelRatio(screenshotDataUrl);
+          const screenshot = await saveWorkflowScreenshot({
+            sessionId,
+            runId: options.runId,
+            dataUrl: screenshotDataUrl,
+            view: `workflow-round-${round}`,
+          });
+          const inspectionResponse = await fetch(`${apiUrl}/api/quality/inspect`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              sessionId,
+              runId: options.runId,
+              round,
+              userGoal: options.userGoal,
+              referenceImages: options.referenceImages,
+              screenshotDataUrl,
+              scene: currentScene,
+              runtimeErrors: options.runtimeErrors,
+            }),
+          });
+          if (!inspectionResponse.ok) throw new Error(`质检请求失败: ${inspectionResponse.status}`);
+          const inspectionData = (await inspectionResponse.json()) as { result: QualityInspectionResult };
+          let result = inspectionData.result;
+          if (nonBlankRatio < options.config.nonBlankPixelThreshold) {
+            result = {
+              ...result,
+              status: "revise",
+              score: Math.min(result.score, 0.2),
+              issues: [`截图非空像素占比 ${nonBlankRatio.toFixed(3)} 低于阈值，疑似空白或主体过小。`, ...result.issues],
+              revisionHints: ["放大主体并确保 renderer 已完成首帧渲染。", ...result.revisionHints],
+            };
+          }
+          if (!best || result.score > best.score) {
+            best = { round, score: result.score, path: screenshot.path, result };
+          }
+          await fetch(`${apiUrl}/api/workflow/revision-event`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              sessionId,
+              runId: options.runId,
+              round,
+              screenshotPath: screenshot.path,
+              score: result.score,
+              status: result.status,
+              issues: result.issues,
+              selectedBest: result.status === "pass",
+            }),
+          });
+          setMessages((items) => [
+            ...items,
+            {
+              id: crypto.randomUUID(),
+              role: "system",
+              content: `第 ${round} 轮质检: ${result.status}，分数 ${result.score.toFixed(2)}。${result.issues.length ? `问题: ${result.issues.join("；")}` : "未发现主要问题。"} 截图: ${screenshot.path}`,
+            },
+          ]);
+          if (result.status === "pass") {
+            setMessages((items) => [
+              ...items,
+              { id: crypto.randomUUID(), role: "assistant", content: "质检通过，当前预览可作为最终结果使用。" },
+            ]);
+            return;
+          }
+          if (result.status === "ask_user" || result.status === "fallback") {
+            setMessages((items) => [
+              ...items,
+              {
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content: result.bestEffortReason || "质检认为需要人工确认，自动修订已停止。",
+              },
+            ]);
+            return;
+          }
+          if (round >= options.config.maxRevisionRounds) break;
+          const revisionResponse = await fetch(`${apiUrl}/api/scene/revise`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              scene: currentScene,
+              quality: result,
+              userGoal: options.userGoal,
+              round,
+            }),
+          });
+          if (!revisionResponse.ok) throw new Error(`Scene DSL 修订失败: ${revisionResponse.status}`);
+          const revisionData = (await revisionResponse.json()) as { result: { scene: SceneDsl; summary: string } };
+          currentScene = revisionData.result.scene;
+          setLatestSceneDsl(currentScene);
+          const renderResponse = await fetch(`${apiUrl}/api/scene/render`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ scene: currentScene }),
+          });
+          if (!renderResponse.ok) throw new Error(`Scene DSL 渲染失败: ${renderResponse.status}`);
+          const renderData = (await renderResponse.json()) as { files: FileMap; summary: string };
+          const patch: PatchEvent = {
+            type: "patch",
+            summary: `${revisionData.result.summary} ${renderData.summary}`,
+            operations: (["src/App.tsx", "src/styles.css"] as const).map((path) => ({
+              type: "replace_file",
+              path,
+              content: renderData.files[path] ?? "",
+            })),
+          };
+          applyAgentPatch(patch);
+        }
+        if (best) {
+          const bestResult = best;
+          await fetch(`${apiUrl}/api/workflow/revision-event`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              sessionId,
+              runId: options.runId,
+              round: bestResult.round,
+              screenshotPath: bestResult.path,
+              score: bestResult.score,
+              status: bestResult.result.status,
+              issues: bestResult.result.issues,
+              selectedBest: true,
+            }),
+          });
+          setMessages((items) => [
+            ...items,
+            {
+              id: crypto.randomUUID(),
+              role: "assistant",
+              content: `已达到最大质检轮数，保留当前最好结果: 第 ${bestResult.round} 轮，分数 ${bestResult.score.toFixed(2)}，截图 ${bestResult.path}。`,
+            },
+          ]);
+        }
+      } catch (error) {
+        setMessages((items) => [
+          ...items,
+          {
+            id: crypto.randomUUID(),
+            role: "system",
+            content: error instanceof Error ? `自动质检失败: ${error.message}` : `自动质检失败: ${String(error)}`,
+          },
+        ]);
+      } finally {
+        setIsQualityRunning(false);
+      }
+    },
+    [applyAgentPatch, postPreviewCommand, sessionId],
+  );
+
   const submit = async () => {
     const message = input.trim();
     if (!message && images.length === 0) return;
@@ -369,10 +552,11 @@ function Workspace() {
     setIsRunning(true);
 
     try {
+      const referenceImages = images;
       const payload = {
         sessionId,
         message: userText,
-        images,
+        images: referenceImages,
         files: currentFiles(),
         runtimeErrors,
         history: messages
@@ -400,8 +584,26 @@ function Workspace() {
       if (!response.ok || !response.body) {
         throw new Error(`Agent 请求失败: ${response.status}`);
       }
+      let sceneForWorkflow: SceneDsl | null = null;
+      let configForWorkflow: RuntimeComposerConfig | null = appSettings?.runtimeComposer ?? null;
+      let runIdForWorkflow: string | undefined = currentRunId;
+      let patchApplied = false;
       for await (const event of readNdjson(response.body)) {
-        handleStreamEvent(event, applyAgentPatch, setMessages, setCurrentRunId);
+        if (event.type === "run_id") runIdForWorkflow = event.runId;
+        if (event.type === "workflow_config") configForWorkflow = event.config;
+        if (event.type === "scene_dsl") sceneForWorkflow = event.scene;
+        if (event.type === "patch") patchApplied = true;
+        handleStreamEvent(event, applyAgentPatch, setMessages, setCurrentRunId, setWorkflowConfig, setLatestSceneDsl);
+      }
+      if (patchApplied && sceneForWorkflow && configForWorkflow?.autoCaptureAfterPatch) {
+        await runQualityWorkflow({
+          scene: sceneForWorkflow,
+          config: configForWorkflow,
+          userGoal: userText,
+          runId: runIdForWorkflow,
+          referenceImages,
+          runtimeErrors,
+        });
       }
       setImages([]);
       void refreshSessions();
@@ -529,6 +731,19 @@ function Workspace() {
                 <span>{runtimeErrors[0]?.message}</span>
               </div>
             )}
+            {(workflowConfig || latestSceneDsl || isQualityRunning) && (
+              <div className="runtime-card">
+                <strong>Runtime Composer</strong>
+                <span>
+                  {isQualityRunning
+                    ? "正在自动截图质检"
+                    : workflowConfig?.enabled
+                      ? `已启用，多轮上限 ${workflowConfig.maxRevisionRounds}`
+                      : "未启用"}
+                  {latestSceneDsl ? `；DSL: ${latestSceneDsl.sceneType} / ${latestSceneDsl.renderStyle}` : ""}
+                </span>
+              </div>
+            )}
             <div className="composer">
               <textarea
                 value={input}
@@ -558,9 +773,9 @@ function Workspace() {
                 <button onClick={() => fileInputRef.current?.click()} title="上传参考图">
                   <ImagePlus size={16} />
                 </button>
-                <button className="send-button" onClick={() => void submit()} disabled={isRunning}>
+                <button className="send-button" onClick={() => void submit()} disabled={isRunning || isQualityRunning}>
                   <Send size={16} />
-                  <span>{isRunning ? "执行中" : "发送"}</span>
+                  <span>{isRunning || isQualityRunning ? "执行中" : "发送"}</span>
                 </button>
               </div>
             </div>
@@ -1034,9 +1249,35 @@ function handleStreamEvent(
   applyAgentPatch: (patch: PatchEvent) => void,
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   setCurrentRunId: React.Dispatch<React.SetStateAction<string | undefined>>,
+  setWorkflowConfig: React.Dispatch<React.SetStateAction<RuntimeComposerConfig | null>>,
+  setLatestSceneDsl: React.Dispatch<React.SetStateAction<SceneDsl | null>>,
 ) {
   if (event.type === "run_id") {
     setCurrentRunId(event.runId);
+    return;
+  }
+  if (event.type === "workflow_config") {
+    setWorkflowConfig(event.config);
+    setMessages((items) => [
+      ...items,
+      {
+        id: crypto.randomUUID(),
+        role: "system",
+        content: `工作流配置: 自动质检${event.config.autoCaptureAfterPatch ? "开启" : "关闭"}，最多 ${event.config.maxRevisionRounds} 轮，阈值 ${event.config.minQualityScore}。`,
+      },
+    ]);
+    return;
+  }
+  if (event.type === "scene_dsl") {
+    setLatestSceneDsl(event.scene);
+    setMessages((items) => [
+      ...items,
+      {
+        id: crypto.randomUUID(),
+        role: "system",
+        content: `Scene DSL: ${event.scene.sceneType} / ${event.scene.cameraPreset} / ${event.scene.renderStyle}。`,
+      },
+    ]);
     return;
   }
   if (event.type === "patch") {
@@ -1280,6 +1521,59 @@ function requestPreviewCapture(postPreviewCommand: (payload: Record<string, unkn
     window.addEventListener("message", handler);
     postPreviewCommand({ type: "agentic-three:capture", requestId });
   });
+}
+
+async function saveWorkflowScreenshot(input: {
+  sessionId: string;
+  runId?: string;
+  dataUrl: string;
+  view: string;
+}): Promise<{ path: string; fileName: string; url: string }> {
+  const response = await fetch(`${apiUrl}/api/artifacts/screenshots`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      sessionId: input.sessionId,
+      runId: input.runId,
+      dataUrl: input.dataUrl,
+      view: input.view,
+      mode: "save",
+    }),
+  });
+  if (!response.ok) throw new Error(`工作流截图保存失败: ${response.status}`);
+  const data = (await response.json()) as { artifact: { path: string; fileName: string; url: string } };
+  return data.artifact;
+}
+
+async function estimateNonBlankPixelRatio(dataUrl: string): Promise<number> {
+  const image = new Image();
+  image.src = dataUrl;
+  await image.decode();
+  const canvas = document.createElement("canvas");
+  const width = 160;
+  const height = Math.max(1, Math.round((image.height / Math.max(image.width, 1)) * width));
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) return 0;
+  context.drawImage(image, 0, 0, width, height);
+  const pixels = context.getImageData(0, 0, width, height).data;
+  let nonBlank = 0;
+  for (let index = 0; index < pixels.length; index += 4) {
+    const alpha = pixels[index + 3] ?? 0;
+    if (alpha < 8) continue;
+    const red = pixels[index] ?? 255;
+    const green = pixels[index + 1] ?? 255;
+    const blue = pixels[index + 2] ?? 255;
+    if (Math.abs(red - 255) + Math.abs(green - 255) + Math.abs(blue - 255) > 24) {
+      nonBlank += 1;
+    }
+  }
+  return nonBlank / (pixels.length / 4);
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
 function downloadDataUrl(dataUrl: string, fileName: string): void {

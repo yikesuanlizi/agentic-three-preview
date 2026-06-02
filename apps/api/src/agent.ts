@@ -8,6 +8,7 @@ import {
   type AppSettings,
   type CompactSummary,
   type PatchEvent,
+  type SceneDsl,
   type StreamEvent,
   agentTurnRequestSchema,
   compactSummarySchema,
@@ -53,6 +54,7 @@ const AgentState = Annotation.Root({
   skillContext: Annotation<string>(),
   plan: Annotation<string>(),
   patch: Annotation<PatchEvent | undefined>(),
+  scene: Annotation<SceneDsl | undefined>(),
   nextCompactSummary: Annotation<CompactSummary | undefined>(),
   reasoningSummary: Annotation<string>(),
   assistantMessage: Annotation<string>(),
@@ -136,6 +138,7 @@ const coderAgent = async (state: AgentStateType) => {
     });
     return {
       patch: runtime.patch,
+      scene: runtime.scene,
       assistantMessage:
         "已使用 Aircraft Runtime Composer 生成 Scene DSL，并通过程序化 three.js renderer 输出可预览场景。旧的从零代码生成仅作为 fallback 保留。",
       reasoningSummary: `${state.reasoningSummary}\n语义解析: ${runtime.intent.subject} / ${runtime.intent.renderStyle}。\n检索: ${runtime.retrievalResults.map((item) => item.id).join(", ") || "无"}。\n场景编排: ${runtime.scene.sceneType} DSL 已渲染为 Sandpack 文件。`,
@@ -242,6 +245,7 @@ export async function runAgent(input: AgentTurnRequest | AgentRunInput): Promise
     skillContext: "",
     plan: "",
     patch: undefined,
+    scene: undefined,
     nextCompactSummary: undefined,
     reasoningSummary: "",
     assistantMessage: "",
@@ -254,6 +258,7 @@ export async function runAgent(input: AgentTurnRequest | AgentRunInput): Promise
   const finalPromptLength = buildModelPrompt(result).length;
   const events: StreamEvent[] = [
     { type: "run_id", runId: initialState.runId },
+    { type: "workflow_config", config: result.settings.runtimeComposer },
     {
       type: "coder_input_summary",
       message: `coder 收到 ${result.request.images.length} 张图片，coder prompt ${finalPromptLength} 字符，skills ${result.skillContext.length} 字符。`,
@@ -261,6 +266,9 @@ export async function runAgent(input: AgentTurnRequest | AgentRunInput): Promise
     { type: "reasoning_summary", message: result.reasoningSummary || "Agent 图执行完成。" },
   ];
   if (result.patch) {
+    if (result.scene) {
+      events.push({ type: "scene_dsl", scene: result.scene });
+    }
     events.push(result.patch);
   }
   if (result.assistantMessage) {
