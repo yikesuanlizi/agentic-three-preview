@@ -141,7 +141,7 @@ export const semanticIntentSchema = z.object({
 export const sceneDslObjectSchema = z.object({
   id: z.string().min(1),
   assetId: z.string().min(1).optional(),
-  primitive: z.enum(["turbofan_front", "wing_panel", "fuselage_section", "landing_gear", "generic_part"]).default("generic_part"),
+  primitive: z.enum(["turbofan_front", "wing_panel", "fuselage_section", "landing_gear", "heart_3d", "generic_part"]).default("generic_part"),
   position: z.tuple([z.number(), z.number(), z.number()]).default([0, 0, 0]),
   rotation: z.tuple([z.number(), z.number(), z.number()]).default([0, 0, 0]),
   scale: z.number().positive().default(1),

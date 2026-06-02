@@ -420,6 +420,26 @@ FILE: src/App.tsx
     expect(() => sanitizePatch(runtime.patch)).not.toThrow();
   });
 
+  it("Runtime Composer 能处理非飞机的粉色爱心动图请求", async () => {
+    const request = {
+      sessionId: "test-runtime-heart",
+      message: "给我画一个三维粉色爱心动图",
+      images: [],
+      files: defaultFiles,
+      runtimeErrors: [],
+      history: [],
+    };
+    const runtime = await createRuntimePatchWithRag(request);
+
+    expect(runtime.retrievalResults).toHaveLength(0);
+    expect(runtime.scene.objects[0]?.primitive).toBe("heart_3d");
+    expect(runtime.scene.animations).toContain("heart_pulse");
+    expect(runtime.scene.renderStyle).toBe("realistic");
+    expect(runtime.patch.summary).toContain("pink animated 3D heart");
+    expect(runtime.patch.operations[0]?.content).toContain("buildHeart3D");
+    expect(() => sanitizePatch(runtime.patch)).not.toThrow();
+  });
+
   it("Scene revise 只修改 DSL，不直接生成 three.js", async () => {
     const scene = sceneDslSchema.parse({
       sceneType: "component_detail",

@@ -17,18 +17,19 @@ import { searchAircraftRag } from "./rag.js";
 
 export function parseSemanticIntent(request: AgentTurnRequest): SemanticIntent {
   const text = request.message.toLowerCase();
+  const isHeart = /heart|love|爱心|心形|桃心|粉色|pink/.test(text);
   const isEngine = /engine|turbofan|fan|发动机|涡扇|进气口|叶片/.test(text) || request.images.length > 0;
   const isWing = /wing|机翼|翼型/.test(text);
-  const renderStyle = /黑线|白图|线稿|工程|ppt|截图/.test(text) ? "technical_lines" : "engineering_white";
+  const renderStyle = /黑线|白图|线稿|工程/.test(text) ? "technical_lines" : isHeart ? "realistic" : "engineering_white";
   const view = /侧面|side/.test(text) ? "side" : /俯视|top/.test(text) ? "top" : "front";
   return semanticIntentSchema.parse({
-    subject: isEngine ? "turbofan engine front view" : isWing ? "aircraft wing component" : "aircraft component",
+    subject: isHeart ? "pink animated 3D heart" : isEngine ? "turbofan engine front view" : isWing ? "aircraft wing component" : "aircraft component",
     category: isEngine ? "engine" : isWing ? "wing" : undefined,
     view,
     renderStyle,
-    requestedOutputs: request.images.length ? ["image_reconstruction", "sandpack_preview"] : ["sandpack_preview"],
+    requestedOutputs: isHeart ? ["animated_preview", "sandpack_preview"] : request.images.length ? ["image_reconstruction", "sandpack_preview"] : ["sandpack_preview"],
     constraints: [
-      renderStyle === "technical_lines" ? "white background with black linework" : "clean aircraft component preview",
+      isHeart ? "pink 3D heart with gentle loop animation" : renderStyle === "technical_lines" ? "white background with black linework" : "clean aircraft component preview",
       "no automatic rotation",
       "preserveDrawingBuffer for screenshots",
     ],
@@ -39,7 +40,8 @@ export function composeScene(input: unknown): SceneDsl {
   const { intent, retrievalResults } = sceneComposeRequestSchema.parse(input);
   const bestAsset = retrievalResults.find((item) => item.kind === "asset_view" || item.kind === "asset");
   const bestTemplate = retrievalResults.find((item) => item.kind === "template");
-  const primitive = intent.category === "engine" ? "turbofan_front" : intent.category === "wing" ? "wing_panel" : "generic_part";
+  const isHeart = /heart|爱心|心形|pink|粉色/.test(intent.subject.toLowerCase());
+  const primitive = isHeart ? "heart_3d" : intent.category === "engine" ? "turbofan_front" : intent.category === "wing" ? "wing_panel" : "generic_part";
   const templateId = normalizeRetrievalId(bestTemplate?.id);
   return sceneDslSchema.parse({
     sceneType: templateId === "front_technical_view" ? "front_technical_view" : intent.category === "engine" ? "engine_showcase" : "component_detail",
@@ -57,7 +59,7 @@ export function composeScene(input: unknown): SceneDsl {
       },
     ],
     annotations: intent.constraints,
-    animations: [],
+    animations: isHeart ? ["heart_pulse"] : [],
   });
 }
 
@@ -89,11 +91,14 @@ export async function createRuntimePatchWithRag(request: AgentTurnRequest): Prom
   retrievalMode: "pgvector" | "fallback";
 }> {
   const intent = parseSemanticIntent(request);
-  const retrieval = await searchAircraftRag({
-    query: `${request.message} ${intent.subject} ${intent.constraints.join(" ")}`,
-    categories: intent.category ? [intent.category] : [],
-    topK: 6,
-  });
+  const shouldUseAircraftRag = Boolean(intent.category) || /aircraft|飞机|发动机|机翼|机身|起落架|涡扇/.test(`${request.message} ${intent.subject}`.toLowerCase());
+  const retrieval = shouldUseAircraftRag
+    ? await searchAircraftRag({
+        query: `${request.message} ${intent.subject} ${intent.constraints.join(" ")}`,
+        categories: intent.category ? [intent.category] : [],
+        topK: 6,
+      })
+    : { results: [] as RetrievalSearchResult[], mode: "fallback" as const };
   return {
     ...createRuntimePatchFromRetrieval(request, intent, retrieval.results),
     retrievalMode: retrieval.mode,
@@ -164,6 +169,7 @@ export default function App() {
 
     const lineMaterial = new THREE.LineBasicMaterial({ color: "#050505" });
     buildPrimitive(root, "${primitive}", lineMaterial);
+    const activeAnimations = ${JSON.stringify(scene.animations)};
 
     const light = new THREE.DirectionalLight("#ffffff", 2.2);
     light.position.set(3, 4, 5);
@@ -184,8 +190,16 @@ export default function App() {
     };
 
     let frame = 0;
+    const clock = new THREE.Clock();
     const animate = () => {
       frame = requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+      if (activeAnimations.includes("heart_pulse")) {
+        root.rotation.y = elapsed * 0.55;
+        root.rotation.z = Math.sin(elapsed * 1.4) * 0.08;
+        const pulse = 1 + Math.sin(elapsed * 2.4) * 0.045;
+        root.scale.setScalar(pulse);
+      }
       controls.update();
       renderer.render(scene, camera);
     };
@@ -228,6 +242,10 @@ function buildPrimitive(root: THREE.Group, primitive: string, lineMaterial: THRE
   }
   if (primitive === "wing_panel") {
     buildWingPanel(root, lineMaterial);
+    return;
+  }
+  if (primitive === "heart_3d") {
+    buildHeart3D(root, lineMaterial);
     return;
   }
   buildGenericPart(root, lineMaterial);
@@ -283,6 +301,43 @@ function buildWingPanel(root: THREE.Group, material: THREE.LineBasicMaterial) {
   });
 }
 
+function buildHeart3D(root: THREE.Group, lineMaterial: THREE.LineBasicMaterial) {
+  const shape = new THREE.Shape();
+  for (let index = 0; index <= 160; index += 1) {
+    const t = (index / 160) * Math.PI * 2;
+    const x = 16 * Math.pow(Math.sin(t), 3) * 0.055;
+    const y = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * 0.055;
+    if (index === 0) shape.moveTo(x, y);
+    else shape.lineTo(x, y);
+  }
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth: 0.42,
+    bevelEnabled: true,
+    bevelThickness: 0.08,
+    bevelSize: 0.08,
+    bevelSegments: 8,
+    curveSegments: 32,
+  });
+  geometry.center();
+  const material = new THREE.MeshStandardMaterial({
+    color: "#ff5ca8",
+    emissive: "#7c174d",
+    emissiveIntensity: 0.18,
+    metalness: 0.08,
+    roughness: 0.28,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.rotation.x = Math.PI;
+  mesh.scale.setScalar(1.45);
+  root.add(mesh);
+
+  const edges = new THREE.EdgesGeometry(geometry, 28);
+  const edgeLines = new THREE.LineSegments(edges, lineMaterial);
+  edgeLines.rotation.copy(mesh.rotation);
+  edgeLines.scale.copy(mesh.scale);
+  root.add(edgeLines);
+}
+
 function buildGenericPart(root: THREE.Group, material: THREE.LineBasicMaterial) {
   addEdges(root, new THREE.BoxGeometry(1.8, 0.8, 0.8, 3, 2, 2), material);
 }
@@ -303,7 +358,7 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: ${scene.renderStyle === "technical_lines" ? "#ffffff" : "#f8fafc"};
+  background: ${scene.objects.some((object) => object.primitive === "heart_3d") ? "#fff5fb" : scene.renderStyle === "technical_lines" ? "#ffffff" : "#f8fafc"};
 }
 
 canvas {
