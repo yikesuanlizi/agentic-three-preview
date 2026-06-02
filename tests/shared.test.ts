@@ -420,7 +420,7 @@ FILE: src/App.tsx
     expect(() => sanitizePatch(runtime.patch)).not.toThrow();
   });
 
-  it("Runtime Composer 能处理非飞机的粉色爱心动图请求", async () => {
+  it("Runtime Composer 能用通用场景处理非飞机装饰类动图请求", async () => {
     const request = {
       sessionId: "test-runtime-heart",
       message: "给我画一个三维粉色爱心动图",
@@ -432,11 +432,13 @@ FILE: src/App.tsx
     const runtime = await createRuntimePatchWithRag(request);
 
     expect(runtime.retrievalResults).toHaveLength(0);
-    expect(runtime.scene.objects[0]?.primitive).toBe("heart_3d");
-    expect(runtime.scene.animations).toContain("heart_pulse");
+    expect(runtime.scene.objects[0]?.primitive).toBe("decorative_shape");
+    expect(runtime.scene.objects[0]?.params.shape).toBe("heart");
+    expect(runtime.scene.objects[0]?.params.color).toBe("#ff5ca8");
+    expect(runtime.scene.animations).toContain("gentle_loop");
     expect(runtime.scene.renderStyle).toBe("realistic");
-    expect(runtime.patch.summary).toContain("pink animated 3D heart");
-    expect(runtime.patch.operations[0]?.content).toContain("buildHeart3D");
+    expect(runtime.patch.summary).toContain("general decorative 3D scene");
+    expect(runtime.patch.operations[0]?.content).toContain("buildDecorativeShape");
     expect(() => sanitizePatch(runtime.patch)).not.toThrow();
   });
 

@@ -64,8 +64,10 @@ export async function reviseScene(input: unknown): Promise<SceneRevisionResult> 
 function reviseSceneWithHeuristics(request: SceneRevisionRequest): SceneRevisionResult {
   const text = `${request.userGoal}\n${request.quality.issues.join("\n")}\n${request.quality.revisionHints.join("\n")}`.toLowerCase();
   const scene = structuredClone(request.scene);
-  const isHeart = /爱心|心形|桃心|heart|love|pink|粉色/.test(text);
-  if (isHeart) {
+  const isDecorative = /爱心|心形|桃心|heart|love|pink|粉色|星星|star|礼物|gift|球|sphere|抽象|装饰|logo|图标/.test(text);
+  if (isDecorative) {
+    const shape = /爱心|心形|桃心|heart|love/.test(text) ? "heart" : /星星|star/.test(text) ? "star" : /球|sphere/.test(text) ? "sphere" : "abstract";
+    const color = /粉色|pink/.test(text) ? "#ff5ca8" : /红色|red/.test(text) ? "#ef4444" : /蓝色|blue/.test(text) ? "#38bdf8" : "#a78bfa";
     scene.sceneType = "component_detail";
     scene.renderStyle = "realistic";
     scene.lightingPreset = "studio_soft";
@@ -74,12 +76,13 @@ function reviseSceneWithHeuristics(request: SceneRevisionRequest): SceneRevision
       index === 0
         ? {
             ...object,
-            primitive: "heart_3d",
+            primitive: "decorative_shape",
+            params: { ...object.params, shape, color },
             scale: Math.min((object.scale ?? 1) * 1.12, 1.55),
           }
         : object,
     );
-    scene.animations = Array.from(new Set([...scene.animations, "heart_pulse"]));
+    scene.animations = Array.from(new Set([...scene.animations, "gentle_loop"]));
   } else {
     scene.renderStyle = "technical_lines";
     scene.lightingPreset = "engineering_white";
@@ -138,7 +141,7 @@ async function reviseSceneWithModel(request: SceneRevisionRequest): Promise<Scen
       },
       {
         role: "user",
-        content: `用户目标:\n${request.userGoal}\n\n当前 Scene DSL:\n${JSON.stringify(request.scene, null, 2)}\n\n质检报告:\n${JSON.stringify(request.quality, null, 2)}\n\n修订要求:\n- 保持 schema 合法。\n- 黑线白图/PPT 场景优先 renderStyle=technical_lines、lightingPreset=engineering_white。\n- 正面图优先 cameraPreset=front。\n- 发动机/螺旋桨/叶片相关优先 engine_showcase + turbofan_front。\n- 爱心/粉色/heart 相关优先 primitive=heart_3d、renderStyle=realistic、animations 包含 heart_pulse。\n- 输出 JSON: { "scene": ..., "summary": "..." }`,
+        content: `用户目标:\n${request.userGoal}\n\n当前 Scene DSL:\n${JSON.stringify(request.scene, null, 2)}\n\n质检报告:\n${JSON.stringify(request.quality, null, 2)}\n\n修订要求:\n- 保持 schema 合法。\n- 黑线白图/PPT 场景优先 renderStyle=technical_lines、lightingPreset=engineering_white。\n- 正面图优先 cameraPreset=front。\n- 发动机/螺旋桨/叶片相关优先 engine_showcase + turbofan_front。\n- 通用装饰/图标/爱心/星星/球体等非飞机场景优先 primitive=decorative_shape，并用 params.shape/params.color 表达具体对象，animations 可包含 gentle_loop。\n- 输出 JSON: { "scene": ..., "summary": "..." }`,
       },
     ],
   });
@@ -227,17 +230,17 @@ function inspectWithHeuristics(request: QualityInspectionRequest): QualityInspec
     }
   }
   if (/发动机|engine|turbofan|fan|叶片/.test(goal) && /turbofan_front/.test(sceneText)) score += 0.1;
-  const wantsHeart = /爱心|心形|桃心|heart|love|pink|粉色/.test(goal);
-  if (wantsHeart) {
-    if (/heart_3d/.test(sceneText)) score += 0.14;
+  const wantsDecorative = /爱心|心形|桃心|heart|love|pink|粉色|星星|star|礼物|gift|球|sphere|抽象|装饰|logo|图标/.test(goal);
+  if (wantsDecorative) {
+    if (/decorative_shape/.test(sceneText)) score += 0.14;
     else {
-      issues.push("目标是粉色爱心，但 Scene DSL 没有使用 heart_3d。");
-      revisionHints.push("把主对象 primitive 调整为 heart_3d。");
+      issues.push("目标是通用装饰/图标类场景，但 Scene DSL 没有使用 decorative_shape。");
+      revisionHints.push("把主对象 primitive 调整为 decorative_shape，并通过 params 描述形状和颜色。");
     }
-    if (/heart_pulse/.test(sceneText)) score += 0.08;
+    if (/gentle_loop/.test(sceneText)) score += 0.08;
     else {
-      issues.push("目标需要动图效果，但 Scene DSL 没有 heart_pulse 动画。");
-      revisionHints.push("在 animations 中加入 heart_pulse。");
+      issues.push("目标需要动图效果，但 Scene DSL 没有 gentle_loop 动画。");
+      revisionHints.push("在 animations 中加入 gentle_loop。");
     }
   }
   if (request.runtimeErrors.length) {

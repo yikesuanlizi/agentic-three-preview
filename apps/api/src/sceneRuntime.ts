@@ -17,19 +17,19 @@ import { searchAircraftRag } from "./rag.js";
 
 export function parseSemanticIntent(request: AgentTurnRequest): SemanticIntent {
   const text = request.message.toLowerCase();
-  const isHeart = /heart|love|爱心|心形|桃心|粉色|pink/.test(text);
+  const isDecorative = /heart|love|爱心|心形|桃心|粉色|pink|星星|star|礼物|gift|球|sphere|抽象|装饰|logo|图标/.test(text);
   const isEngine = /engine|turbofan|fan|发动机|涡扇|进气口|叶片/.test(text) || request.images.length > 0;
   const isWing = /wing|机翼|翼型/.test(text);
-  const renderStyle = /黑线|白图|线稿|工程/.test(text) ? "technical_lines" : isHeart ? "realistic" : "engineering_white";
+  const renderStyle = /黑线|白图|线稿|工程/.test(text) ? "technical_lines" : isDecorative ? "realistic" : "engineering_white";
   const view = /侧面|side/.test(text) ? "side" : /俯视|top/.test(text) ? "top" : "front";
   return semanticIntentSchema.parse({
-    subject: isHeart ? "pink animated 3D heart" : isEngine ? "turbofan engine front view" : isWing ? "aircraft wing component" : "aircraft component",
+    subject: isDecorative ? "general decorative 3D scene" : isEngine ? "turbofan engine front view" : isWing ? "aircraft wing component" : "aircraft component",
     category: isEngine ? "engine" : isWing ? "wing" : undefined,
     view,
     renderStyle,
-    requestedOutputs: isHeart ? ["animated_preview", "sandpack_preview"] : request.images.length ? ["image_reconstruction", "sandpack_preview"] : ["sandpack_preview"],
+    requestedOutputs: isDecorative ? ["animated_preview", "sandpack_preview"] : request.images.length ? ["image_reconstruction", "sandpack_preview"] : ["sandpack_preview"],
     constraints: [
-      isHeart ? "pink 3D heart with gentle loop animation" : renderStyle === "technical_lines" ? "white background with black linework" : "clean aircraft component preview",
+      isDecorative ? `general decorative scene: ${request.message}` : renderStyle === "technical_lines" ? "white background with black linework" : "clean aircraft component preview",
       "no automatic rotation",
       "preserveDrawingBuffer for screenshots",
     ],
@@ -40,8 +40,9 @@ export function composeScene(input: unknown): SceneDsl {
   const { intent, retrievalResults } = sceneComposeRequestSchema.parse(input);
   const bestAsset = retrievalResults.find((item) => item.kind === "asset_view" || item.kind === "asset");
   const bestTemplate = retrievalResults.find((item) => item.kind === "template");
-  const isHeart = /heart|爱心|心形|pink|粉色/.test(intent.subject.toLowerCase());
-  const primitive = isHeart ? "heart_3d" : intent.category === "engine" ? "turbofan_front" : intent.category === "wing" ? "wing_panel" : "generic_part";
+  const decorativeParams = inferDecorativeParams(`${intent.subject}\n${intent.constraints.join("\n")}`);
+  const isDecorative = Boolean(decorativeParams);
+  const primitive = isDecorative ? "decorative_shape" : intent.category === "engine" ? "turbofan_front" : intent.category === "wing" ? "wing_panel" : "generic_part";
   const templateId = normalizeRetrievalId(bestTemplate?.id);
   return sceneDslSchema.parse({
     sceneType: templateId === "front_technical_view" ? "front_technical_view" : intent.category === "engine" ? "engine_showcase" : "component_detail",
@@ -56,10 +57,11 @@ export function composeScene(input: unknown): SceneDsl {
         position: [0, 0, 0],
         rotation: [0, 0, 0],
         scale: 1,
+        params: decorativeParams ?? {},
       },
     ],
     annotations: intent.constraints,
-    animations: isHeart ? ["heart_pulse"] : [],
+    animations: isDecorative ? ["gentle_loop"] : [],
   });
 }
 
@@ -133,9 +135,24 @@ function normalizeRetrievalId(id?: string): string | undefined {
   return id?.replace(/^(asset|asset-view|template|wiki):/, "").split(":")[0];
 }
 
+function inferDecorativeParams(text: string): Record<string, unknown> | undefined {
+  const lower = text.toLowerCase();
+  if (!/heart|love|爱心|心形|桃心|粉色|pink|星星|star|礼物|gift|球|sphere|抽象|装饰|logo|图标/.test(lower)) return undefined;
+  const shape = /heart|love|爱心|心形|桃心/.test(lower)
+    ? "heart"
+    : /星星|star/.test(lower)
+      ? "star"
+      : /球|sphere/.test(lower)
+        ? "sphere"
+        : "abstract";
+  const color = /粉色|pink/.test(lower) ? "#ff5ca8" : /红色|red/.test(lower) ? "#ef4444" : /蓝色|blue/.test(lower) ? "#38bdf8" : "#a78bfa";
+  return { shape, color };
+}
+
 function renderAppTsx(scene: SceneDsl): string {
   const primary = scene.objects[0];
   const primitive = primary?.primitive ?? "generic_part";
+  const primitiveParams = primary?.params ?? {};
   return `import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
@@ -168,7 +185,7 @@ export default function App() {
     scene.add(root);
 
     const lineMaterial = new THREE.LineBasicMaterial({ color: "#050505" });
-    buildPrimitive(root, "${primitive}", lineMaterial);
+    buildPrimitive(root, "${primitive}", lineMaterial, ${JSON.stringify(primitiveParams, null, 2)});
     const activeAnimations = ${JSON.stringify(scene.animations)};
 
     const light = new THREE.DirectionalLight("#ffffff", 2.2);
@@ -194,7 +211,7 @@ export default function App() {
     const animate = () => {
       frame = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
-      if (activeAnimations.includes("heart_pulse")) {
+      if (activeAnimations.includes("gentle_loop")) {
         root.rotation.y = elapsed * 0.55;
         root.rotation.z = Math.sin(elapsed * 1.4) * 0.08;
         const pulse = 1 + Math.sin(elapsed * 2.4) * 0.045;
@@ -235,7 +252,7 @@ export default function App() {
   return <div className="scene-root" ref={mountRef} />;
 }
 
-function buildPrimitive(root: THREE.Group, primitive: string, lineMaterial: THREE.LineBasicMaterial) {
+function buildPrimitive(root: THREE.Group, primitive: string, lineMaterial: THREE.LineBasicMaterial, params: Record<string, unknown>) {
   if (primitive === "turbofan_front") {
     buildTurbofanFront(root, lineMaterial);
     return;
@@ -244,8 +261,8 @@ function buildPrimitive(root: THREE.Group, primitive: string, lineMaterial: THRE
     buildWingPanel(root, lineMaterial);
     return;
   }
-  if (primitive === "heart_3d") {
-    buildHeart3D(root, lineMaterial);
+  if (primitive === "decorative_shape") {
+    buildDecorativeShape(root, lineMaterial, params);
     return;
   }
   buildGenericPart(root, lineMaterial);
@@ -301,7 +318,25 @@ function buildWingPanel(root: THREE.Group, material: THREE.LineBasicMaterial) {
   });
 }
 
-function buildHeart3D(root: THREE.Group, lineMaterial: THREE.LineBasicMaterial) {
+function buildDecorativeShape(root: THREE.Group, lineMaterial: THREE.LineBasicMaterial, params: Record<string, unknown>) {
+  const shapeName = typeof params.shape === "string" ? params.shape : "abstract";
+  if (shapeName === "heart") {
+    buildExtrudedHeart(root, lineMaterial, typeof params.color === "string" ? params.color : "#ff5ca8");
+    return;
+  }
+  if (shapeName === "sphere") {
+    const color = typeof params.color === "string" ? params.color : "#a78bfa";
+    const geometry = new THREE.SphereGeometry(1.15, 48, 24);
+    const material = new THREE.MeshStandardMaterial({ color, roughness: 0.28, metalness: 0.12 });
+    const mesh = new THREE.Mesh(geometry, material);
+    root.add(mesh);
+    addEdges(root, geometry.clone(), lineMaterial);
+    return;
+  }
+  buildGenericPart(root, lineMaterial);
+}
+
+function buildExtrudedHeart(root: THREE.Group, lineMaterial: THREE.LineBasicMaterial, color: string) {
   const shape = new THREE.Shape();
   for (let index = 0; index <= 160; index += 1) {
     const t = (index / 160) * Math.PI * 2;
@@ -320,7 +355,7 @@ function buildHeart3D(root: THREE.Group, lineMaterial: THREE.LineBasicMaterial) 
   });
   geometry.center();
   const material = new THREE.MeshStandardMaterial({
-    color: "#ff5ca8",
+    color,
     emissive: "#7c174d",
     emissiveIntensity: 0.18,
     metalness: 0.08,
@@ -358,7 +393,7 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: ${scene.objects.some((object) => object.primitive === "heart_3d") ? "#fff5fb" : scene.renderStyle === "technical_lines" ? "#ffffff" : "#f8fafc"};
+  background: ${scene.objects.some((object) => object.primitive === "decorative_shape") ? "#fff5fb" : scene.renderStyle === "technical_lines" ? "#ffffff" : "#f8fafc"};
 }
 
 canvas {
