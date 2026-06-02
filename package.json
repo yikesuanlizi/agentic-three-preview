@@ -1,0 +1,24 @@
+{
+  "name": "agentic-three-preview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm run dev -w @agentic-three/api\" \"npm run dev -w @agentic-three/web\"",
+    "dev:api": "npm run dev -w @agentic-three/api",
+    "dev:web": "npm run dev -w @agentic-three/web",
+    "build": "npm run build -w @agentic-three/shared && npm run build -w @agentic-three/api && npm run build -w @agentic-three/web",
+    "test": "vitest run",
+    "typecheck": "npm run typecheck -w @agentic-three/shared && npm run typecheck -w @agentic-three/api && npm run typecheck -w @agentic-three/web"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "concurrently": "^9.2.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  }
+}
