@@ -595,6 +595,103 @@ button:disabled {
   text-align: right;
 }
 
+.rag-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.rag-status-row,
+.rag-search-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.rag-search-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.rag-status-row small,
+.rag-message,
+.rag-results-title span {
+  min-width: 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.rag-message {
+  margin: 0;
+}
+
+.rag-results {
+  display: grid;
+  gap: 8px;
+}
+
+.rag-results-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #e5e7eb;
+}
+
+.rag-result-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  width: 100%;
+  min-height: 0;
+  padding: 9px;
+  text-align: left;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #cbd5e1;
+  background: #020617;
+}
+
+.rag-result-item span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.rag-result-item strong {
+  color: #38bdf8;
+}
+
+.rag-result-item small {
+  overflow: hidden;
+  color: #94a3b8;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rag-source-card {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  background: #020617;
+}
+
+.rag-source-card span,
+.rag-source-card code {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.rag-source-card pre {
+  max-height: 180px;
+  margin: 0;
+  overflow: auto;
+  color: #cbd5e1;
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
 .skill-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -688,6 +785,8 @@ button:disabled {
   .settings-row,
   .settings-secret,
   .runtime-settings-grid,
+  .rag-status-row,
+  .rag-search-row,
   .skill-list,
   .skill-add,
   .skill-url-row,

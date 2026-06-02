@@ -17,6 +17,7 @@ import {
   type ModelConfig,
   type PatchEvent,
   type QualityInspectionResult,
+  type RetrievalSearchResult,
   type RuntimeComposerConfig,
   type SceneDsl,
   type ScreenshotMode,
@@ -56,6 +57,25 @@ type SkillCard = {
   id: string;
   title: string;
   description: string;
+};
+
+type RagStatus = {
+  ready: boolean;
+  databaseUrl: string;
+};
+
+type RagIngestResult = {
+  ok: boolean;
+  documentCount: number;
+  mode: "pgvector" | "fallback";
+  message: string;
+};
+
+type RagSourceResult = {
+  kind: string;
+  id: string;
+  sourcePath: string;
+  source: unknown;
 };
 
 type SessionState = {
@@ -957,6 +977,13 @@ function SettingsDialog({
     content: "",
   });
   const [skillUrl, setSkillUrl] = useState("https://github.com/CloudAI-X/threejs-skills/tree/main");
+  const [ragStatus, setRagStatus] = useState<RagStatus | null>(null);
+  const [ragQuery, setRagQuery] = useState("发动机 正面 黑线白图 六视图");
+  const [ragResults, setRagResults] = useState<RetrievalSearchResult[]>([]);
+  const [ragMode, setRagMode] = useState<"pgvector" | "fallback" | "">("");
+  const [ragSource, setRagSource] = useState<RagSourceResult | null>(null);
+  const [ragMessage, setRagMessage] = useState("");
+  const [ragBusy, setRagBusy] = useState(false);
   const updateModel = (index: number, patch: Partial<ModelConfig>) => {
     onChange({
       ...settings,
@@ -1024,6 +1051,63 @@ function SettingsDialog({
     });
     await onSkillsRefresh();
   };
+  const refreshRagStatus = async () => {
+    const response = await fetch(`${apiUrl}/api/rag/status`);
+    if (!response.ok) throw new Error(`RAG 状态读取失败: ${response.status}`);
+    setRagStatus((await response.json()) as RagStatus);
+  };
+  const ingestRag = async () => {
+    setRagBusy(true);
+    setRagMessage("正在入库资产元数据和六视图说明...");
+    try {
+      const response = await fetch(`${apiUrl}/api/rag/ingest`, { method: "POST" });
+      if (!response.ok) throw new Error(`RAG 入库失败: ${response.status}`);
+      const data = (await response.json()) as { result: RagIngestResult };
+      setRagMessage(`${data.result.mode}: ${data.result.documentCount} 条。${data.result.message}`);
+      await refreshRagStatus();
+    } finally {
+      setRagBusy(false);
+    }
+  };
+  const searchRag = async () => {
+    setRagBusy(true);
+    setRagSource(null);
+    setRagMessage("正在检索 RAG...");
+    try {
+      const response = await fetch(`${apiUrl}/api/rag/search`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ query: ragQuery, topK: 6 }),
+      });
+      if (!response.ok) throw new Error(`RAG 检索失败: ${response.status}`);
+      const data = (await response.json()) as { results: RetrievalSearchResult[]; mode: "pgvector" | "fallback" };
+      setRagResults(data.results);
+      setRagMode(data.mode);
+      setRagMessage(`${data.mode}: 命中 ${data.results.length} 条。`);
+    } finally {
+      setRagBusy(false);
+    }
+  };
+  const resolveRagSource = async (result: RetrievalSearchResult) => {
+    setRagBusy(true);
+    try {
+      const response = await fetch(`${apiUrl}/api/rag/source`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ kind: result.kind, id: result.id }),
+      });
+      if (!response.ok) throw new Error(`source 解析失败: ${response.status}`);
+      setRagSource((await response.json()) as RagSourceResult);
+    } finally {
+      setRagBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    void refreshRagStatus().catch((statusError) =>
+      setRagMessage(statusError instanceof Error ? statusError.message : String(statusError)),
+    );
+  }, []);
 
   return (
     <div className="settings-backdrop">
@@ -1075,6 +1159,92 @@ function SettingsDialog({
               </div>
             ))}
           </div>
+          <section className="settings-skills">
+            <div className="settings-section-title">
+              <strong>RAG</strong>
+              <span>检索六视图元数据和源码指针</span>
+            </div>
+            <div className="rag-panel">
+              <div className="rag-status-row">
+                <span className={ragStatus?.ready ? "env-ok" : "env-missing"}>
+                  {ragStatus?.ready ? "pgvector 已连接" : "pgvector 未连接"}
+                </span>
+                <small>{ragStatus?.databaseUrl ?? "正在检测数据库状态..."}</small>
+                <button
+                  disabled={ragBusy}
+                  onClick={() => {
+                    void refreshRagStatus().catch((statusError) =>
+                      setError(statusError instanceof Error ? statusError.message : String(statusError)),
+                    );
+                  }}
+                >
+                  刷新状态
+                </button>
+                <button
+                  disabled={ragBusy}
+                  onClick={() => {
+                    void ingestRag().catch((ingestError) =>
+                      setError(ingestError instanceof Error ? ingestError.message : String(ingestError)),
+                    );
+                  }}
+                >
+                  入库
+                </button>
+              </div>
+              <div className="rag-search-row">
+                <input value={ragQuery} onChange={(event) => setRagQuery(event.target.value)} placeholder="测试检索，例如：发动机 正面 黑线白图 六视图" />
+                <button
+                  disabled={ragBusy}
+                  onClick={() => {
+                    void searchRag().catch((searchError) =>
+                      setError(searchError instanceof Error ? searchError.message : String(searchError)),
+                    );
+                  }}
+                >
+                  检索
+                </button>
+              </div>
+              {ragMessage && <p className="rag-message">{ragMessage}</p>}
+              {!!ragResults.length && (
+                <div className="rag-results">
+                  <div className="rag-results-title">
+                    <strong>命中结果</strong>
+                    <span>{ragMode || "unknown"}</span>
+                  </div>
+                  {ragResults.map((result) => (
+                    <button
+                      key={`${result.kind}:${result.id}`}
+                      className="rag-result-item"
+                      onClick={() => {
+                        void resolveRagSource(result).catch((sourceError) =>
+                          setError(sourceError instanceof Error ? sourceError.message : String(sourceError)),
+                        );
+                      }}
+                    >
+                      <span>
+                        <strong>{result.title}</strong>
+                        <small>
+                          {result.kind} · {result.id} · score {result.score.toFixed(3)}
+                        </small>
+                      </span>
+                      <small>
+                        {result.view ? `${result.view} · ` : ""}
+                        {result.sourcePath ?? result.imagePath ?? "无 source 指针"}
+                      </small>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {ragSource && (
+                <div className="rag-source-card">
+                  <strong>Source Resolver</strong>
+                  <span>{ragSource.kind} · {ragSource.id}</span>
+                  <code>{ragSource.sourcePath}</code>
+                  <pre>{formatJsonPreview(ragSource.source)}</pre>
+                </div>
+              )}
+            </div>
+          </section>
           <section className="settings-skills">
             <div className="settings-section-title">
               <strong>Runtime Composer</strong>
@@ -1354,6 +1524,15 @@ function formatRuntimePayload(data: unknown): string {
     }
   }
   return String(data);
+}
+
+function formatJsonPreview(value: unknown, limit = 900): string {
+  try {
+    const text = JSON.stringify(value, null, 2);
+    return text.length > limit ? `${text.slice(0, limit)}\n...` : text;
+  } catch {
+    return String(value);
+  }
 }
 
 function handleStreamEvent(
