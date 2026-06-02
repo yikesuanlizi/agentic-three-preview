@@ -376,7 +376,7 @@ function Workspace() {
       if (!options.config.enabled || !options.config.autoCaptureAfterPatch) return;
       setIsQualityRunning(true);
       let currentScene = options.scene;
-      let best: { round: number; score: number; path: string; result: QualityInspectionResult } | undefined;
+      let best: { round: number; score: number; path: string; result: QualityInspectionResult; files: FileMap } | undefined;
       setMessages((items) => [
         ...items,
         {
@@ -413,6 +413,7 @@ function Workspace() {
           if (!inspectionResponse.ok) throw new Error(`质检请求失败: ${inspectionResponse.status}`);
           const inspectionData = (await inspectionResponse.json()) as { result: QualityInspectionResult };
           let result = inspectionData.result;
+          const roundFiles = currentFiles();
           if (nonBlankRatio < options.config.nonBlankPixelThreshold) {
             result = {
               ...result,
@@ -423,7 +424,7 @@ function Workspace() {
             };
           }
           if (!best || result.score > best.score) {
-            best = { round, score: result.score, path: screenshot.path, result };
+            best = { round, score: result.score, path: screenshot.path, result, files: roundFiles };
           }
           await fetch(`${apiUrl}/api/workflow/revision-event`, {
             method: "POST",
@@ -448,9 +449,18 @@ function Workspace() {
             },
           ]);
           if (result.status === "pass") {
+            await finalizeWorkflowSnapshot({
+              sessionId,
+              runId: options.runId,
+              label: `workflow-pass-round-${round}`,
+              files: roundFiles,
+              round,
+              score: result.score,
+              screenshotPath: screenshot.path,
+            });
             setMessages((items) => [
               ...items,
-              { id: crypto.randomUUID(), role: "assistant", content: "质检通过，当前预览可作为最终结果使用。" },
+              { id: crypto.randomUUID(), role: "assistant", content: "质检通过，当前预览已保存为稳定快照。" },
             ]);
             return;
           }
@@ -500,6 +510,16 @@ function Workspace() {
         }
         if (best) {
           const bestResult = best;
+          applySnapshot(bestResult.files);
+          await finalizeWorkflowSnapshot({
+            sessionId,
+            runId: options.runId,
+            label: `workflow-best-round-${bestResult.round}`,
+            files: bestResult.files,
+            round: bestResult.round,
+            score: bestResult.score,
+            screenshotPath: bestResult.path,
+          });
           await fetch(`${apiUrl}/api/workflow/revision-event`, {
             method: "POST",
             headers: { "content-type": "application/json" },
@@ -519,7 +539,7 @@ function Workspace() {
             {
               id: crypto.randomUUID(),
               role: "assistant",
-              content: `已达到最大质检轮数，保留当前最好结果: 第 ${bestResult.round} 轮，分数 ${bestResult.score.toFixed(2)}，截图 ${bestResult.path}。`,
+              content: `已达到最大质检轮数，已恢复并保存当前最好结果: 第 ${bestResult.round} 轮，分数 ${bestResult.score.toFixed(2)}，截图 ${bestResult.path}。`,
             },
           ]);
         }
@@ -536,7 +556,7 @@ function Workspace() {
         setIsQualityRunning(false);
       }
     },
-    [applyAgentPatch, postPreviewCommand, sessionId],
+    [applyAgentPatch, applySnapshot, currentFiles, postPreviewCommand, sessionId],
   );
 
   const submit = async () => {
@@ -1543,6 +1563,23 @@ async function saveWorkflowScreenshot(input: {
   if (!response.ok) throw new Error(`工作流截图保存失败: ${response.status}`);
   const data = (await response.json()) as { artifact: { path: string; fileName: string; url: string } };
   return data.artifact;
+}
+
+async function finalizeWorkflowSnapshot(input: {
+  sessionId: string;
+  runId?: string;
+  label: string;
+  files: FileMap;
+  round: number;
+  score: number;
+  screenshotPath: string;
+}): Promise<void> {
+  const response = await fetch(`${apiUrl}/api/workflow/finalize`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) throw new Error(`工作流稳定快照保存失败: ${response.status}`);
 }
 
 async function estimateNonBlankPixelRatio(dataUrl: string): Promise<number> {

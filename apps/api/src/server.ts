@@ -13,6 +13,7 @@ import {
   screenshotSaveRequestSchema,
   sceneComposeRequestSchema,
   sceneRenderRequestSchema,
+  workflowFinalizeRequestSchema,
   workflowRevisionEventSchema,
 } from "@agentic-three/shared";
 import { runAgent } from "./agent.js";
@@ -113,6 +114,23 @@ app.post("/api/workflow/revision-event", async (request) => {
     appendRunEvent(parsed.runId, parsed.sessionId, "workflow.revision", parsed);
   }
   return { ok: true };
+});
+
+app.post("/api/workflow/finalize", async (request) => {
+  const parsed = workflowFinalizeRequestSchema.parse(request.body);
+  saveFileSnapshot(parsed.sessionId, parsed.runId, parsed.label, parsed.files, true);
+  if (parsed.runId) {
+    appendRunEvent(parsed.runId, parsed.sessionId, "workflow.finalize", {
+      label: parsed.label,
+      round: parsed.round,
+      score: parsed.score,
+      screenshotPath: parsed.screenshotPath,
+    });
+  }
+  return {
+    ok: true,
+    label: parsed.label,
+  };
 });
 
 app.get("/api/default-files", async () => ({

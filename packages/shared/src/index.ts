@@ -226,6 +226,16 @@ export const fileMapSchema = z.record(z.string()).superRefine((files, ctx) => {
   }
 });
 
+export const workflowFinalizeRequestSchema = z.object({
+  sessionId: z.string().min(1),
+  runId: z.string().optional(),
+  label: z.string().min(1).max(80).default("workflow-final"),
+  files: fileMapSchema,
+  round: z.number().int().min(1).optional(),
+  score: z.number().min(0).max(1).optional(),
+  screenshotPath: z.string().optional(),
+});
+
 export const agentTurnRequestSchema = z.object({
   sessionId: z.string().min(1),
   message: z.string().default(""),
@@ -302,6 +312,7 @@ export type QualityInspectionResult = z.infer<typeof qualityInspectionResultSche
 export type SceneRevisionRequest = z.infer<typeof sceneRevisionRequestSchema>;
 export type SceneRevisionResult = z.infer<typeof sceneRevisionResultSchema>;
 export type WorkflowRevisionEvent = z.infer<typeof workflowRevisionEventSchema>;
+export type WorkflowFinalizeRequest = z.infer<typeof workflowFinalizeRequestSchema>;
 
 export const screenshotSaveRequestSchema = z.object({
   sessionId: z.string().min(1),

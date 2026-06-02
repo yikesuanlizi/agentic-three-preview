@@ -10,6 +10,7 @@ import {
   sanitizePatch,
   sceneDslSchema,
   streamEventSchema,
+  workflowFinalizeRequestSchema,
   type PatchEvent,
 } from "../packages/shared/src/index";
 import { mergeCompactSummary, parseModelFileBlocks } from "../apps/api/src/agent";
@@ -288,6 +289,27 @@ FILE: src/App.tsx
 
     expect(request.referenceImages).toEqual([]);
     expect(request.scene.objects[0]?.primitive).toBe("turbofan_front");
+  });
+
+  it("工作流 finalize 请求只能保存白名单文件快照", () => {
+    const request = workflowFinalizeRequestSchema.parse({
+      sessionId: "finalize-test",
+      runId: "run-1",
+      label: "workflow-best-round-2",
+      files: defaultFiles,
+      round: 2,
+      score: 0.82,
+      screenshotPath: "outputs/screenshots/test/a.png",
+    });
+
+    expect(request.label).toBe("workflow-best-round-2");
+    expect(request.files["src/App.tsx"]).toContain("three");
+    expect(() =>
+      workflowFinalizeRequestSchema.parse({
+        ...request,
+        files: { ...defaultFiles, "../escape.ts": "bad" },
+      }),
+    ).toThrow();
   });
 
   it("质检 supervisor 按阈值决定 pass 或 revise", () => {
