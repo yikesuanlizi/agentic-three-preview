@@ -1,0 +1,125 @@
+{
+  "id": "f-22-d7rm9j",
+  "category": "fuselage",
+  "title": "洛克希德·马丁F 22“猛禽”战斗机整机机身",
+  "description": "自动从 洛克希德·马丁F-22“猛禽”战斗机整机机身.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "fuselage",
+    "洛克希德",
+    "马丁f",
+    "22",
+    "猛禽",
+    "战斗机整机机身",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/f-22-d7rm9j/model.glb",
+  "previewPath": "assets/aircraft/imported/f-22-d7rm9j/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/f-22-d7rm9j/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/f-22-d7rm9j/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/f-22-d7rm9j/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/f-22-d7rm9j/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/f-22-d7rm9j/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/f-22-d7rm9j/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: 洛克希德·马丁F 22“猛禽”战斗机整机机身 (洛克希德·马丁F-22“猛禽”战斗机整机机身.glb)。\n类别: fuselage; 标签: imported, aircraft, fuselage, 洛克希德, 马丁f, 22, 猛禽, 战斗机整机机身, glb。\n自动从 洛克希德·马丁F-22“猛禽”战斗机整机机身.glb 导入。\n结构要点: 机身主体应为长筒/流线体，截面近圆或椭圆。；可用 Cylinder/Lathe/Curve 组合表达机鼻、舱段和尾部收缩。\n结构分析失败: Cannot resolve external images with binaryToJSON().\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "机身主体应为长筒/流线体，截面近圆或椭圆。",
+    "可用 Cylinder/Lathe/Curve 组合表达机鼻、舱段和尾部收缩。"
+  ],
+  "structureAnalysis": {
+    "status": "error",
+    "error": "Cannot resolve external images with binaryToJSON().",
+    "nodeCount": 0,
+    "meshCount": 0,
+    "materialCount": 0,
+    "meshStats": [],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

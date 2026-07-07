@@ -1,0 +1,506 @@
+{
+  "id": "asset-1ualk1",
+  "category": "engine",
+  "title": "飞机涡轮增压发动机",
+  "description": "自动从 飞机涡轮增压发动机.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "engine",
+    "飞机涡轮增压发动机",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/asset-1ualk1/model.glb",
+  "previewPath": "assets/aircraft/imported/asset-1ualk1/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [
+    "metal-bright",
+    "plastic-cone-black",
+    "plastic-grey",
+    "accent-yellow",
+    "metal-dark",
+    "metal-mid"
+  ],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/asset-1ualk1/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/asset-1ualk1/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/asset-1ualk1/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/asset-1ualk1/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/asset-1ualk1/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/asset-1ualk1/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: 飞机涡轮增压发动机 (飞机涡轮增压发动机.glb)。\n类别: engine; 标签: imported, aircraft, engine, 飞机涡轮增压发动机, glb。\n自动从 飞机涡轮增压发动机.glb 导入。\n结构要点: 正面应有外涵道/机匣大圆环和内涵道圆环。；中心应有整流锥或轮毂，周围放射状风扇叶片。；侧面可用短圆筒机匣、唇口厚度和后部收缩表达发动机体积。；工程黑线白图优先使用 Torus/Cylinder/Sphere/EdgesGeometry/LineSegments 组合。\n结构分析: node=21, mesh=19, material=6。 候选主轴: +X。 整体尺寸: 4.009 x 1.573 x 1.586。\n模板参数: generic_model, confidence=0.35, turbofan={}。\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "正面应有外涵道/机匣大圆环和内涵道圆环。",
+    "中心应有整流锥或轮毂，周围放射状风扇叶片。",
+    "侧面可用短圆筒机匣、唇口厚度和后部收缩表达发动机体积。",
+    "工程黑线白图优先使用 Torus/Cylinder/Sphere/EdgesGeometry/LineSegments 组合。"
+  ],
+  "structureAnalysis": {
+    "status": "success",
+    "nodeCount": 21,
+    "meshCount": 19,
+    "materialCount": 6,
+    "bounds": {
+      "center": [
+        0.1314,
+        0,
+        0
+      ],
+      "size": [
+        4.0086,
+        1.5734,
+        1.5861
+      ]
+    },
+    "dominantAxis": "+X",
+    "meshStats": [
+      {
+        "name": "Object_2",
+        "vertexCount": 6258,
+        "triangleCount": 6512,
+        "center": [
+          0.5937,
+          0,
+          0
+        ],
+        "size": [
+          2.6361,
+          1.5734,
+          1.5734
+        ],
+        "radiusEstimate": 1.3180588612371764,
+        "materials": [
+          "metal-bright"
+        ]
+      },
+      {
+        "name": "Object_3",
+        "vertexCount": 1150,
+        "triangleCount": 1344,
+        "center": [
+          0.1955,
+          0,
+          0
+        ],
+        "size": [
+          3.8804,
+          0.636,
+          0.636
+        ],
+        "radiusEstimate": 1.9401870071406577,
+        "materials": [
+          "plastic-cone-black"
+        ]
+      },
+      {
+        "name": "Object_4",
+        "vertexCount": 3764,
+        "triangleCount": 4032,
+        "center": [
+          1.0131,
+          0,
+          0
+        ],
+        "size": [
+          1.6777,
+          1.1031,
+          1.1031
+        ],
+        "radiusEstimate": 0.8388663966410421,
+        "materials": [
+          "plastic-grey"
+        ]
+      },
+      {
+        "name": "Object_5",
+        "vertexCount": 8763,
+        "triangleCount": 8656,
+        "center": [
+          0.1854,
+          0,
+          0
+        ],
+        "size": [
+          3.8964,
+          1.3437,
+          1.3437
+        ],
+        "radiusEstimate": 1.9481889521873086,
+        "materials": [
+          "accent-yellow"
+        ]
+      },
+      {
+        "name": "Object_6",
+        "vertexCount": 4192,
+        "triangleCount": 4096,
+        "center": [
+          1.0264,
+          0,
+          0
+        ],
+        "size": [
+          0.1072,
+          1.1764,
+          1.1764
+        ],
+        "radiusEstimate": 0.5881788525477846,
+        "materials": [
+          "accent-yellow"
+        ]
+      },
+      {
+        "name": "Object_7",
+        "vertexCount": 16232,
+        "triangleCount": 10368,
+        "center": [
+          -0.269,
+          0,
+          0
+        ],
+        "size": [
+          0.3384,
+          0.7911,
+          0.7911
+        ],
+        "radiusEstimate": 0.3955504486567386,
+        "materials": [
+          "accent-yellow"
+        ]
+      },
+      {
+        "name": "Object_8",
+        "vertexCount": 8048,
+        "triangleCount": 5252,
+        "center": [
+          -0.0054,
+          0,
+          0
+        ],
+        "size": [
+          3.2048,
+          1.2212,
+          1.2924
+        ],
+        "radiusEstimate": 1.6023890748735852,
+        "materials": [
+          "metal-bright"
+        ]
+      },
+      {
+        "name": "Object_9",
+        "vertexCount": 12298,
+        "triangleCount": 14080,
+        "center": [
+          0.0716,
+          0,
+          0
+        ],
+        "size": [
+          3.8739,
+          1.4682,
+          1.4682
+        ],
+        "radiusEstimate": 1.9369591406697353,
+        "materials": [
+          "metal-bright"
+        ]
+      },
+      {
+        "name": "Object_10",
+        "vertexCount": 8098,
+        "triangleCount": 6528,
+        "center": [
+          0.499,
+          0,
+          0
+        ],
+        "size": [
+          1.8873,
+          1.3165,
+          1.3165
+        ],
+        "radiusEstimate": 0.9436604723109667,
+        "materials": [
+          "metal-bright"
+        ]
+      },
+      {
+        "name": "Object_11",
+        "vertexCount": 25600,
+        "triangleCount": 22480,
+        "center": [
+          -0.0201,
+          0,
+          0
+        ],
+        "size": [
+          0.1212,
+          1.1892,
+          1.1892
+        ],
+        "radiusEstimate": 0.5946234727248304,
+        "materials": [
+          "metal-dark"
+        ]
+      },
+      {
+        "name": "Object_12",
+        "vertexCount": 9660,
+        "triangleCount": 8864,
+        "center": [
+          0.0298,
+          0,
+          0
+        ],
+        "size": [
+          3.7502,
+          1.5302,
+          1.5302
+        ],
+        "radiusEstimate": 1.8751093217851178,
+        "materials": [
+          "metal-dark"
+        ]
+      },
+      {
+        "name": "Object_13",
+        "vertexCount": 12180,
+        "triangleCount": 8968,
+        "center": [
+          -0.2608,
+          0,
+          0
+        ],
+        "size": [
+          0.3866,
+          0.786,
+          0.786
+        ],
+        "radiusEstimate": 0.3929996774321617,
+        "materials": [
+          "metal-dark"
+        ]
+      },
+      {
+        "name": "Object_14",
+        "vertexCount": 7504,
+        "triangleCount": 7680,
+        "center": [
+          1.3399,
+          0,
+          0
+        ],
+        "size": [
+          0.068,
+          1.3553,
+          1.3553
+        ],
+        "radiusEstimate": 0.6776662625628661,
+        "materials": [
+          "metal-mid"
+        ]
+      },
+      {
+        "name": "Object_15",
+        "vertexCount": 7068,
+        "triangleCount": 7262,
+        "center": [
+          0.0751,
+          0.0002,
+          0
+        ],
+        "size": [
+          3.5759,
+          1.2428,
+          1.2431
+        ],
+        "radiusEstimate": 1.7879512401200799,
+        "materials": [
+          "metal-mid"
+        ]
+      },
+      {
+        "name": "Object_16",
+        "vertexCount": 5974,
+        "triangleCount": 4672,
+        "center": [
+          0.5901,
+          0,
+          0
+        ],
+        "size": [
+          2.629,
+          1.2726,
+          1.2346
+        ],
+        "radiusEstimate": 1.3144838586877796,
+        "materials": [
+          "metal-mid"
+        ]
+      },
+      {
+        "name": "Object_17",
+        "vertexCount": 18492,
+        "triangleCount": 25152,
+        "center": [
+          0.5086,
+          0,
+          0
+        ],
+        "size": [
+          1.9526,
+          1.5245,
+          1.5861
+        ],
+        "radiusEstimate": 0.9762891891113608,
+        "materials": [
+          "metal-mid"
+        ]
+      },
+      {
+        "name": "Object_18",
+        "vertexCount": 8582,
+        "triangleCount": 7656,
+        "center": [
+          0.0737,
+          0,
+          0
+        ],
+        "size": [
+          3.8379,
+          1.3335,
+          1.3335
+        ],
+        "radiusEstimate": 1.9189673133246288,
+        "materials": [
+          "metal-mid"
+        ]
+      },
+      {
+        "name": "Object_19",
+        "vertexCount": 65532,
+        "triangleCount": 55106,
+        "center": [
+          -0.5142,
+          0,
+          0
+        ],
+        "size": [
+          2.7174,
+          1.4146,
+          1.4146
+        ],
+        "radiusEstimate": 1.3587171889360121,
+        "materials": [
+          "metal-mid"
+        ]
+      },
+      {
+        "name": "Object_20",
+        "vertexCount": 30854,
+        "triangleCount": 27070,
+        "center": [
+          -0.5142,
+          0,
+          0
+        ],
+        "size": [
+          2.7174,
+          1.4146,
+          1.4146
+        ],
+        "radiusEstimate": 1.3587171889360121,
+        "materials": [
+          "metal-mid"
+        ]
+      }
+    ],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "template": "generic_model",
+    "confidence": 0.35,
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

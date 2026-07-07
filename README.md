@@ -18,8 +18,7 @@ npm run dev
 
 当前不额外拆复杂多 Agent。图片和文本会先经过一个轻量“需求适配”步骤，转成给原有 coder agent 使用的中文专业编码需求；真正负责生成 three.js 补丁的仍然是原有编码层次。
 
-- `VISION_MODEL`：负责理解图片、多图角度和用户文本，并整理成编码需求，默认 `Qwen3.5-122B-A10B`。
-- `CODER_MODEL`：负责根据整理后的需求、当前文件和运行错误生成受控补丁，默认 `qwen3-coder-480b-a35b-instruct`。
+- `coder_agent`：负责理解图片、读取 RAG 参考资料包并生成受控 Sandpack three.js 补丁，默认 `GLM-5V-Turbo`。
 - 支持只上传图片不写文本；此时系统会把图片当作视觉参考自动转成场景需求。
 
 ## 安全模型

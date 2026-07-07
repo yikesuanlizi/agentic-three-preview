@@ -1,0 +1,1666 @@
+{
+  "id": "a320-l908fa",
+  "category": "cockpit",
+  "title": "A320部分驾驶舱（客机）",
+  "description": "自动从 A320部分驾驶舱（客机）.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "cockpit",
+    "a320部分驾驶舱",
+    "客机",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/a320-l908fa/model.glb",
+  "previewPath": "assets/aircraft/imported/a320-l908fa/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [
+    "Color_I20",
+    "Metal_Corrogated_Shiny",
+    "Wood_OSB_2",
+    "Color_I19",
+    "Stone_Vein_Gray",
+    "FrontColor",
+    "Color_007",
+    "Color_I25"
+  ],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/a320-l908fa/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/a320-l908fa/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/a320-l908fa/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/a320-l908fa/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/a320-l908fa/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/a320-l908fa/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: A320部分驾驶舱（客机） (A320部分驾驶舱（客机）.glb)。\n类别: cockpit; 标签: imported, aircraft, cockpit, a320部分驾驶舱, 客机, glb。\n自动从 A320部分驾驶舱（客机）.glb 导入。\n结构要点: 提取主体外轮廓、主轴方向、对称关系和重复结构。；优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。\n结构分析: node=1696, mesh=747, material=83。 候选主轴: +Z。 整体尺寸: 25.690 x 15.540 x 26.420。\n模板参数: generic_model, confidence=0.35, turbofan={}。\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "提取主体外轮廓、主轴方向、对称关系和重复结构。",
+    "优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。"
+  ],
+  "structureAnalysis": {
+    "status": "success",
+    "nodeCount": 1696,
+    "meshCount": 747,
+    "materialCount": 83,
+    "bounds": {
+      "center": [
+        3.8085,
+        7.7497,
+        -2.254
+      ],
+      "size": [
+        25.69,
+        15.5395,
+        26.42
+      ]
+    },
+    "dominantAxis": "+Z",
+    "meshStats": [
+      {
+        "name": "Mesh1_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          7.8125,
+          3.5483,
+          -2.6813
+        ],
+        "size": [
+          0.115,
+          0,
+          3.45
+        ],
+        "radiusEstimate": 0.05750091424209813,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh1_Metal_Corrogated_Shiny_0",
+        "vertexCount": 32,
+        "triangleCount": 18,
+        "center": [
+          7.8125,
+          3.4508,
+          -2.6813
+        ],
+        "size": [
+          0.1151,
+          0.195,
+          3.45
+        ],
+        "radiusEstimate": 0.09750625392408097,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh2_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          5.2375,
+          3.5484,
+          -2.6813
+        ],
+        "size": [
+          0.115,
+          0.0001,
+          1.205
+        ],
+        "radiusEstimate": 0.05751891961278943,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh2_Metal_Corrogated_Shiny_0",
+        "vertexCount": 32,
+        "triangleCount": 18,
+        "center": [
+          5.2375,
+          3.4509,
+          -2.6813
+        ],
+        "size": [
+          0.1151,
+          0.195,
+          1.205
+        ],
+        "radiusEstimate": 0.09751266261534397,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh3_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          5.155,
+          3.55,
+          -2.6806
+        ],
+        "size": [
+          0.0499,
+          0,
+          5.2
+        ],
+        "radiusEstimate": 0.024967650809117004,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh3__Wood_OSB_2_0",
+        "vertexCount": 28,
+        "triangleCount": 18,
+        "center": [
+          5.155,
+          1.965,
+          -2.6806
+        ],
+        "size": [
+          0.0499,
+          3.17,
+          5.2
+        ],
+        "radiusEstimate": 1.5849988010898493,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh3_Color_I19_0",
+        "vertexCount": 16,
+        "triangleCount": 12,
+        "center": [
+          5.155,
+          1.965,
+          -2.6806
+        ],
+        "size": [
+          0.0499,
+          3.17,
+          5.2
+        ],
+        "radiusEstimate": 1.5849988010898493,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh4__Wood_OSB_2_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          0.3495,
+          0.4292,
+          -2.6806
+        ],
+        "size": [
+          0.5,
+          0.1017,
+          5
+        ],
+        "radiusEstimate": 0.24999999441206455,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh5__Wood_OSB_2_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          4.8845,
+          0.4292,
+          -2.6806
+        ],
+        "size": [
+          0.5,
+          0.1017,
+          5
+        ],
+        "radiusEstimate": 0.24999984182417734,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh6__Wood_OSB_2_0",
+        "vertexCount": 16,
+        "triangleCount": 8,
+        "center": [
+          2.615,
+          2.39,
+          -0.1306
+        ],
+        "size": [
+          5.03,
+          4.02,
+          0.1
+        ],
+        "radiusEstimate": 2.515001646093986,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh6_Color_I19_0",
+        "vertexCount": 8,
+        "triangleCount": 4,
+        "center": [
+          2.615,
+          2.39,
+          -0.1306
+        ],
+        "size": [
+          5.03,
+          4.02,
+          0.1
+        ],
+        "radiusEstimate": 2.515001646093986,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh7_Color_I19_0",
+        "vertexCount": 8,
+        "triangleCount": 4,
+        "center": [
+          2.615,
+          2.39,
+          -5.2306
+        ],
+        "size": [
+          5.03,
+          4.02,
+          0.1
+        ],
+        "radiusEstimate": 2.515001646093986,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh7__Wood_OSB_2_0",
+        "vertexCount": 16,
+        "triangleCount": 8,
+        "center": [
+          2.615,
+          2.39,
+          -5.2306
+        ],
+        "size": [
+          5.03,
+          4.02,
+          0.1
+        ],
+        "radiusEstimate": 2.515001646093986,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh8_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          6.505,
+          3.5483,
+          -0.7738
+        ],
+        "size": [
+          2.65,
+          0,
+          0.115
+        ],
+        "radiusEstimate": 1.3249999703839421,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh8_Metal_Corrogated_Shiny_0",
+        "vertexCount": 32,
+        "triangleCount": 18,
+        "center": [
+          6.505,
+          3.4508,
+          -0.7737
+        ],
+        "size": [
+          2.65,
+          0.195,
+          0.1151
+        ],
+        "radiusEstimate": 1.3250014962628143,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh9_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          6.525,
+          3.5483,
+          -3.1663
+        ],
+        "size": [
+          2.46,
+          0,
+          0.235
+        ],
+        "radiusEstimate": 1.2299999725073576,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh9_Metal_Corrogated_Shiny_0",
+        "vertexCount": 20,
+        "triangleCount": 10,
+        "center": [
+          6.525,
+          3.5383,
+          -3.1663
+        ],
+        "size": [
+          2.46,
+          0.02,
+          0.235
+        ],
+        "radiusEstimate": 1.2299999725073576,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh10_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          6.525,
+          3.5483,
+          -2.1963
+        ],
+        "size": [
+          2.46,
+          0,
+          0.235
+        ],
+        "radiusEstimate": 1.2299999725073576,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh10_Metal_Corrogated_Shiny_0",
+        "vertexCount": 20,
+        "triangleCount": 10,
+        "center": [
+          6.525,
+          3.5383,
+          -2.1963
+        ],
+        "size": [
+          2.46,
+          0.02,
+          0.235
+        ],
+        "radiusEstimate": 1.2299999725073576,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh11_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          6.505,
+          3.5483,
+          -4.5888
+        ],
+        "size": [
+          2.65,
+          0,
+          0.115
+        ],
+        "radiusEstimate": 1.3249999703839421,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh11_Metal_Corrogated_Shiny_0",
+        "vertexCount": 32,
+        "triangleCount": 18,
+        "center": [
+          6.505,
+          3.4508,
+          -4.5888
+        ],
+        "size": [
+          2.65,
+          0.195,
+          0.1151
+        ],
+        "radiusEstimate": 1.3250014962628143,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh12__Wood_OSB_2_0",
+        "vertexCount": 31,
+        "triangleCount": 21,
+        "center": [
+          0.05,
+          2.3883,
+          -2.6806
+        ],
+        "size": [
+          0.1,
+          4.02,
+          5.2
+        ],
+        "radiusEstimate": 2.0100021866708495,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh12_Color_I19_0",
+        "vertexCount": 19,
+        "triangleCount": 15,
+        "center": [
+          0.05,
+          2.3883,
+          -2.6806
+        ],
+        "size": [
+          0.1,
+          4.02,
+          5.2
+        ],
+        "radiusEstimate": 2.0100021866708495,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh12_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          0.05,
+          4.3983,
+          -2.6806
+        ],
+        "size": [
+          0.1,
+          0,
+          5.2
+        ],
+        "radiusEstimate": 0.050000691382868334,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh13_Stone_Vein_Gray_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          6.505,
+          3.3,
+          -0.6663
+        ],
+        "size": [
+          2.65,
+          0.8,
+          0.1001
+        ],
+        "radiusEstimate": 1.3250011910870398,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh14_Stone_Vein_Gray_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          7.9199,
+          3.25,
+          -3.7813
+        ],
+        "size": [
+          0.1003,
+          0.7,
+          1.65
+        ],
+        "radiusEstimate": 0.3500054853408301,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh15_Stone_Vein_Gray_0",
+        "vertexCount": 120,
+        "triangleCount": 76,
+        "center": [
+          5.2099,
+          3.2995,
+          -0.05
+        ],
+        "size": [
+          0.14,
+          0.8,
+          0.14
+        ],
+        "radiusEstimate": 0.3999989229440928,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh16_Stone_Vein_Gray_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          6.505,
+          3.3,
+          -4.6963
+        ],
+        "size": [
+          2.65,
+          0.8,
+          0.1001
+        ],
+        "radiusEstimate": 1.3250011910870398,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh17_Stone_Vein_Gray_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          5.23,
+          3.3,
+          -4.9938
+        ],
+        "size": [
+          0.1,
+          0.8,
+          0.495
+        ],
+        "radiusEstimate": 0.4000015169381754,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh18_Stone_Vein_Gray_0",
+        "vertexCount": 120,
+        "triangleCount": 76,
+        "center": [
+          7.9,
+          3.3,
+          -0.6863
+        ],
+        "size": [
+          0.14,
+          0.8,
+          0.14
+        ],
+        "radiusEstimate": 0.3999989229440928,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh19_Stone_Vein_Gray_0",
+        "vertexCount": 120,
+        "triangleCount": 76,
+        "center": [
+          7.9,
+          3.3,
+          -4.6763
+        ],
+        "size": [
+          0.14,
+          0.8,
+          0.14
+        ],
+        "radiusEstimate": 0.3999989229440928,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh20_Stone_Vein_Gray_0",
+        "vertexCount": 120,
+        "triangleCount": 76,
+        "center": [
+          5.21,
+          3.3,
+          -5.3113
+        ],
+        "size": [
+          0.14,
+          0.8,
+          0.14
+        ],
+        "radiusEstimate": 0.3999989229440928,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh21_Stone_Vein_Gray_0",
+        "vertexCount": 112,
+        "triangleCount": 70,
+        "center": [
+          2.5619,
+          3.7175,
+          -5.3315
+        ],
+        "size": [
+          5.1562,
+          1.6323,
+          0.1006
+        ],
+        "radiusEstimate": 2.578118314338065,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh22_Stone_Vein_Gray_0",
+        "vertexCount": 112,
+        "triangleCount": 70,
+        "center": [
+          2.5618,
+          3.717,
+          -0.0303
+        ],
+        "size": [
+          5.1562,
+          1.6323,
+          0.1006
+        ],
+        "radiusEstimate": 2.578118554544778,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh23_Stone_Vein_Gray_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          7.92,
+          3.25,
+          -1.5813
+        ],
+        "size": [
+          0.1003,
+          0.7,
+          1.65
+        ],
+        "radiusEstimate": 0.3500056379287173,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh24_Stone_Vein_Gray_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          5.2299,
+          3.2995,
+          -0.3675
+        ],
+        "size": [
+          0.1,
+          0.8,
+          0.495
+        ],
+        "radiusEstimate": 0.4000015169381754,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh25_Color_I19_0",
+        "vertexCount": 12,
+        "triangleCount": 6,
+        "center": [
+          6.525,
+          2.3271,
+          -0.7663
+        ],
+        "size": [
+          2.69,
+          2.05,
+          0.1
+        ],
+        "radiusEstimate": 1.3450005802884561,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh25__Wood_OSB_2_0",
+        "vertexCount": 12,
+        "triangleCount": 6,
+        "center": [
+          6.525,
+          2.3271,
+          -0.7663
+        ],
+        "size": [
+          2.69,
+          2.05,
+          0.1
+        ],
+        "radiusEstimate": 1.3450005802884561,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh26__Wood_OSB_2_0",
+        "vertexCount": 12,
+        "triangleCount": 6,
+        "center": [
+          6.525,
+          2.3271,
+          -4.5964
+        ],
+        "size": [
+          2.69,
+          2.05,
+          0.1
+        ],
+        "radiusEstimate": 1.3450005802884561,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh26_Color_I19_0",
+        "vertexCount": 12,
+        "triangleCount": 6,
+        "center": [
+          6.525,
+          2.3271,
+          -4.5964
+        ],
+        "size": [
+          2.69,
+          2.05,
+          0.1
+        ],
+        "radiusEstimate": 1.3450005802884561,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh27_Color_I19_0",
+        "vertexCount": 8,
+        "triangleCount": 4,
+        "center": [
+          7.82,
+          2.3247,
+          -2.6813
+        ],
+        "size": [
+          0.1,
+          2.0548,
+          3.7301
+        ],
+        "radiusEstimate": 1.0274181899260384,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh27_FrontColor_0",
+        "vertexCount": 9,
+        "triangleCount": 5,
+        "center": [
+          7.82,
+          2.3247,
+          -2.6813
+        ],
+        "size": [
+          0.1,
+          2.0548,
+          3.7301
+        ],
+        "radiusEstimate": 1.0274181899260384,
+        "materials": [
+          "FrontColor"
+        ]
+      },
+      {
+        "name": "Mesh27__Wood_OSB_2_0",
+        "vertexCount": 9,
+        "triangleCount": 5,
+        "center": [
+          7.82,
+          2.3247,
+          -2.6813
+        ],
+        "size": [
+          0.1,
+          2.0548,
+          3.7301
+        ],
+        "radiusEstimate": 1.0274181899260384,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh28_Color_I20_0",
+        "vertexCount": 672,
+        "triangleCount": 456,
+        "center": [
+          -0.6042,
+          6.0625,
+          6.3394
+        ],
+        "size": [
+          0.9379,
+          2.5321,
+          2.1
+        ],
+        "radiusEstimate": 1.2660513022679538,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh29_Color_I20_0",
+        "vertexCount": 672,
+        "triangleCount": 456,
+        "center": [
+          -0.557,
+          6.0791,
+          -11.7059
+        ],
+        "size": [
+          0.9379,
+          2.5321,
+          2.1
+        ],
+        "radiusEstimate": 1.266051454855841,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh30_Color_I20_0",
+        "vertexCount": 901,
+        "triangleCount": 633,
+        "center": [
+          -0.9543,
+          7.0217,
+          -7.9056
+        ],
+        "size": [
+          0.9129,
+          2.508,
+          5.45
+        ],
+        "radiusEstimate": 1.2540069299785728,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh30_FrontColor_0",
+        "vertexCount": 8,
+        "triangleCount": 4,
+        "center": [
+          -0.6823,
+          6.2534,
+          -7.5066
+        ],
+        "size": [
+          0.0617,
+          0.1043,
+          3.8281
+        ],
+        "radiusEstimate": 0.0521389758853843,
+        "materials": [
+          "FrontColor"
+        ]
+      },
+      {
+        "name": "Mesh31_Color_I20_0",
+        "vertexCount": 868,
+        "triangleCount": 617,
+        "center": [
+          -0.9543,
+          7.0217,
+          2.5444
+        ],
+        "size": [
+          0.9129,
+          2.508,
+          5.45
+        ],
+        "radiusEstimate": 1.2540069299785728,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh31_FrontColor_0",
+        "vertexCount": 8,
+        "triangleCount": 4,
+        "center": [
+          -0.6823,
+          6.2534,
+          3.3703
+        ],
+        "size": [
+          0.0617,
+          0.1043,
+          3.5581
+        ],
+        "radiusEstimate": 0.0521389758853843,
+        "materials": [
+          "FrontColor"
+        ]
+      },
+      {
+        "name": "Mesh32__Wood_OSB_2_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          -3.35,
+          0.4292,
+          -2.6806
+        ],
+        "size": [
+          0.5,
+          0.1017,
+          5
+        ],
+        "radiusEstimate": 0.24999999441206455,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh33__Wood_OSB_2_0",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          -0.25,
+          0.4292,
+          -2.6806
+        ],
+        "size": [
+          0.5,
+          0.1017,
+          5
+        ],
+        "radiusEstimate": 0.24999999842457318,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh34_Color_I19_0",
+        "vertexCount": 32,
+        "triangleCount": 20,
+        "center": [
+          -3.65,
+          2.34,
+          -2.6806
+        ],
+        "size": [
+          0.1,
+          3.92,
+          5.2
+        ],
+        "radiusEstimate": 1.9600000134110438,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh34_Color_I20_0",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          -3.65,
+          4.3,
+          -2.6806
+        ],
+        "size": [
+          0.1,
+          0,
+          5.2
+        ],
+        "radiusEstimate": 0.04999999888241291,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh34__Wood_OSB_2_0",
+        "vertexCount": 12,
+        "triangleCount": 10,
+        "center": [
+          -3.65,
+          2.34,
+          -2.6806
+        ],
+        "size": [
+          0.1,
+          3.92,
+          5.2
+        ],
+        "radiusEstimate": 1.9600000134110438,
+        "materials": [
+          "Wood_OSB_2"
+        ]
+      },
+      {
+        "name": "Mesh35_Color_I20_0",
+        "vertexCount": 2139,
+        "triangleCount": 1466,
+        "center": [
+          -0.6956,
+          6.2912,
+          -2.6806
+        ],
+        "size": [
+          1.4303,
+          3.9691,
+          5.4
+        ],
+        "radiusEstimate": 1.984554093825352,
+        "materials": [
+          "Color_I20"
+        ]
+      },
+      {
+        "name": "Mesh36_Metal_Corrogated_Shiny_0",
+        "vertexCount": 888,
+        "triangleCount": 604,
+        "center": [
+          4.1593,
+          0.35,
+          8.9752
+        ],
+        "size": [
+          0.34,
+          0.06,
+          0.38
+        ],
+        "radiusEstimate": 0.1699999962002039,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh37_Color_007_0",
+        "vertexCount": 572,
+        "triangleCount": 384,
+        "center": [
+          4.2893,
+          0.1425,
+          8.9795
+        ],
+        "size": [
+          0.305,
+          0.305,
+          0.13
+        ],
+        "radiusEstimate": 0.1524999971874058,
+        "materials": [
+          "Color_007"
+        ]
+      },
+      {
+        "name": "Mesh38_Metal_Corrogated_Shiny_0",
+        "vertexCount": 356,
+        "triangleCount": 236,
+        "center": [
+          4.1899,
+          0.2262,
+          8.9752
+        ],
+        "size": [
+          0.299,
+          0.2875,
+          0.24
+        ],
+        "radiusEstimate": 0.1494888272250705,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh39_Metal_Corrogated_Shiny_0",
+        "vertexCount": 888,
+        "triangleCount": 604,
+        "center": [
+          4.1593,
+          0.35,
+          5.2552
+        ],
+        "size": [
+          0.34,
+          0.06,
+          0.38
+        ],
+        "radiusEstimate": 0.1699999962002039,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh40_Color_007_0",
+        "vertexCount": 572,
+        "triangleCount": 384,
+        "center": [
+          4.2893,
+          0.1425,
+          5.2594
+        ],
+        "size": [
+          0.305,
+          0.305,
+          0.13
+        ],
+        "radiusEstimate": 0.1524999971874058,
+        "materials": [
+          "Color_007"
+        ]
+      },
+      {
+        "name": "Mesh41_Metal_Corrogated_Shiny_0",
+        "vertexCount": 356,
+        "triangleCount": 236,
+        "center": [
+          4.1899,
+          0.2262,
+          5.2552
+        ],
+        "size": [
+          0.299,
+          0.2875,
+          0.24
+        ],
+        "radiusEstimate": 0.1494888272250705,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh42_Metal_Corrogated_Shiny_0",
+        "vertexCount": 888,
+        "triangleCount": 604,
+        "center": [
+          -0.0007,
+          0.35,
+          5.2552
+        ],
+        "size": [
+          0.34,
+          0.06,
+          0.38
+        ],
+        "radiusEstimate": 0.1699999962002039,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh43_Color_007_0",
+        "vertexCount": 572,
+        "triangleCount": 384,
+        "center": [
+          0.1293,
+          0.1425,
+          5.2594
+        ],
+        "size": [
+          0.305,
+          0.305,
+          0.13
+        ],
+        "radiusEstimate": 0.1524999971874058,
+        "materials": [
+          "Color_007"
+        ]
+      },
+      {
+        "name": "Mesh44_Metal_Corrogated_Shiny_0",
+        "vertexCount": 356,
+        "triangleCount": 236,
+        "center": [
+          0.0299,
+          0.2262,
+          5.2552
+        ],
+        "size": [
+          0.299,
+          0.2875,
+          0.24
+        ],
+        "radiusEstimate": 0.14948887967715674,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh45_Metal_Corrogated_Shiny_0",
+        "vertexCount": 888,
+        "triangleCount": 604,
+        "center": [
+          -0.0007,
+          0.35,
+          7.2152
+        ],
+        "size": [
+          0.34,
+          0.06,
+          0.38
+        ],
+        "radiusEstimate": 0.1699999962002039,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh46_Color_007_0",
+        "vertexCount": 572,
+        "triangleCount": 384,
+        "center": [
+          0.1293,
+          0.1425,
+          7.2194
+        ],
+        "size": [
+          0.305,
+          0.305,
+          0.13
+        ],
+        "radiusEstimate": 0.1524999971874058,
+        "materials": [
+          "Color_007"
+        ]
+      },
+      {
+        "name": "Mesh47_Metal_Corrogated_Shiny_0",
+        "vertexCount": 356,
+        "triangleCount": 236,
+        "center": [
+          0.0299,
+          0.2262,
+          7.2152
+        ],
+        "size": [
+          0.299,
+          0.2875,
+          0.24
+        ],
+        "radiusEstimate": 0.14948887967715674,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh48_Color_I19_0",
+        "vertexCount": 20,
+        "triangleCount": 12,
+        "center": [
+          2.0793,
+          2.18,
+          7.3602
+        ],
+        "size": [
+          4.5,
+          3.6,
+          4.59
+        ],
+        "radiusEstimate": 2.249999902024866,
+        "materials": [
+          "Color_I19"
+        ]
+      },
+      {
+        "name": "Mesh48_Stone_Vein_Gray_0",
+        "vertexCount": 26,
+        "triangleCount": 14,
+        "center": [
+          2.0293,
+          4.39,
+          7.3852
+        ],
+        "size": [
+          4.4,
+          0.82,
+          4.44
+        ],
+        "radiusEstimate": 2.1999999031424533,
+        "materials": [
+          "Stone_Vein_Gray"
+        ]
+      },
+      {
+        "name": "Mesh48_Color_I25_0",
+        "vertexCount": 19,
+        "triangleCount": 11,
+        "center": [
+          2.0793,
+          2.59,
+          7.3602
+        ],
+        "size": [
+          4.5,
+          4.42,
+          4.59
+        ],
+        "radiusEstimate": 2.249999902024866,
+        "materials": [
+          "Color_I25"
+        ]
+      },
+      {
+        "name": "Mesh49_Metal_Corrogated_Shiny_0",
+        "vertexCount": 888,
+        "triangleCount": 604,
+        "center": [
+          -0.0007,
+          0.34,
+          -10.6213
+        ],
+        "size": [
+          0.34,
+          0.06,
+          0.38
+        ],
+        "radiusEstimate": 0.1699999962002039,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh50_Color_007_0",
+        "vertexCount": 572,
+        "triangleCount": 384,
+        "center": [
+          0.1293,
+          0.1325,
+          -10.6171
+        ],
+        "size": [
+          0.305,
+          0.305,
+          0.13
+        ],
+        "radiusEstimate": 0.15249999659135938,
+        "materials": [
+          "Color_007"
+        ]
+      },
+      {
+        "name": "Mesh51_Metal_Corrogated_Shiny_0",
+        "vertexCount": 356,
+        "triangleCount": 236,
+        "center": [
+          0.0299,
+          0.2162,
+          -10.6213
+        ],
+        "size": [
+          0.299,
+          0.2875,
+          0.24
+        ],
+        "radiusEstimate": 0.14948887967715674,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh52_Metal_Corrogated_Shiny_0",
+        "vertexCount": 888,
+        "triangleCount": 604,
+        "center": [
+          4.1593,
+          0.34,
+          -10.6213
+        ],
+        "size": [
+          0.34,
+          0.06,
+          0.38
+        ],
+        "radiusEstimate": 0.1699999962002039,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh53_Color_007_0",
+        "vertexCount": 572,
+        "triangleCount": 384,
+        "center": [
+          4.2893,
+          0.1325,
+          -10.6171
+        ],
+        "size": [
+          0.305,
+          0.305,
+          0.13
+        ],
+        "radiusEstimate": 0.15249999659135938,
+        "materials": [
+          "Color_007"
+        ]
+      },
+      {
+        "name": "Mesh54_Metal_Corrogated_Shiny_0",
+        "vertexCount": 356,
+        "triangleCount": 236,
+        "center": [
+          4.1899,
+          0.2162,
+          -10.6213
+        ],
+        "size": [
+          0.299,
+          0.2875,
+          0.24
+        ],
+        "radiusEstimate": 0.1494888272250705,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh55_Metal_Corrogated_Shiny_0",
+        "vertexCount": 888,
+        "triangleCount": 604,
+        "center": [
+          4.1593,
+          0.34,
+          -14.3413
+        ],
+        "size": [
+          0.34,
+          0.06,
+          0.38
+        ],
+        "radiusEstimate": 0.1699999962002039,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh56_Color_007_0",
+        "vertexCount": 572,
+        "triangleCount": 384,
+        "center": [
+          4.2893,
+          0.1325,
+          -14.3371
+        ],
+        "size": [
+          0.305,
+          0.305,
+          0.13
+        ],
+        "radiusEstimate": 0.15249999659135938,
+        "materials": [
+          "Color_007"
+        ]
+      },
+      {
+        "name": "Mesh57_Metal_Corrogated_Shiny_0",
+        "vertexCount": 356,
+        "triangleCount": 236,
+        "center": [
+          4.1899,
+          0.2162,
+          -14.3413
+        ],
+        "size": [
+          0.299,
+          0.2875,
+          0.24
+        ],
+        "radiusEstimate": 0.1494888272250705,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      },
+      {
+        "name": "Mesh58_Metal_Corrogated_Shiny_0",
+        "vertexCount": 888,
+        "triangleCount": 604,
+        "center": [
+          -0.0007,
+          0.34,
+          -12.5813
+        ],
+        "size": [
+          0.34,
+          0.06,
+          0.38
+        ],
+        "radiusEstimate": 0.1699999962002039,
+        "materials": [
+          "Metal_Corrogated_Shiny"
+        ]
+      }
+    ],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "template": "generic_model",
+    "confidence": 0.35,
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

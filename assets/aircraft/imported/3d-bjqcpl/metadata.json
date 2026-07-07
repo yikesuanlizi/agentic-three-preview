@@ -1,0 +1,519 @@
+{
+  "id": "3d-bjqcpl",
+  "category": "environment",
+  "title": "飞机涡轮机的详细3D模型（全裸）",
+  "description": "自动从 飞机涡轮机的详细3D模型（全裸）.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "environment",
+    "飞机涡轮机的详细3d模型",
+    "全裸",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/3d-bjqcpl/model.glb",
+  "previewPath": "assets/aircraft/imported/3d-bjqcpl/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [
+    "Main"
+  ],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/3d-bjqcpl/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/3d-bjqcpl/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/3d-bjqcpl/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/3d-bjqcpl/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/3d-bjqcpl/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/3d-bjqcpl/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: 飞机涡轮机的详细3D模型（全裸） (飞机涡轮机的详细3D模型（全裸）.glb)。\n类别: environment; 标签: imported, aircraft, environment, 飞机涡轮机的详细3d模型, 全裸, glb。\n自动从 飞机涡轮机的详细3D模型（全裸）.glb 导入。\n结构要点: 提取主体外轮廓、主轴方向、对称关系和重复结构。；优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。\n结构分析: node=23, mesh=20, material=20。 候选主轴: +Z。 整体尺寸: 61.196 x 61.533 x 157.871。\n模板参数: generic_model, confidence=0.35, turbofan={}。\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "提取主体外轮廓、主轴方向、对称关系和重复结构。",
+    "优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。"
+  ],
+  "structureAnalysis": {
+    "status": "success",
+    "nodeCount": 23,
+    "meshCount": 20,
+    "materialCount": 20,
+    "bounds": {
+      "center": [
+        0.0272,
+        -51.3,
+        -66.9226
+      ],
+      "size": [
+        61.1964,
+        61.5335,
+        157.8706
+      ]
+    },
+    "dominantAxis": "+Z",
+    "meshStats": [
+      {
+        "name": "Main",
+        "vertexCount": 65532,
+        "triangleCount": 145895,
+        "center": [
+          0.3908,
+          -51.2054,
+          -58.4919
+        ],
+        "size": [
+          34.1367,
+          34.5382,
+          10.4993
+        ],
+        "radiusEstimate": 17.269113540649414,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 136926,
+        "center": [
+          0.0175,
+          -51.3115,
+          -133.4326
+        ],
+        "size": [
+          61.177,
+          61.5105,
+          24.8507
+        ],
+        "radiusEstimate": 30.755233764648438,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 147124,
+        "center": [
+          0.3898,
+          -51.3,
+          -111.0134
+        ],
+        "size": [
+          60.4712,
+          61.5335,
+          32.9862
+        ],
+        "radiusEstimate": 30.766736030578613,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 143440,
+        "center": [
+          -4.079,
+          -51.3287,
+          -99.6438
+        ],
+        "size": [
+          48.5028,
+          56.3288,
+          25.6598
+        ],
+        "radiusEstimate": 28.164376258850098,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 151424,
+        "center": [
+          0.0417,
+          -51.3051,
+          -101.4307
+        ],
+        "size": [
+          56.5212,
+          56.5039,
+          13.5541
+        ],
+        "radiusEstimate": 28.260622024536133,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 143830,
+        "center": [
+          0.033,
+          -53.2109,
+          -54.5446
+        ],
+        "size": [
+          52.8798,
+          56.69,
+          133.1145
+        ],
+        "radiusEstimate": 28.345004081726074,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 151524,
+        "center": [
+          -16.0527,
+          -51.0828,
+          -117.345
+        ],
+        "size": [
+          28.4357,
+          58.2523,
+          7.5137
+        ],
+        "radiusEstimate": 29.126134872436523,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 150977,
+        "center": [
+          7.7475,
+          -46.2931,
+          -117.345
+        ],
+        "size": [
+          44.9954,
+          50.3684,
+          7.5137
+        ],
+        "radiusEstimate": 25.18422222137451,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 136506,
+        "center": [
+          2.1444,
+          -55.0695,
+          -60.2611
+        ],
+        "size": [
+          47.9658,
+          51.2762,
+          122.0446
+        ],
+        "radiusEstimate": 25.638075828552246,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 145715,
+        "center": [
+          0.034,
+          -51.3045,
+          -68.0798
+        ],
+        "size": [
+          43.7422,
+          43.7435,
+          35.7005
+        ],
+        "radiusEstimate": 21.871740341186523,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 145933,
+        "center": [
+          0.0326,
+          -51.304,
+          -49.9985
+        ],
+        "size": [
+          31.3621,
+          31.3654,
+          2.8368
+        ],
+        "radiusEstimate": 15.682680130004883,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 146478,
+        "center": [
+          -0.0137,
+          -51.2581,
+          -44.8119
+        ],
+        "size": [
+          42.0492,
+          42.0499,
+          64.1869
+        ],
+        "radiusEstimate": 21.02494716644287,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 148100,
+        "center": [
+          -0.0258,
+          -51.329,
+          -75.538
+        ],
+        "size": [
+          41.8462,
+          41.6215,
+          8.3487
+        ],
+        "radiusEstimate": 20.923123359680176,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 151260,
+        "center": [
+          -0.0248,
+          -51.1871,
+          -69.5877
+        ],
+        "size": [
+          40.2871,
+          39.7878,
+          11.7417
+        ],
+        "radiusEstimate": 20.14353084564209,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 151193,
+        "center": [
+          -0.0244,
+          -51.3283,
+          -68.2381
+        ],
+        "size": [
+          38.4076,
+          38.2013,
+          6.147
+        ],
+        "radiusEstimate": 19.203792572021484,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 140385,
+        "center": [
+          0.3745,
+          -52.0191,
+          -64.002
+        ],
+        "size": [
+          35.774,
+          36.2799,
+          14.7342
+        ],
+        "radiusEstimate": 18.139970779418945,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 153970,
+        "center": [
+          -0.0276,
+          -51.21,
+          -57.3361
+        ],
+        "size": [
+          33.6686,
+          33.2514,
+          5.4222
+        ],
+        "radiusEstimate": 16.83431625366211,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 150826,
+        "center": [
+          0.0342,
+          -51.3045,
+          -36.8399
+        ],
+        "size": [
+          42.8037,
+          42.8033,
+          39.5045
+        ],
+        "radiusEstimate": 21.401862144470215,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 65531,
+        "triangleCount": 152194,
+        "center": [
+          -0.0356,
+          -51.2247,
+          -22.9031
+        ],
+        "size": [
+          41.4536,
+          40.9877,
+          7.6465
+        ],
+        "radiusEstimate": 20.726795196533203,
+        "materials": [
+          "Main"
+        ]
+      },
+      {
+        "name": "Main",
+        "vertexCount": 26139,
+        "triangleCount": 59166,
+        "center": [
+          0.03,
+          -51.3818,
+          -17.1992
+        ],
+        "size": [
+          45.8895,
+          45.9478,
+          19.1578
+        ],
+        "radiusEstimate": 22.973923683166504,
+        "materials": [
+          "Main"
+        ]
+      }
+    ],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "template": "generic_model",
+    "confidence": 0.35,
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

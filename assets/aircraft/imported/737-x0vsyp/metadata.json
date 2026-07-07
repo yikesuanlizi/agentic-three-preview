@@ -1,0 +1,121 @@
+{
+  "id": "737-x0vsyp",
+  "category": "cockpit",
+  "title": "波音737驾驶舱",
+  "description": "自动从 波音737驾驶舱.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "cockpit",
+    "波音737驾驶舱",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/737-x0vsyp/model.glb",
+  "previewPath": "assets/aircraft/imported/737-x0vsyp/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/737-x0vsyp/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/737-x0vsyp/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/737-x0vsyp/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/737-x0vsyp/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/737-x0vsyp/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/737-x0vsyp/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: 波音737驾驶舱 (波音737驾驶舱.glb)。\n类别: cockpit; 标签: imported, aircraft, cockpit, 波音737驾驶舱, glb。\n自动从 波音737驾驶舱.glb 导入。\n结构要点: 提取主体外轮廓、主轴方向、对称关系和重复结构。；优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。\n结构分析失败: Cannot resolve external images with binaryToJSON().\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "提取主体外轮廓、主轴方向、对称关系和重复结构。",
+    "优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。"
+  ],
+  "structureAnalysis": {
+    "status": "error",
+    "error": "Cannot resolve external images with binaryToJSON().",
+    "nodeCount": 0,
+    "meshCount": 0,
+    "materialCount": 0,
+    "meshStats": [],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

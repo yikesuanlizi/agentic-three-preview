@@ -1,0 +1,1681 @@
+{
+  "id": "j20-xpnugq",
+  "category": "fuselage",
+  "title": "中国成都J20机身",
+  "description": "自动从 中国成都J20机身.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "fuselage",
+    "中国成都j20机身",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/j20-xpnugq/model.glb",
+  "previewPath": "assets/aircraft/imported/j20-xpnugq/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [
+    "27_66_0ec19d06f12efab_4",
+    "material_159",
+    "0131_Silver_1",
+    "Material_shiny12",
+    "Color_B03",
+    "Color_C02",
+    "0010_Snow_1",
+    "Body16",
+    "Color_D07",
+    "Color_D08",
+    "Display_Grey",
+    "Materiala12",
+    "DimGray",
+    "hud_1",
+    "glass_meters",
+    "KNOP",
+    "0136_Charcoal",
+    "27_66_0ec19d06f12efab",
+    "DISPLAY_2",
+    "Material_shiny12_0",
+    "0021_DarkRed_2",
+    "Color_C01",
+    "Material112",
+    "Color_G23"
+  ],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/j20-xpnugq/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/j20-xpnugq/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/j20-xpnugq/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/j20-xpnugq/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/j20-xpnugq/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/j20-xpnugq/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: 中国成都J20机身 (中国成都J20机身.glb)。\n类别: fuselage; 标签: imported, aircraft, fuselage, 中国成都j20机身, glb。\n自动从 中国成都J20机身.glb 导入。\n结构要点: 机身主体应为长筒/流线体，截面近圆或椭圆。；可用 Cylinder/Lathe/Curve 组合表达机鼻、舱段和尾部收缩。\n结构分析: node=99, mesh=94, material=85。 候选主轴: +Z。 整体尺寸: 517.912 x 189.985 x 859.974。\n模板参数: generic_model, confidence=0.35, turbofan={}。\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "机身主体应为长筒/流线体，截面近圆或椭圆。",
+    "可用 Cylinder/Lathe/Curve 组合表达机鼻、舱段和尾部收缩。"
+  ],
+  "structureAnalysis": {
+    "status": "success",
+    "nodeCount": 99,
+    "meshCount": 94,
+    "materialCount": 85,
+    "bounds": {
+      "center": [
+        258.956,
+        94.9923,
+        -429.9871
+      ],
+      "size": [
+        517.9121,
+        189.9846,
+        859.9742
+      ]
+    },
+    "dominantAxis": "+Z",
+    "meshStats": [
+      {
+        "name": "Material2",
+        "vertexCount": 36,
+        "triangleCount": 12,
+        "center": [
+          259.6031,
+          126.9123,
+          -580.489
+        ],
+        "size": [
+          15.9746,
+          4.5803,
+          18.6456
+        ],
+        "radiusEstimate": 7.987312316894531,
+        "materials": [
+          "27_66_0ec19d06f12efab_4"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 193,
+        "triangleCount": 276,
+        "center": [
+          258.2708,
+          125.3537,
+          -634.3269
+        ],
+        "size": [
+          31.839,
+          25.2712,
+          118.7136
+        ],
+        "radiusEstimate": 15.919479370117188,
+        "materials": [
+          "material_159"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 10650,
+        "triangleCount": 8779,
+        "center": [
+          258.4931,
+          115.9719,
+          -624.2986
+        ],
+        "size": [
+          20.532,
+          34.0171,
+          54.4665
+        ],
+        "radiusEstimate": 17.00856018066407,
+        "materials": [
+          "0131_Silver_1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 5524,
+        "triangleCount": 3445,
+        "center": [
+          260.4845,
+          109.7725,
+          -623.9387
+        ],
+        "size": [
+          25.4497,
+          35.9179,
+          53.7468
+        ],
+        "radiusEstimate": 17.958942413330085,
+        "materials": [
+          "Material_shiny12"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 1020,
+        "triangleCount": 906,
+        "center": [
+          259.422,
+          126.34,
+          -606.4423
+        ],
+        "size": [
+          15.3147,
+          1.4542,
+          0.5759
+        ],
+        "radiusEstimate": 7.657356262207031,
+        "materials": [
+          "Color_B03"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 332,
+        "triangleCount": 338,
+        "center": [
+          259.614,
+          117.1814,
+          -612.7823
+        ],
+        "size": [
+          19.8873,
+          23.1753,
+          18.8068
+        ],
+        "radiusEstimate": 11.587657928466804,
+        "materials": [
+          "Color_C02"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 8887,
+        "triangleCount": 14292,
+        "center": [
+          260.8329,
+          112.0575,
+          -624.679
+        ],
+        "size": [
+          23.6227,
+          32.5418,
+          53.8199
+        ],
+        "radiusEstimate": 16.270919799804695,
+        "materials": [
+          "0010_Snow_1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 854,
+        "triangleCount": 846,
+        "center": [
+          259.614,
+          122.1282,
+          -614.9804
+        ],
+        "size": [
+          18.6519,
+          10.1202,
+          15.4006
+        ],
+        "radiusEstimate": 9.325950622558594,
+        "materials": [
+          "Body16"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 3580,
+        "triangleCount": 6140,
+        "center": [
+          252.9043,
+          106.6889,
+          -614.6935
+        ],
+        "size": [
+          10.2892,
+          29.7507,
+          11.5599
+        ],
+        "radiusEstimate": 14.875370025634766,
+        "materials": [
+          "Color_D07"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 312,
+        "triangleCount": 332,
+        "center": [
+          255.5379,
+          114.1042,
+          -628.2818
+        ],
+        "size": [
+          6.8346,
+          15.0332,
+          40.3582
+        ],
+        "radiusEstimate": 7.516609191894531,
+        "materials": [
+          "Color_D08"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 14762,
+        "triangleCount": 19344,
+        "center": [
+          259.8585,
+          114.3412,
+          -624.7336
+        ],
+        "size": [
+          26.7927,
+          28.0692,
+          53.7108
+        ],
+        "radiusEstimate": 14.034599304199226,
+        "materials": [
+          "Display_Grey"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 882,
+        "triangleCount": 574,
+        "center": [
+          259.6139,
+          123.7445,
+          -615.8571
+        ],
+        "size": [
+          18.4164,
+          18.472,
+          11.8782
+        ],
+        "radiusEstimate": 9.236011505126953,
+        "materials": [
+          "Materiala12"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 28,
+        "triangleCount": 18,
+        "center": [
+          264.2872,
+          115.6721,
+          -630.4974
+        ],
+        "size": [
+          11.9472,
+          33.4175,
+          41.1948
+        ],
+        "radiusEstimate": 16.708755493164062,
+        "materials": [
+          "DimGray"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 2220,
+        "triangleCount": 2240,
+        "center": [
+          260.6316,
+          114.3835,
+          -630.0731
+        ],
+        "size": [
+          20.362,
+          37.1939,
+          42.7122
+        ],
+        "radiusEstimate": 18.596939086914062,
+        "materials": [
+          "hud_1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 8,
+        "triangleCount": 6,
+        "center": [
+          254.6724,
+          127.304,
+          -609.7553
+        ],
+        "size": [
+          0,
+          0.8549,
+          1.1019
+        ],
+        "radiusEstimate": 0.4274559020996094,
+        "materials": [
+          "glass_meters"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 2124,
+        "triangleCount": 2493,
+        "center": [
+          261.8527,
+          114.0452,
+          -627.8815
+        ],
+        "size": [
+          22.8043,
+          36.5172,
+          37.811
+        ],
+        "radiusEstimate": 18.25860595703125,
+        "materials": [
+          "KNOP"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 19162,
+        "triangleCount": 19290,
+        "center": [
+          259.8153,
+          111.5346,
+          -644.0258
+        ],
+        "size": [
+          29.6927,
+          41.5383,
+          69.8037
+        ],
+        "radiusEstimate": 20.769153594970703,
+        "materials": [
+          "0136_Charcoal"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 264,
+        "triangleCount": 199,
+        "center": [
+          255.4673,
+          119.8117,
+          -658.5731
+        ],
+        "size": [
+          0.6643,
+          0.2561,
+          0.6421
+        ],
+        "radiusEstimate": 0.3321685791015625,
+        "materials": [
+          "27_66_0ec19d06f12efab"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 126,
+        "triangleCount": 114,
+        "center": [
+          259.9752,
+          115.6529,
+          -648.7985
+        ],
+        "size": [
+          2.5813,
+          13.9045,
+          4.7744
+        ],
+        "radiusEstimate": 6.952251434326172,
+        "materials": [
+          "DISPLAY_2"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 43997,
+        "triangleCount": 31739,
+        "center": [
+          259.5549,
+          104.7282,
+          -638.3601
+        ],
+        "size": [
+          32.4726,
+          37.283,
+          54.5041
+        ],
+        "radiusEstimate": 18.641517639160156,
+        "materials": [
+          "Material_shiny12_0"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 864,
+        "triangleCount": 1336,
+        "center": [
+          256.014,
+          114.3783,
+          -649.0626
+        ],
+        "size": [
+          6.0527,
+          7.6504,
+          4.5482
+        ],
+        "radiusEstimate": 3.825214385986328,
+        "materials": [
+          "0021_DarkRed_2"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 32,
+        "triangleCount": 20,
+        "center": [
+          258.4343,
+          111.4186,
+          -649.8956
+        ],
+        "size": [
+          23.8803,
+          11.3521,
+          1.2659
+        ],
+        "radiusEstimate": 11.940132141113281,
+        "materials": [
+          "Color_C01"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 312,
+        "triangleCount": 268,
+        "center": [
+          269.6154,
+          107.393,
+          -650.4456
+        ],
+        "size": [
+          2.0494,
+          2.7414,
+          0.613
+        ],
+        "radiusEstimate": 1.3706817626953125,
+        "materials": [
+          "Material112"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 240,
+        "triangleCount": 220,
+        "center": [
+          269.6106,
+          107.3735,
+          -650.4414
+        ],
+        "size": [
+          1.5763,
+          2.2058,
+          0.4869
+        ],
+        "radiusEstimate": 1.1029052734375,
+        "materials": [
+          "Color_G23"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 48,
+        "triangleCount": 48,
+        "center": [
+          269.6227,
+          107.363,
+          -650.4313
+        ],
+        "size": [
+          1.1076,
+          1.1449,
+          0.3066
+        ],
+        "radiusEstimate": 0.5724601745605469,
+        "materials": [
+          "Material113"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 4400,
+        "triangleCount": 4287,
+        "center": [
+          260.0209,
+          114.6589,
+          -632.8482
+        ],
+        "size": [
+          21.4196,
+          35.373,
+          35.9832
+        ],
+        "radiusEstimate": 17.686511993408203,
+        "materials": [
+          "DISPLAY_RIGHT"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          269.6704,
+          112.0302,
+          -650.9128
+        ],
+        "size": [
+          0.9326,
+          0.7247,
+          0.2986
+        ],
+        "radiusEstimate": 0.4663238525390625,
+        "materials": [
+          "0058_Olive_1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 254,
+        "triangleCount": 248,
+        "center": [
+          261.7622,
+          107.7411,
+          -645.8492
+        ],
+        "size": [
+          17.8508,
+          14.1749,
+          11.5356
+        ],
+        "radiusEstimate": 8.925399780273438,
+        "materials": [
+          "Burnt_Umber_1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 146,
+        "triangleCount": 136,
+        "center": [
+          256.6,
+          115.5603,
+          -651.1116
+        ],
+        "size": [
+          7.742,
+          9.8477,
+          0.9444
+        ],
+        "radiusEstimate": 4.9238433837890625,
+        "materials": [
+          "0110_LightSlateGray"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 400,
+        "triangleCount": 370,
+        "center": [
+          269.646,
+          105.6617,
+          -644.8131
+        ],
+        "size": [
+          9.0599,
+          4.2813,
+          12.5623
+        ],
+        "radiusEstimate": 4.52996826171875,
+        "materials": [
+          "LightGray"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 28,
+        "triangleCount": 24,
+        "center": [
+          263.5523,
+          110.0672,
+          -647.0987
+        ],
+        "size": [
+          18.654,
+          0.8307,
+          8.4037
+        ],
+        "radiusEstimate": 9.327003479003906,
+        "materials": [
+          "Color_B05"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 24,
+        "triangleCount": 24,
+        "center": [
+          248.2861,
+          108.4882,
+          -649.9214
+        ],
+        "size": [
+          1.151,
+          3.0751,
+          0.9625
+        ],
+        "radiusEstimate": 1.5375595092773438,
+        "materials": [
+          "Mirror_01"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 26,
+        "triangleCount": 24,
+        "center": [
+          259.7558,
+          96.9671,
+          -645.8965
+        ],
+        "size": [
+          1.463,
+          0.1018,
+          1.4594
+        ],
+        "radiusEstimate": 0.731475830078125,
+        "materials": [
+          "Leather_Red_Brown_1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 38,
+        "triangleCount": 26,
+        "center": [
+          261.883,
+          113.8364,
+          -630.083
+        ],
+        "size": [
+          17.5364,
+          25.9218,
+          25.2624
+        ],
+        "radiusEstimate": 12.960918426513672,
+        "materials": [
+          "0046_Gold"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 842,
+        "triangleCount": 1059,
+        "center": [
+          258.7943,
+          101.3858,
+          -645.5334
+        ],
+        "size": [
+          20.1003,
+          5.993,
+          19.5358
+        ],
+        "radiusEstimate": 10.050155639648438,
+        "materials": [
+          "Color_A07"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 16,
+        "triangleCount": 8,
+        "center": [
+          259.4211,
+          119.2041,
+          -648.0925
+        ],
+        "size": [
+          9.103,
+          1.8918,
+          0.132
+        ],
+        "radiusEstimate": 4.551506042480469,
+        "materials": [
+          "Translucent_Glass_Blue_4"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 44,
+        "triangleCount": 42,
+        "center": [
+          267.5425,
+          119.7212,
+          -648.9759
+        ],
+        "size": [
+          3.6761,
+          4.3333,
+          0.3023
+        ],
+        "radiusEstimate": 2.1666336059570312,
+        "materials": [
+          "DIISPLAY"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 80,
+        "triangleCount": 40,
+        "center": [
+          267.5425,
+          119.7348,
+          -648.8643
+        ],
+        "size": [
+          4.5022,
+          5.1574,
+          0.5256
+        ],
+        "radiusEstimate": 2.5786819458007812,
+        "materials": [
+          "Material1A"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 144,
+        "triangleCount": 72,
+        "center": [
+          259.4211,
+          125.865,
+          -651.5977
+        ],
+        "size": [
+          5.6569,
+          6.7617,
+          7.0489
+        ],
+        "radiusEstimate": 3.3808631896972656,
+        "materials": [
+          "hud_2"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 24,
+        "triangleCount": 0,
+        "center": [
+          259.4211,
+          125.865,
+          -651.5977
+        ],
+        "size": [
+          5.6569,
+          6.7617,
+          7.0489
+        ],
+        "radiusEstimate": 3.3808631896972656,
+        "materials": [
+          "edge_color13319611610"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 1214,
+        "triangleCount": 851,
+        "center": [
+          264.9227,
+          112.8653,
+          -646.9591
+        ],
+        "size": [
+          16.1204,
+          19.3735,
+          15.2599
+        ],
+        "radiusEstimate": 9.686729431152344,
+        "materials": [
+          "Material12shiny_hud"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 500,
+        "triangleCount": 298,
+        "center": [
+          259.4211,
+          122.5038,
+          -652.0522
+        ],
+        "size": [
+          4.7918,
+          0.7542,
+          4.7667
+        ],
+        "radiusEstimate": 2.395904541015625,
+        "materials": [
+          "HUD_Glass"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 500,
+        "triangleCount": 298,
+        "center": [
+          259.4211,
+          122.5038,
+          -652.0522
+        ],
+        "size": [
+          4.7918,
+          0.7542,
+          4.7667
+        ],
+        "radiusEstimate": 2.395904541015625,
+        "materials": [
+          "Translucent_Glass_Gold_3"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 62,
+        "triangleCount": 40,
+        "center": [
+          264.1958,
+          113.1769,
+          -627.1791
+        ],
+        "size": [
+          22.5457,
+          24.9127,
+          20.2474
+        ],
+        "radiusEstimate": 12.456367492675781,
+        "materials": [
+          "0134_DimGray"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 4,
+        "triangleCount": 2,
+        "center": [
+          272.0374,
+          102.9214,
+          -637.8688
+        ],
+        "size": [
+          0.5125,
+          0.5144,
+          0.5837
+        ],
+        "radiusEstimate": 0.2571868896484375,
+        "materials": [
+          "Body15"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 24,
+        "triangleCount": 22,
+        "center": [
+          272.8859,
+          110.0781,
+          -642.708
+        ],
+        "size": [
+          0.0132,
+          0.8091,
+          0.4903
+        ],
+        "radiusEstimate": 0.4045372009277344,
+        "materials": [
+          "Material143"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 192,
+        "triangleCount": 176,
+        "center": [
+          272.9329,
+          109.4151,
+          -639.9503
+        ],
+        "size": [
+          0.6253,
+          5.6346,
+          10.8745
+        ],
+        "radiusEstimate": 2.8173065185546875,
+        "materials": [
+          "0019_Crimson"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 686,
+        "triangleCount": 676,
+        "center": [
+          259.3793,
+          108.5773,
+          -633.2384
+        ],
+        "size": [
+          3.3953,
+          13.6316,
+          29.606
+        ],
+        "radiusEstimate": 6.815807342529297,
+        "materials": [
+          "Color_002"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 2560,
+        "triangleCount": 980,
+        "center": [
+          259.5621,
+          95.2681,
+          -645.6312
+        ],
+        "size": [
+          4.0248,
+          3.4997,
+          5.9746
+        ],
+        "radiusEstimate": 2.012420654296875,
+        "materials": [
+          "Leather_Red_Brown"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 3663,
+        "triangleCount": 2050,
+        "center": [
+          259.614,
+          114.7352,
+          -629.7152
+        ],
+        "size": [
+          20.6057,
+          35.9232,
+          30.0333
+        ],
+        "radiusEstimate": 17.961597442626953,
+        "materials": [
+          "seat_buis_5"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 976,
+        "triangleCount": 676,
+        "center": [
+          259.614,
+          116.5233,
+          -619.5928
+        ],
+        "size": [
+          2.926,
+          32.3469,
+          9.7885
+        ],
+        "radiusEstimate": 16.173473358154297,
+        "materials": [
+          "Metal_Corrugated_Shiny_1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 2322,
+        "triangleCount": 1278,
+        "center": [
+          259.6136,
+          116.2985,
+          -620.4929
+        ],
+        "size": [
+          15.5606,
+          31.8972,
+          11.5887
+        ],
+        "radiusEstimate": 15.948589324951172,
+        "materials": [
+          "seat_buis_1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 98,
+        "triangleCount": 96,
+        "center": [
+          268.267,
+          97.3456,
+          -636.1705
+        ],
+        "size": [
+          0.4876,
+          0.2685,
+          0.4921
+        ],
+        "radiusEstimate": 0.2438201904296875,
+        "materials": [
+          "seat_buis_4"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 12182,
+        "triangleCount": 17476,
+        "center": [
+          262.6933,
+          97.4768,
+          -638.9087
+        ],
+        "size": [
+          11.6323,
+          1.9852,
+          5.8891
+        ],
+        "radiusEstimate": 5.816131591796875,
+        "materials": [
+          "Color_A05"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 10883,
+        "triangleCount": 5856,
+        "center": [
+          259.614,
+          95.0667,
+          -636.2589
+        ],
+        "size": [
+          18.3268,
+          2.1212,
+          15.12
+        ],
+        "radiusEstimate": 9.16339111328125,
+        "materials": [
+          "stof1"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 417,
+        "triangleCount": 168,
+        "center": [
+          259.614,
+          95.0668,
+          -636.1874
+        ],
+        "size": [
+          18.0696,
+          1.8359,
+          14.9771
+        ],
+        "radiusEstimate": 9.034820556640625,
+        "materials": [
+          "stof1_2"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 5914,
+        "triangleCount": 3098,
+        "center": [
+          259.614,
+          95.0667,
+          -636.2596
+        ],
+        "size": [
+          18.3268,
+          2.1212,
+          15.1187
+        ],
+        "radiusEstimate": 9.16339111328125,
+        "materials": [
+          "KOORT"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 4238,
+        "triangleCount": 2082,
+        "center": [
+          259.6031,
+          105.5832,
+          -627.8018
+        ],
+        "size": [
+          16.5655,
+          21.2881,
+          9.6481
+        ],
+        "radiusEstimate": 10.644062042236328,
+        "materials": [
+          "CHAIR"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 54,
+        "triangleCount": 34,
+        "center": [
+          259.5485,
+          127.5549,
+          -618.4144
+        ],
+        "size": [
+          12.9603,
+          9.4865,
+          1.1741
+        ],
+        "radiusEstimate": 6.4801483154296875,
+        "materials": [
+          "Suede_Brown"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 48,
+        "triangleCount": 48,
+        "center": [
+          253.1213,
+          126.815,
+          -617.8106
+        ],
+        "size": [
+          0.0325,
+          0.279,
+          0.279
+        ],
+        "radiusEstimate": 0.1394805908203125,
+        "materials": [
+          "Color_E03"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 24,
+        "triangleCount": 22,
+        "center": [
+          253.105,
+          126.815,
+          -617.8106
+        ],
+        "size": [
+          0,
+          0.279,
+          0.279
+        ],
+        "radiusEstimate": 0.1394805908203125,
+        "materials": [
+          "Color_E04"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 22,
+        "triangleCount": 12,
+        "center": [
+          253.118,
+          126.6493,
+          -617.617
+        ],
+        "size": [
+          0.0065,
+          0.296,
+          0.3303
+        ],
+        "radiusEstimate": 0.14801025390625,
+        "materials": [
+          "Color_E02"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 1322,
+        "triangleCount": 1306,
+        "center": [
+          259.5779,
+          109.25,
+          -625.7263
+        ],
+        "size": [
+          18.2546,
+          27.3873,
+          7.929
+        ],
+        "radiusEstimate": 13.693626403808594,
+        "materials": [
+          "0007_MistyRose"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 8,
+        "triangleCount": 6,
+        "center": [
+          259.8462,
+          96.1415,
+          -640.4315
+        ],
+        "size": [
+          1.3682,
+          0.9106,
+          0.3788
+        ],
+        "radiusEstimate": 0.6840972900390625,
+        "materials": [
+          "Color_B04"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 784,
+        "triangleCount": 776,
+        "center": [
+          259.8349,
+          97.211,
+          -641.2146
+        ],
+        "size": [
+          5.7975,
+          1.4535,
+          1.1588
+        ],
+        "radiusEstimate": 2.8987579345703125,
+        "materials": [
+          "Color_A01"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 4640,
+        "triangleCount": 3532,
+        "center": [
+          259.6139,
+          121.0378,
+          -620.9377
+        ],
+        "size": [
+          18.4164,
+          3.7484,
+          10.6992
+        ],
+        "radiusEstimate": 9.208175659179688,
+        "materials": [
+          "Materiala12_3"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 525,
+        "triangleCount": 414,
+        "center": [
+          258.7698,
+          123.657,
+          -634.3353
+        ],
+        "size": [
+          35.0256,
+          25.0927,
+          131.7141
+        ],
+        "radiusEstimate": 17.512802124023438,
+        "materials": [
+          "auto_84"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 7900,
+        "triangleCount": 8622,
+        "center": [
+          258.956,
+          94.9923,
+          -402.2106
+        ],
+        "size": [
+          517.912,
+          189.9846,
+          804.4211
+        ],
+        "radiusEstimate": 258.9559936523474,
+        "materials": [
+          "6TOJLMO200AH0001"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 85,
+        "triangleCount": 79,
+        "center": [
+          258.956,
+          72.5079,
+          -321.52
+        ],
+        "size": [
+          153.165,
+          46.9223,
+          528.3933
+        ],
+        "radiusEstimate": 76.58250427246094,
+        "materials": [
+          "material"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 574,
+        "triangleCount": 515,
+        "center": [
+          285.6342,
+          75.1073,
+          -458.6179
+        ],
+        "size": [
+          99.8087,
+          50.055,
+          802.7126
+        ],
+        "radiusEstimate": 49.90435791015625,
+        "materials": [
+          "material_78"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 120,
+        "triangleCount": 119,
+        "center": [
+          204.9206,
+          139.4804,
+          -185.8163
+        ],
+        "size": [
+          381.0567,
+          101.0085,
+          316.8023
+        ],
+        "radiusEstimate": 190.52836275100708,
+        "materials": [
+          "Color_H25"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 1035,
+        "triangleCount": 1431,
+        "center": [
+          258.956,
+          56.7142,
+          -409.1712
+        ],
+        "size": [
+          473.353,
+          103.1642,
+          728.2627
+        ],
+        "radiusEstimate": 236.67650890350342,
+        "materials": [
+          "material_80"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 124,
+        "triangleCount": 176,
+        "center": [
+          258.956,
+          88.6177,
+          -523.3961
+        ],
+        "size": [
+          101.9391,
+          40.585,
+          153.901
+        ],
+        "radiusEstimate": 50.96953582763672,
+        "materials": [
+          "material_81"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 2483,
+        "triangleCount": 1219,
+        "center": [
+          258.956,
+          139.1051,
+          -97.1836
+        ],
+        "size": [
+          314.3144,
+          101.759,
+          139.5367
+        ],
+        "radiusEstimate": 157.15719604492188,
+        "materials": [
+          "6TOJLMO200AH0001_5"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 52,
+        "triangleCount": 48,
+        "center": [
+          258.956,
+          40.7615,
+          -357.344
+        ],
+        "size": [
+          145.4909,
+          39.619,
+          46.6841
+        ],
+        "radiusEstimate": 72.74543762207031,
+        "materials": [
+          "material_83"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 11,
+        "triangleCount": 9,
+        "center": [
+          271.5765,
+          52.3688,
+          -583.7384
+        ],
+        "size": [
+          3.8008,
+          19.9245,
+          75.1181
+        ],
+        "radiusEstimate": 9.962232589721687,
+        "materials": [
+          "material_84"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 2278,
+        "triangleCount": 2692,
+        "center": [
+          232.5145,
+          116.9792,
+          -565.4537
+        ],
+        "size": [
+          87.5362,
+          42.0202,
+          269.4774
+        ],
+        "radiusEstimate": 43.768096923828125,
+        "materials": [
+          "Body_black"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 12001,
+        "triangleCount": 13570,
+        "center": [
+          257.8951,
+          111.2074,
+          -626.1819
+        ],
+        "size": [
+          25.1248,
+          42.276,
+          47.9952
+        ],
+        "radiusEstimate": 21.13800811767579,
+        "materials": [
+          "Body_black"
+        ]
+      },
+      {
+        "name": "Material3",
+        "vertexCount": 919,
+        "triangleCount": 893,
+        "center": [
+          262.8949,
+          116.7621,
+          -626.2097
+        ],
+        "size": [
+          23.2142,
+          22.9135,
+          48.2711
+        ],
+        "radiusEstimate": 11.60711669921875,
+        "materials": [
+          "Color_M04"
+        ]
+      },
+      {
+        "name": "Material2",
+        "vertexCount": 1764,
+        "triangleCount": 2114,
+        "center": [
+          255.8492,
+          108.4648,
+          -621.1712
+        ],
+        "size": [
+          9.4929,
+          26.6214,
+          38.0062
+        ],
+        "radiusEstimate": 13.310699462890632,
+        "materials": [
+          "Color_M05"
+        ]
+      }
+    ],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "template": "generic_model",
+    "confidence": 0.35,
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

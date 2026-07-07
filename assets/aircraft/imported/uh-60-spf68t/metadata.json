@@ -1,0 +1,1474 @@
+{
+  "id": "uh-60-spf68t",
+  "category": "environment",
+  "title": "UH 60旋翼（直升机）",
+  "description": "自动从 UH_60旋翼（直升机）.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "environment",
+    "uh",
+    "60旋翼",
+    "直升机",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/uh-60-spf68t/model.glb",
+  "previewPath": "assets/aircraft/imported/uh-60-spf68t/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [
+    "63done",
+    "PM3D_PolyMesh3D_8",
+    "PM3D_PolyMesh3D_7",
+    "56_01",
+    "UMesh_PolyMesh3D_6",
+    "Merged_UMesh_PolyMesh3D_14",
+    "Merged_UMesh_PolyMesh3D_19",
+    "Merged_UMesh_PolyMesh3D_17",
+    "Merged_UMesh_PolyMesh3D_15",
+    "Bifilar1",
+    "bifilar screws 3",
+    "bifilar hub1",
+    "damper2",
+    "damper3",
+    "Merged_37",
+    "Merged_39",
+    "Merged_40",
+    "42",
+    "UMesh_PolyMesh3D_9",
+    "assembled64",
+    "assembled65",
+    "56",
+    "PolyMesh3D1_4",
+    "PolyMesh3D1_2"
+  ],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/uh-60-spf68t/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/uh-60-spf68t/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/uh-60-spf68t/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/uh-60-spf68t/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/uh-60-spf68t/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/uh-60-spf68t/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: UH 60旋翼（直升机） (UH_60旋翼（直升机）.glb)。\n类别: environment; 标签: imported, aircraft, environment, uh, 60旋翼, 直升机, glb。\n自动从 UH_60旋翼（直升机）.glb 导入。\n结构要点: 提取主体外轮廓、主轴方向、对称关系和重复结构。；优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。\n结构分析: node=131, mesh=69, material=69。 候选主轴: +X。 整体尺寸: 34.227 x 2.176 x 34.227。\n模板参数: generic_model, confidence=0.35, turbofan={}。\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "提取主体外轮廓、主轴方向、对称关系和重复结构。",
+    "优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。"
+  ],
+  "structureAnalysis": {
+    "status": "success",
+    "nodeCount": 131,
+    "meshCount": 69,
+    "materialCount": 69,
+    "bounds": {
+      "center": [
+        0,
+        -0.0406,
+        0
+      ],
+      "size": [
+        34.2268,
+        2.1761,
+        34.2268
+      ]
+    },
+    "dominantAxis": "+X",
+    "meshStats": [
+      {
+        "name": "63done_low_63done_0",
+        "vertexCount": 14680,
+        "triangleCount": 0,
+        "center": [
+          -0.0006,
+          -0.9872,
+          -0.0004
+        ],
+        "size": [
+          2.1157,
+          0.243,
+          2.1078
+        ],
+        "radiusEstimate": 1.0578678250312805,
+        "materials": [
+          "63done"
+        ]
+      },
+      {
+        "name": "PM3D_PolyMesh3D_8_low_PM3D_PolyMesh3D_8_0",
+        "vertexCount": 1186,
+        "triangleCount": 0,
+        "center": [
+          0,
+          -0.1416,
+          0
+        ],
+        "size": [
+          0.5072,
+          1.7253,
+          0.5072
+        ],
+        "radiusEstimate": 0.8626420795917511,
+        "materials": [
+          "PM3D_PolyMesh3D_8"
+        ]
+      },
+      {
+        "name": "PM3D_PolyMesh3D_7_low_PM3D_PolyMesh3D_7_0",
+        "vertexCount": 2216,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.4016,
+          0
+        ],
+        "size": [
+          3.2539,
+          0.2444,
+          3.2539
+        ],
+        "radiusEstimate": 1.6269667744636536,
+        "materials": [
+          "PM3D_PolyMesh3D_7"
+        ]
+      },
+      {
+        "name": "PM3D_PolyMesh3D_6_low_PM3D_PolyMesh3D_6_0",
+        "vertexCount": 15281,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3492,
+          0
+        ],
+        "size": [
+          4.0085,
+          0.6181,
+          4.0085
+        ],
+        "radiusEstimate": 2.004226326942444,
+        "materials": [
+          "56_01"
+        ]
+      },
+      {
+        "name": "Merged_UMesh_PolyMesh3D_16_low_Merged_UMesh_PolyMesh3D_16_0",
+        "vertexCount": 65533,
+        "triangleCount": 0,
+        "center": [
+          -0.0121,
+          0.4551,
+          0.0121
+        ],
+        "size": [
+          2.4987,
+          0.6761,
+          2.4987
+        ],
+        "radiusEstimate": 1.249335527420044,
+        "materials": [
+          "UMesh_PolyMesh3D_6"
+        ]
+      },
+      {
+        "name": "Merged_UMesh_PolyMesh3D_16_low_Merged_UMesh_PolyMesh3D_16_0",
+        "vertexCount": 65532,
+        "triangleCount": 0,
+        "center": [
+          0.0456,
+          0.4551,
+          -0.0467
+        ],
+        "size": [
+          2.4318,
+          0.6761,
+          2.4295
+        ],
+        "radiusEstimate": 1.2158774137496948,
+        "materials": [
+          "UMesh_PolyMesh3D_6"
+        ]
+      },
+      {
+        "name": "HUB1_low_HUB1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.4123,
+          0
+        ],
+        "size": [
+          2.1837,
+          0.6308,
+          2.1837
+        ],
+        "radiusEstimate": 1.0918288826942444,
+        "materials": [
+          "UMesh_PolyMesh3D_6"
+        ]
+      },
+      {
+        "name": "UMesh_PolyMesh3D_6_low_UMesh_PolyMesh3D_6_0",
+        "vertexCount": 52990,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.38,
+          0
+        ],
+        "size": [
+          3.1245,
+          0.4539,
+          3.1245
+        ],
+        "radiusEstimate": 1.5622520446777344,
+        "materials": [
+          "UMesh_PolyMesh3D_6"
+        ]
+      },
+      {
+        "name": "PolyMesh3D_11_low_PolyMesh3D_11_0",
+        "vertexCount": 48211,
+        "triangleCount": 0,
+        "center": [
+          0,
+          -0.1134,
+          0
+        ],
+        "size": [
+          2.7667,
+          1.8085,
+          2.7667
+        ],
+        "radiusEstimate": 1.3833293318748474,
+        "materials": [
+          "UMesh_PolyMesh3D_6"
+        ]
+      },
+      {
+        "name": "Merged_UMesh_PolyMesh3D_14_low_Merged_UMesh_PolyMesh3D_14_0",
+        "vertexCount": 1280,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.6285,
+          0
+        ],
+        "size": [
+          2.2828,
+          0.0872,
+          2.2828
+        ],
+        "radiusEstimate": 1.1413859724998474,
+        "materials": [
+          "Merged_UMesh_PolyMesh3D_14"
+        ]
+      },
+      {
+        "name": "Merged_UMesh_PolyMesh3D_19_low_Merged_UMesh_PolyMesh3D_19_0",
+        "vertexCount": 5873,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.2183,
+          0
+        ],
+        "size": [
+          2.5118,
+          0.0872,
+          2.5118
+        ],
+        "radiusEstimate": 1.2558903098106384,
+        "materials": [
+          "Merged_UMesh_PolyMesh3D_19"
+        ]
+      },
+      {
+        "name": "Merged_UMesh_PolyMesh3D_17_low_Merged_UMesh_PolyMesh3D_17_0",
+        "vertexCount": 6656,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.7476,
+          0
+        ],
+        "size": [
+          2.1033,
+          0.0806,
+          2.1033
+        ],
+        "radiusEstimate": 1.0516470670700073,
+        "materials": [
+          "Merged_UMesh_PolyMesh3D_17"
+        ]
+      },
+      {
+        "name": "Merged_UMesh_PolyMesh3D_15_low_Merged_UMesh_PolyMesh3D_15_0",
+        "vertexCount": 1568,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.685,
+          0
+        ],
+        "size": [
+          2.1522,
+          0.1415,
+          2.1522
+        ],
+        "radiusEstimate": 1.0761059522628784,
+        "materials": [
+          "Merged_UMesh_PolyMesh3D_15"
+        ]
+      },
+      {
+        "name": "Bifilar1_low_Bifilar1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -0.0003,
+          0.774,
+          -0.0602
+        ],
+        "size": [
+          2.1127,
+          0.1602,
+          1.9928
+        ],
+        "radiusEstimate": 1.0563631057739258,
+        "materials": [
+          "Bifilar1"
+        ]
+      },
+      {
+        "name": "Bifilar1_low_Bifilar1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -0.0637,
+          0.7762,
+          0.064
+        ],
+        "size": [
+          1.9848,
+          0.1647,
+          1.9853
+        ],
+        "radiusEstimate": 0.9923860430717468,
+        "materials": [
+          "Bifilar1"
+        ]
+      },
+      {
+        "name": "Bifilar1_low_Bifilar1_0",
+        "vertexCount": 39455,
+        "triangleCount": 0,
+        "center": [
+          0.0614,
+          0.774,
+          0.0002
+        ],
+        "size": [
+          1.9905,
+          0.1602,
+          2.1119
+        ],
+        "radiusEstimate": 0.9952559769153595,
+        "materials": [
+          "Bifilar1"
+        ]
+      },
+      {
+        "name": "bifilar_screws_3_low_bifilar_screws_3_0",
+        "vertexCount": 65533,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.7673,
+          -0.026
+        ],
+        "size": [
+          1.8001,
+          0.1946,
+          1.748
+        ],
+        "radiusEstimate": 0.9000277519226074,
+        "materials": [
+          "bifilar screws 3"
+        ]
+      },
+      {
+        "name": "bifilar_screws_3_low_bifilar_screws_3_0",
+        "vertexCount": 28125,
+        "triangleCount": 0,
+        "center": [
+          0.0048,
+          0.7673,
+          0.7688
+        ],
+        "size": [
+          1.7034,
+          0.1946,
+          0.2625
+        ],
+        "radiusEstimate": 0.8517206609249115,
+        "materials": [
+          "bifilar screws 3"
+        ]
+      },
+      {
+        "name": "bifilar_hub1_low_bifilar_hub1_0",
+        "vertexCount": 11926,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.9524,
+          0
+        ],
+        "size": [
+          0.93,
+          0.1902,
+          0.93
+        ],
+        "radiusEstimate": 0.46501125395298004,
+        "materials": [
+          "bifilar hub1"
+        ]
+      },
+      {
+        "name": "damper2_low_damper2_0",
+        "vertexCount": 23808,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3995,
+          0
+        ],
+        "size": [
+          3.7162,
+          0.2189,
+          3.7162
+        ],
+        "radiusEstimate": 1.8581019043922424,
+        "materials": [
+          "damper2"
+        ]
+      },
+      {
+        "name": "damper3_low_damper3_0",
+        "vertexCount": 17712,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3772,
+          0
+        ],
+        "size": [
+          1.7563,
+          0.4036,
+          1.7563
+        ],
+        "radiusEstimate": 0.8781588673591614,
+        "materials": [
+          "damper3"
+        ]
+      },
+      {
+        "name": "Merged_37_low_Merged_37_0",
+        "vertexCount": 1920,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.392,
+          0
+        ],
+        "size": [
+          2.5176,
+          0.1288,
+          2.5176
+        ],
+        "radiusEstimate": 1.2587836384773254,
+        "materials": [
+          "Merged_37"
+        ]
+      },
+      {
+        "name": "Merged_39_low_Merged_39_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.396,
+          0.0103
+        ],
+        "size": [
+          3.7875,
+          0.2518,
+          3.7669
+        ],
+        "radiusEstimate": 1.8937273025512695,
+        "materials": [
+          "Merged_39"
+        ]
+      },
+      {
+        "name": "Merged_39_low_Merged_39_0",
+        "vertexCount": 13103,
+        "triangleCount": 0,
+        "center": [
+          -0.5221,
+          0.4151,
+          -1.0251
+        ],
+        "size": [
+          1.9027,
+          0.1979,
+          1.7372
+        ],
+        "radiusEstimate": 0.9513587802648544,
+        "materials": [
+          "Merged_39"
+        ]
+      },
+      {
+        "name": "Merged_40_low_Merged_40_0",
+        "vertexCount": 3328,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3905,
+          0
+        ],
+        "size": [
+          3.0757,
+          0.2384,
+          3.0757
+        ],
+        "radiusEstimate": 1.5378651022911072,
+        "materials": [
+          "Merged_40"
+        ]
+      },
+      {
+        "name": "42_low_42_0",
+        "vertexCount": 986,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3955,
+          0
+        ],
+        "size": [
+          3.1326,
+          0.4029,
+          3.1326
+        ],
+        "radiusEstimate": 1.5663248300552368,
+        "materials": [
+          "42"
+        ]
+      },
+      {
+        "name": "UMesh_PolyMesh3D_9_low_UMesh_PolyMesh3D_9_0",
+        "vertexCount": 60996,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3982,
+          0
+        ],
+        "size": [
+          6.0852,
+          0.3438,
+          6.0852
+        ],
+        "radiusEstimate": 3.0425961017608643,
+        "materials": [
+          "UMesh_PolyMesh3D_9"
+        ]
+      },
+      {
+        "name": "PolyMesh3D_3_low_PolyMesh3D_3_0",
+        "vertexCount": 11594,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3941,
+          0
+        ],
+        "size": [
+          4.1341,
+          0.4146,
+          4.1341
+        ],
+        "radiusEstimate": 2.0670734643936157,
+        "materials": [
+          "UMesh_PolyMesh3D_9"
+        ]
+      },
+      {
+        "name": "assembled64_low_assembled64_0",
+        "vertexCount": 5246,
+        "triangleCount": 0,
+        "center": [
+          0,
+          -0.0587,
+          0
+        ],
+        "size": [
+          34.2268,
+          1.214,
+          34.2268
+        ],
+        "radiusEstimate": 17.113393783569336,
+        "materials": [
+          "assembled64"
+        ]
+      },
+      {
+        "name": "assembled65_low_assembled65_0",
+        "vertexCount": 21244,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.4154,
+          0
+        ],
+        "size": [
+          5.5977,
+          0.2744,
+          5.5977
+        ],
+        "radiusEstimate": 2.7988275289535522,
+        "materials": [
+          "assembled65"
+        ]
+      },
+      {
+        "name": "56_low_56_0",
+        "vertexCount": 13365,
+        "triangleCount": 0,
+        "center": [
+          0,
+          -0.3925,
+          0
+        ],
+        "size": [
+          1.9271,
+          1.4723,
+          1.9271
+        ],
+        "radiusEstimate": 0.9635316729545593,
+        "materials": [
+          "56"
+        ]
+      },
+      {
+        "name": "PolyMesh3D1_4_low_PolyMesh3D1_4_0",
+        "vertexCount": 17512,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.4436,
+          0
+        ],
+        "size": [
+          4.1187,
+          0.5267,
+          4.1187
+        ],
+        "radiusEstimate": 2.059340476989746,
+        "materials": [
+          "PolyMesh3D1_4"
+        ]
+      },
+      {
+        "name": "PolyMesh3D1_2_low_PolyMesh3D1_2_0",
+        "vertexCount": 6861,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3911,
+          0
+        ],
+        "size": [
+          3.2475,
+          0.5842,
+          3.2475
+        ],
+        "radiusEstimate": 1.623753547668457,
+        "materials": [
+          "PolyMesh3D1_2"
+        ]
+      },
+      {
+        "name": "53-2_low_53-2_0",
+        "vertexCount": 2284,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.5772,
+          0
+        ],
+        "size": [
+          2.5766,
+          0.0989,
+          2.5766
+        ],
+        "radiusEstimate": 1.2882870435714722,
+        "materials": [
+          "53-2"
+        ]
+      },
+      {
+        "name": "56_02_low_56_02_0",
+        "vertexCount": 5800,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3161,
+          0
+        ],
+        "size": [
+          3.9808,
+          0.2972,
+          3.9808
+        ],
+        "radiusEstimate": 1.9904150366783142,
+        "materials": [
+          "56_02"
+        ]
+      },
+      {
+        "name": "57_spring1_low_57_spring1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3272,
+          0.0002
+        ],
+        "size": [
+          2.6391,
+          0.4259,
+          2.6387
+        ],
+        "radiusEstimate": 1.319559633731842,
+        "materials": [
+          "57_spring1"
+        ]
+      },
+      {
+        "name": "57_spring1_low_57_spring1_0",
+        "vertexCount": 26123,
+        "triangleCount": 0,
+        "center": [
+          0.4376,
+          0.3272,
+          -0.7357
+        ],
+        "size": [
+          1.4736,
+          0.4259,
+          1.1678
+        ],
+        "radiusEstimate": 0.736782044172287,
+        "materials": [
+          "57_spring1"
+        ]
+      },
+      {
+        "name": "labels3_low_labels3_0",
+        "vertexCount": 8050,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.0428,
+          0
+        ],
+        "size": [
+          2.6649,
+          0.9199,
+          2.6649
+        ],
+        "radiusEstimate": 1.33243727684021,
+        "materials": [
+          "labels3"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65533,
+        "triangleCount": 0,
+        "center": [
+          -0.0298,
+          0.8486,
+          -0.7559
+        ],
+        "size": [
+          0.0907,
+          0.2253,
+          0.6938
+        ],
+        "radiusEstimate": 0.11263898015022278,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65533,
+        "triangleCount": 0,
+        "center": [
+          0.5861,
+          0.5832,
+          -0.4234
+        ],
+        "size": [
+          1.2937,
+          0.7586,
+          0.9975
+        ],
+        "radiusEstimate": 0.646826358512044,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65533,
+        "triangleCount": 0,
+        "center": [
+          0.9812,
+          0.8484,
+          -0.0376
+        ],
+        "size": [
+          1.1462,
+          0.2253,
+          0.1049
+        ],
+        "radiusEstimate": 0.5730841904878616,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65532,
+        "triangleCount": 0,
+        "center": [
+          -0.5795,
+          0.5832,
+          0.5456
+        ],
+        "size": [
+          1.3068,
+          0.7586,
+          1.1109
+        ],
+        "radiusEstimate": 0.6533916406333447,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65532,
+        "triangleCount": 0,
+        "center": [
+          -0.7559,
+          0.8488,
+          0.0298
+        ],
+        "size": [
+          0.6938,
+          0.2248,
+          0.0907
+        ],
+        "radiusEstimate": 0.34688474237918854,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0.2233,
+          0.4885,
+          1.6446
+        ],
+        "size": [
+          0.6042,
+          0.5692,
+          1.1868
+        ],
+        "radiusEstimate": 0.3020802475512028,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0.2844,
+          0.6233,
+          1.672
+        ],
+        "size": [
+          0.4834,
+          0.3048,
+          1.132
+        ],
+        "radiusEstimate": 0.24168210849165916,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0.3279,
+          0.6327,
+          2.0298
+        ],
+        "size": [
+          0.3911,
+          0.32,
+          0.4141
+        ],
+        "radiusEstimate": 0.19556713104248047,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0.1133,
+          0.764,
+          1.4537
+        ],
+        "size": [
+          0.1389,
+          0.0566,
+          0.871
+        ],
+        "radiusEstimate": 0.06944780610501766,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0.0305,
+          0.8485,
+          0.756
+        ],
+        "size": [
+          0.0921,
+          0.2255,
+          0.694
+        ],
+        "radiusEstimate": 0.1127597987651825,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -1.6446,
+          0.489,
+          0.2233
+        ],
+        "size": [
+          1.1868,
+          0.5683,
+          0.6042
+        ],
+        "radiusEstimate": 0.5934118032455444,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -1.1383,
+          0.6279,
+          -0.2906
+        ],
+        "size": [
+          2.1994,
+          0.2957,
+          1.6248
+        ],
+        "radiusEstimate": 1.099699093028903,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          1.6451,
+          0.5466,
+          -0.2233
+        ],
+        "size": [
+          1.1859,
+          0.4531,
+          0.6042
+        ],
+        "radiusEstimate": 0.5929550528526306,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          1.5337,
+          0.6525,
+          -0.2757
+        ],
+        "size": [
+          1.4064,
+          0.3633,
+          0.5006
+        ],
+        "radiusEstimate": 0.7031862139701843,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0.7555,
+          0.8513,
+          -0.0298
+        ],
+        "size": [
+          0.6947,
+          0.2224,
+          0.0907
+        ],
+        "radiusEstimate": 0.34735430777072906,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          1.7603,
+          0.7433,
+          -0.2202
+        ],
+        "size": [
+          0.8321,
+          0.0988,
+          0.3462
+        ],
+        "radiusEstimate": 0.41603368520736694,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          1.0726,
+          0.6278,
+          -0.9122
+        ],
+        "size": [
+          2.327,
+          0.2935,
+          1.2841
+        ],
+        "radiusEstimate": 1.1635036170482635,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -0.2204,
+          0.7433,
+          -1.7603
+        ],
+        "size": [
+          0.3466,
+          0.0988,
+          0.8321
+        ],
+        "radiusEstimate": 0.17331430688500404,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -0.2843,
+          0.6233,
+          -1.6714
+        ],
+        "size": [
+          0.4834,
+          0.3048,
+          1.131
+        ],
+        "radiusEstimate": 0.2416821289807558,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -0.2293,
+          0.6224,
+          -1.6634
+        ],
+        "size": [
+          0.5923,
+          0.3014,
+          1.1493
+        ],
+        "radiusEstimate": 0.2961595244705677,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -0.3529,
+          0.5832,
+          -0.5901
+        ],
+        "size": [
+          0.8633,
+          0.7586,
+          1.2856
+        ],
+        "radiusEstimate": 0.43165724724531174,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -1.1616,
+          0.8186,
+          0.058
+        ],
+        "size": [
+          0.7853,
+          0.1657,
+          0.0658
+        ],
+        "radiusEstimate": 0.3926667273044586,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          -1.8816,
+          0.6994,
+          0.2607
+        ],
+        "size": [
+          0.6922,
+          0.1867,
+          0.3965
+        ],
+        "radiusEstimate": 0.34608644247055054,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "hose1_low_hose1_0",
+        "vertexCount": 40559,
+        "triangleCount": 0,
+        "center": [
+          -1.6715,
+          0.6233,
+          0.2844
+        ],
+        "size": [
+          1.1309,
+          0.3048,
+          0.4833
+        ],
+        "radiusEstimate": 0.5654260516166687,
+        "materials": [
+          "hose1"
+        ]
+      },
+      {
+        "name": "vidat1_low_vidat1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3494,
+          -0.0005
+        ],
+        "size": [
+          3.8078,
+          0.6065,
+          3.8067
+        ],
+        "radiusEstimate": 1.9038793444633484,
+        "materials": [
+          "vidat1"
+        ]
+      },
+      {
+        "name": "vidat1_low_vidat1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.5968,
+          0
+        ],
+        "size": [
+          3.8081,
+          0.7674,
+          3.8081
+        ],
+        "radiusEstimate": 1.9040619134902954,
+        "materials": [
+          "vidat1"
+        ]
+      },
+      {
+        "name": "vidat1_low_vidat1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.3986,
+          0
+        ],
+        "size": [
+          3.9381,
+          0.5617,
+          3.9381
+        ],
+        "radiusEstimate": 1.9690258502960205,
+        "materials": [
+          "vidat1"
+        ]
+      },
+      {
+        "name": "vidat1_low_vidat1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          0.4938,
+          0
+        ],
+        "size": [
+          3.3737,
+          0.3713,
+          3.3737
+        ],
+        "radiusEstimate": 1.6868702173233032,
+        "materials": [
+          "vidat1"
+        ]
+      },
+      {
+        "name": "vidat1_low_vidat1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          -0.0523,
+          0
+        ],
+        "size": [
+          5.8679,
+          2.0655,
+          5.8679
+        ],
+        "radiusEstimate": 2.9339449405670166,
+        "materials": [
+          "vidat1"
+        ]
+      },
+      {
+        "name": "vidat1_low_vidat1_0",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          0,
+          -0.1614,
+          0
+        ],
+        "size": [
+          5.864,
+          1.8473,
+          5.864
+        ],
+        "radiusEstimate": 2.9320242404937744,
+        "materials": [
+          "vidat1"
+        ]
+      },
+      {
+        "name": "vidat1_low_vidat1_0",
+        "vertexCount": 45286,
+        "triangleCount": 0,
+        "center": [
+          0,
+          -0.1031,
+          0
+        ],
+        "size": [
+          4.0228,
+          1.9638,
+          4.0228
+        ],
+        "radiusEstimate": 2.0114212036132812,
+        "materials": [
+          "vidat1"
+        ]
+      }
+    ],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "template": "generic_model",
+    "confidence": 0.35,
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

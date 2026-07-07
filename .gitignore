@@ -4,6 +4,7 @@ dist
 .logs
 .data
 outputs
+*.glb
 .env
 .env.local
 coverage

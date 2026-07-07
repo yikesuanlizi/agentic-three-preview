@@ -1,4 +1,4 @@
-import { type ClipboardEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ClipboardEvent, type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   SandpackCodeEditor,
   SandpackLayout,
@@ -11,12 +11,14 @@ import { Bot, Camera, Code2, Grid3X3, History, ImagePlus, Plus, RotateCcw, Rotat
 import {
   ALLOWED_FILE_PATHS,
   type AllowedFilePath,
+  type AssetImportJob,
   type AppSettings,
   type FileMap,
   type ImageInput,
   type ModelConfig,
   type PatchEvent,
   type QualityInspectionResult,
+  type QualityReviewView,
   type RetrievalSearchResult,
   type RuntimeComposerConfig,
   type SceneDsl,
@@ -41,6 +43,100 @@ type RuntimeError = {
   source?: string;
 };
 
+type QualityHistoryEntry = {
+  round: number;
+  score?: number;
+  candidateScore?: number;
+  status?: QualityInspectionResult["status"];
+  modelUsed?: string;
+  selectedBest?: boolean;
+  runtimeError?: string;
+};
+
+type WorkflowBestRound = {
+  round: number;
+  score: number;
+  candidateScore?: number;
+  modelUsed?: string;
+};
+
+function modelNodeLabel(node: ModelConfig["node"]): string {
+  if (node === "review_agent") return "safety_review";
+  return node;
+}
+
+function modelNodeDescription(node: ModelConfig["node"]): string {
+  if (node === "coder_agent") return "代码生成 / 多模态建模";
+  if (node === "planner_agent") return "任务规划 / Skill 选择";
+  if (node === "review_agent") return "补丁安全审查";
+  if (node === "summary") return "对话摘要 / 记忆压缩";
+  return "默认兜底模型";
+}
+
+function visionReviewDescription(index: number): string {
+  return `第 ${index + 1} 顺位视觉质检`;
+}
+
+const QUALITY_REVIEW_VIEWS: QualityReviewView[] = ["front", "side", "top", "three_quarter"];
+
+function computeCandidateSelectionScore(result: QualityInspectionResult): number {
+  if (typeof result.candidateScore === "number") return result.candidateScore;
+  const scores = result.scores;
+  if (scores.renderHealth < 0.65) return Math.min(result.score, scores.renderHealth * 0.5);
+
+  const structuralScore = clamp01(
+    scores.geometry * 0.46 +
+      scores.referenceSimilarity * 0.24 +
+      scores.material * 0.2 +
+      scores.renderHealth * 0.1,
+  );
+  const hasNonVisionCriticalFailure = result.checks.some(
+    (check) => !check.pass && check.severity === "critical" && !isVisionReviewProcessFailure(check.item, check.note),
+  );
+  const criticalPenalty = hasNonVisionCriticalFailure ? 0.12 : 0;
+  const successfulVisionViews = result.viewResults.filter((view) => view.modelUsed && view.modelUsed !== "vision-error").length;
+  const allVisionFailedPenalty = result.viewResults.length > 0 && successfulVisionViews === 0 ? 0.08 : 0;
+
+  return clamp01(Math.max(result.score, structuralScore) - criticalPenalty - allVisionFailedPenalty);
+}
+
+function isVisionReviewProcessFailure(item: string, note?: string): boolean {
+  return /视觉质检失败|视觉对比|必须完成视觉|vision[-_ ]?error|模型.*json|模型.*返回|限速|rate/i.test(`${item}\n${note ?? ""}`);
+}
+
+function formatFeatureMatchScore(result: QualityInspectionResult): string {
+  if (!result.featureMatches.length) return "-";
+  const totalConfidence = result.featureMatches.reduce((sum, match) => sum + match.confidence, 0);
+  if (totalConfidence <= 0) return "-";
+  const score = result.featureMatches.reduce((sum, match) => {
+    const value = match.pass ? 1 : Math.max(0, 1 - match.distance);
+    return sum + value * match.confidence;
+  }, 0) / totalConfidence;
+  return score.toFixed(2);
+}
+
+function describePatchOperations(patch: PatchEvent): string {
+  const details = patch.operations.map((operation) => {
+    if (operation.type === "parameter_patch") {
+      const params = Object.entries(operation.parameters).map(([key, value]) => `${key}=${String(value)}`).join(", ");
+      return `参数微调${operation.targetFunction ? `(${operation.targetFunction})` : ""}: ${params || "无参数"}`;
+    }
+    if (operation.type === "replace_function") return `函数替换: ${operation.functionName}`;
+    return `文件替换: ${operation.path}`;
+  });
+  return details.length ? `\n补丁类型: ${details.join("；")}` : "";
+}
+
+function formatEmbeddingSimilarity(result: QualityInspectionResult): string {
+  if (result.scores.embeddingSimilarity > 0) return result.scores.embeddingSimilarity.toFixed(2);
+  const matched = result.embeddingMatches.find((match) => match.matched);
+  return matched ? ((matched.similarity + 1) / 2).toFixed(2) : "-";
+}
+
+function clamp01(value: number): number {
+  return Math.max(0, Math.min(1, value));
+}
+
 type MemorySession = {
   id: string;
   title: string;
@@ -62,12 +158,22 @@ type SkillCard = {
 type RagStatus = {
   ready: boolean;
   databaseUrl: string;
+  fallbackForced?: boolean;
+  lastError?: string;
 };
 
 type RagIngestResult = {
   ok: boolean;
   documentCount: number;
-  mode: "pgvector" | "fallback";
+  mode: "milvus" | "fallback";
+  message: string;
+};
+
+type KnowledgeClearResult = {
+  ok: boolean;
+  deletedFiles: number;
+  clearedTables: string[];
+  milvusDropped: boolean;
   message: string;
 };
 
@@ -97,12 +203,52 @@ type SessionState = {
   };
 };
 
+type RunRecord = {
+  runId: string;
+  sessionId: string;
+  status: "pending" | "running" | "success" | "error" | "interrupted" | string;
+  error?: string | null;
+  updatedAt?: string;
+};
+
+type RunEventRecord = {
+  id: number;
+  runId: string;
+  sessionId: string;
+  eventType: string;
+  content: string;
+  createdAt: string;
+};
+
+type WorkflowRunState = {
+  run: RunRecord;
+  events: RunEventRecord[];
+};
+
+type PendingWorkflowResume = {
+  runId: string;
+  userGoal: string;
+  scene: SceneDsl;
+  config: RuntimeComposerConfig;
+  referenceImages: ImageInput[];
+  patchGenerator: PatchEvent["generator"];
+};
+
 type PreviewView = "front" | "back" | "left" | "right" | "top" | "bottom";
 
 const apiUrl = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8787";
 const initialAssistantMessage = "准备好了。把你的 three.js 场景想法发给我。";
+const activeSessionStorageKey = "agentic-three:active-session-id";
 const maxInputImageEdge = 1600;
 const inputImageQuality = 0.86;
+
+function createInitialSessionId(): string {
+  try {
+    return window.localStorage.getItem(activeSessionStorageKey) || crypto.randomUUID();
+  } catch {
+    return crypto.randomUUID();
+  }
+}
 
 export default function App() {
   const files = useMemo(() => toSandpackFiles(defaultFiles), []);
@@ -133,7 +279,7 @@ export default function App() {
 function Workspace() {
   const { sandpack } = useSandpack();
   const isNarrowViewport = useIsNarrowViewport();
-  const [sessionId, setSessionId] = useState<string>(() => crypto.randomUUID());
+  const [sessionId, setSessionId] = useState<string>(() => createInitialSessionId());
   const [sessions, setSessions] = useState<MemorySession[]>([]);
   const [showHistory, setShowHistory] = useState(true);
   const [showCode, setShowCode] = useState(true);
@@ -144,10 +290,10 @@ function Workspace() {
   const [appSettings, setAppSettings] = useState<AppSettings | null>(null);
   const [skills, setSkills] = useState<SkillCard[]>([]);
   const [envStatus, setEnvStatus] = useState<Record<string, boolean>>({});
-  const [apiKeyDraft, setApiKeyDraft] = useState("");
   const [screenshotMode, setScreenshotMode] = useState<ScreenshotMode>("download");
   const [workflowConfig, setWorkflowConfig] = useState<RuntimeComposerConfig | null>(null);
   const [latestSceneDsl, setLatestSceneDsl] = useState<SceneDsl | null>(null);
+  const [latestPatchGenerator, setLatestPatchGenerator] = useState<PatchEvent["generator"] | null>(null);
   const [isQualityRunning, setIsQualityRunning] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -160,11 +306,29 @@ function Workspace() {
   const [images, setImages] = useState<ImageInput[]>([]);
   const [runtimeErrors, setRuntimeErrors] = useState<RuntimeError[]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [pendingWorkflowResume, setPendingWorkflowResume] = useState<PendingWorkflowResume | null>(null);
   const [past, setPast] = useState<FileMap[]>([]);
   const [future, setFuture] = useState<FileMap[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const runtimeErrorsRef = useRef<RuntimeError[]>([]);
+  const filesRef = useRef<FileMap>(defaultFiles);
+  const restoredSessionRef = useRef(false);
+  const restoredRunEventIdsRef = useRef<Set<number>>(new Set());
+  const [runEventPollingActive, setRunEventPollingActive] = useState(false);
 
-  const currentFiles = useCallback(() => extractSandpackFiles(sandpack.files), [sandpack.files]);
+  const currentFiles = useCallback(() => filesRef.current, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(activeSessionStorageKey, sessionId);
+    } catch {
+      // Best effort only: private browsing or locked storage should not break the app.
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    runtimeErrorsRef.current = runtimeErrors;
+  }, [runtimeErrors]);
 
   const refreshSessions = useCallback(async () => {
     const response = await fetch(`${apiUrl}/api/memory/sessions`);
@@ -216,6 +380,7 @@ function Workspace() {
 
   const applySnapshot = useCallback(
     (snapshot: FileMap) => {
+      filesRef.current = snapshot;
       for (const path of ALLOWED_FILE_PATHS) {
         sandpack.updateFile(`/${path}`, snapshot[path]);
       }
@@ -226,16 +391,31 @@ function Workspace() {
   const applyAgentPatch = useCallback(
     (patch: PatchEvent) => {
       const before = currentFiles();
-      const after = applyPatch(before, patch);
+      let after: FileMap;
+      try {
+        after = applyPatch(before, patch);
+      } catch (error) {
+        setMessages((items) => [
+          ...items,
+          {
+            id: crypto.randomUUID(),
+            role: "system",
+            content: `补丁未应用: ${error instanceof Error ? error.message : String(error)}。已保留当前代码。`,
+          },
+        ]);
+        throw error;
+      }
       setPast((items) => [...items, before].slice(-20));
       setFuture([]);
+      setRuntimeErrors([]);
+      runtimeErrorsRef.current = [];
       applySnapshot(after);
       setMessages((items) => [
         ...items,
         {
           id: crypto.randomUUID(),
           role: "system",
-          content: `已应用补丁: ${patch.summary}`,
+          content: `已应用补丁: ${patch.summary}${describePatchOperations(patch)}`,
         },
       ]);
     },
@@ -243,23 +423,19 @@ function Workspace() {
   );
 
   const undo = () => {
-    setPast((items) => {
-      const snapshot = items.at(-1);
-      if (!snapshot) return items;
-      setFuture((futureItems) => [currentFiles(), ...futureItems].slice(0, 20));
-      applySnapshot(snapshot);
-      return items.slice(0, -1);
-    });
+    const snapshot = past.at(-1);
+    if (!snapshot) return;
+    setFuture((items) => [currentFiles(), ...items].slice(0, 20));
+    setPast((items) => items.slice(0, -1));
+    applySnapshot(snapshot);
   };
 
   const redo = () => {
-    setFuture((items) => {
-      const snapshot = items[0];
-      if (!snapshot) return items;
-      setPast((pastItems) => [...pastItems, currentFiles()].slice(-20));
-      applySnapshot(snapshot);
-      return items.slice(1);
-    });
+    const snapshot = future[0];
+    if (!snapshot) return;
+    setPast((items) => [...items, currentFiles()].slice(-20));
+    setFuture((items) => items.slice(1));
+    applySnapshot(snapshot);
   };
 
   const startNewSession = () => {
@@ -271,6 +447,8 @@ function Workspace() {
     setPast([]);
     setFuture([]);
     setCurrentRunId(undefined);
+    restoredRunEventIdsRef.current = new Set();
+    setRunEventPollingActive(false);
     setLatestSceneDsl(null);
     setWorkflowConfig(null);
     applySnapshot(defaultFiles);
@@ -284,18 +462,58 @@ function Workspace() {
     if (!turnsResponse.ok) return;
     const data = (await turnsResponse.json()) as { turns: MemoryTurn[] };
     const state = stateResponse.ok ? ((await stateResponse.json()) as SessionState) : undefined;
+    const runState = state?.latestRun?.runId ? await fetchWorkflowRunState(state.latestRun.runId) : undefined;
+    const restoredEventMessages = runState?.events.length ? runEventsToChatMessages(runState.events) : [];
+    restoredRunEventIdsRef.current = new Set(runState?.events.map((event) => event.id) ?? []);
     setSessionId(targetSessionId);
-    setMessages(
-      data.turns.length
-        ? data.turns.map((turn) => ({
-            id: String(turn.id),
-            role: turn.role,
-            content: turn.content,
-          }))
-        : [{ id: crypto.randomUUID(), role: "assistant", content: initialAssistantMessage }],
-    );
+    const turnMessages = data.turns.length
+      ? data.turns.map((turn) => ({
+          id: String(turn.id),
+          role: turn.role,
+          content: turn.content,
+        }))
+      : [{ id: crypto.randomUUID(), role: "assistant" as const, content: initialAssistantMessage }];
+    setMessages([
+      ...turnMessages,
+      ...(restoredEventMessages.length
+        ? [
+            {
+              id: crypto.randomUUID(),
+              role: "system" as const,
+              content: `已恢复最近一次运行流程记录，共 ${restoredEventMessages.length} 条事件。刷新不会再把过程日志藏起来了。`,
+            },
+            ...restoredEventMessages,
+          ]
+        : []),
+    ]);
     if (state?.latestStableSnapshot?.files) {
       applySnapshot(state.latestStableSnapshot.files);
+    }
+    if (runState?.run.runId) {
+      setCurrentRunId(runState.run.runId);
+      setRunEventPollingActive(runState.run.status === "pending" || runState.run.status === "running");
+    }
+    const latestWorkflow = deriveLatestWorkflowState(runState?.events ?? []);
+    if (latestWorkflow.config) setWorkflowConfig(latestWorkflow.config);
+    if (latestWorkflow.scene) setLatestSceneDsl(latestWorkflow.scene);
+    if (runState && shouldResumeWorkflowAfterRefresh(runState) && latestWorkflow.scene && latestWorkflow.config) {
+      const referenceImages = await fetchRecentInputImages(targetSessionId);
+      setPendingWorkflowResume({
+        runId: runState.run.runId,
+        userGoal: latestWorkflow.userGoal,
+        scene: latestWorkflow.scene,
+        config: latestWorkflow.config,
+        referenceImages,
+        patchGenerator: latestWorkflow.patchGenerator,
+      });
+      setMessages((items) => [
+        ...items,
+        {
+          id: crypto.randomUUID(),
+          role: "system",
+          content: `检测到刷新前质检闭环尚未最终保存，已准备从 run ${runState.run.runId.slice(0, 8)} 继续。参考图 ${referenceImages.length} 张。`,
+        },
+      ]);
     }
     const failedRun = state?.latestRun?.status === "error" ? state.latestRun : undefined;
     if (failedRun) {
@@ -309,6 +527,53 @@ function Workspace() {
       ]);
     }
   };
+
+  useEffect(() => {
+    if (restoredSessionRef.current) return;
+    restoredSessionRef.current = true;
+    void loadSession(sessionId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!currentRunId || !runEventPollingActive) return;
+    let cancelled = false;
+    const poll = async () => {
+      try {
+        const runState = await fetchWorkflowRunState(currentRunId);
+        if (!runState || cancelled) return;
+        const nextEvents = runState.events.filter((event) => !restoredRunEventIdsRef.current.has(event.id));
+        if (nextEvents.length) {
+          nextEvents.forEach((event) => restoredRunEventIdsRef.current.add(event.id));
+          setMessages((items) => [...items, ...runEventsToChatMessages(nextEvents)]);
+          const latestWorkflow = deriveLatestWorkflowState(nextEvents);
+          if (latestWorkflow.config) setWorkflowConfig(latestWorkflow.config);
+          if (latestWorkflow.scene) setLatestSceneDsl(latestWorkflow.scene);
+        }
+        if (runState.run.status !== "pending" && runState.run.status !== "running") {
+          setRunEventPollingActive(false);
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setMessages((items) => [
+            ...items,
+            {
+              id: crypto.randomUUID(),
+              role: "system",
+              content: `恢复运行日志轮询失败: ${error instanceof Error ? error.message : String(error)}`,
+            },
+          ]);
+          setRunEventPollingActive(false);
+        }
+      }
+    };
+    const id = window.setInterval(() => void poll(), 1800);
+    void poll();
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [currentRunId, runEventPollingActive]);
 
   const postPreviewCommand = useCallback((payload: Record<string, unknown>) => {
     const iframe = document.querySelector<HTMLIFrameElement>('iframe[title="Sandpack Preview"]');
@@ -392,31 +657,179 @@ function Workspace() {
       runId?: string;
       referenceImages: ImageInput[];
       runtimeErrors: RuntimeError[];
+      patchGenerator: PatchEvent["generator"];
     }) => {
       if (!options.config.enabled || !options.config.autoCaptureAfterPatch) return;
+      const allowDslRevision = options.patchGenerator === "runtime_composer";
+      const visualReferenceMinScore = options.referenceImages.length && !allowDslRevision
+        ? Math.max(options.config.minQualityScore, 0.88)
+        : options.config.minQualityScore;
       setIsQualityRunning(true);
       let currentScene = options.scene;
-      let best: { round: number; score: number; path: string; result: QualityInspectionResult; files: FileMap } | undefined;
+      let noImprovementRounds = 0;
+      let runtimeRepairRounds = 0;
+      const qualityHistory: QualityHistoryEntry[] = [];
+      let best:
+        | {
+            round: number;
+            score: number;
+            selectionScore: number;
+            path: string;
+            screenshotPaths: Record<string, string>;
+            result: QualityInspectionResult;
+            files: FileMap;
+            scene: SceneDsl;
+          }
+        | undefined;
       setMessages((items) => [
         ...items,
         {
           id: crypto.randomUUID(),
           role: "system",
-          content: `已进入 Runtime Composer 多轮质检，最多 ${options.config.maxRevisionRounds} 轮。`,
+          content: allowDslRevision
+            ? `已进入 Runtime Composer 多轮质检，最多 ${options.config.maxRevisionRounds} 轮。`
+            : `已进入 LLM coder 视觉闭环，最多 ${options.config.maxRevisionRounds} 轮：截图、视觉检查，并由 coder 修正代码，不再用 Runtime Composer 覆盖代码。`,
         },
       ]);
       try {
-        for (let round = 1; round <= options.config.maxRevisionRounds; round += 1) {
+        let round = 1;
+        while (round <= options.config.maxRevisionRounds) {
           await delay(options.config.captureDelayMs);
-          const screenshotDataUrl = await requestPreviewCapture(postPreviewCommand);
-          const nonBlankRatio = await estimateNonBlankPixelRatio(screenshotDataUrl);
-          const screenshot = await saveWorkflowScreenshot({
+          const preCaptureErrors = runtimeErrorsRef.current;
+          if (!allowDslRevision && preCaptureErrors.length) {
+            const bestSnapshotForRepair = best;
+            const repairBaseFiles = bestSnapshotForRepair && runtimeRepairRounds > 0 ? bestSnapshotForRepair.files : currentFiles();
+            if (runtimeRepairRounds >= 3) {
+              if (bestSnapshotForRepair) applySnapshot(bestSnapshotForRepair.files);
+              throw new Error("连续运行错误修复仍未稳定，已停止当前闭环，避免继续消耗视觉轮数。");
+            }
+            if (bestSnapshotForRepair && runtimeRepairRounds > 0) {
+              applySnapshot(bestSnapshotForRepair.files);
+              setMessages((items) => [
+                ...items,
+                {
+                  id: crypto.randomUUID(),
+                  role: "system",
+                  content: `连续运行错误修复未稳定，已先回滚到第 ${bestSnapshotForRepair.round} 轮可截图版本，再尝试最小运行错误修复。`,
+                },
+              ]);
+            }
+            runtimeRepairRounds += 1;
+            const repaired = await repairRuntimeErrorBeforeCapture({
+              sessionId,
+              round,
+              runId: options.runId,
+              userGoal: options.userGoal,
+              files: repairBaseFiles,
+              referenceImages: options.referenceImages,
+              runtimeErrors: preCaptureErrors,
+              qualityHistory,
+              bestRound: bestSnapshotForRepair
+                ? {
+                    round: bestSnapshotForRepair.round,
+                    score: bestSnapshotForRepair.score,
+                    candidateScore: bestSnapshotForRepair.selectionScore,
+                    modelUsed: bestSnapshotForRepair.result.modelUsed,
+                  }
+                : undefined,
+              repairAttempt: runtimeRepairRounds,
+              dualCoderRequested: runtimeRepairRounds >= 2,
+              dualCoderReason: runtimeRepairRounds >= 2 ? `连续 ${runtimeRepairRounds} 次运行错误修复仍未稳定，启用双 coder 会诊` : "",
+              applyAgentPatch,
+              setLatestPatchGenerator,
+              setMessages,
+            });
+            if (repaired) continue;
+            throw new Error("运行错误修复失败，已停止本轮闭环，避免继续用坏代码截图。");
+          }
+          let screenshots: Awaited<ReturnType<typeof captureWorkflowScreenshots>>;
+          try {
+            screenshots = await captureWorkflowScreenshots({
+              sessionId,
+              runId: options.runId,
+              round,
+              postPreviewCommand,
+            });
+          } catch (captureError) {
+            const latestRuntimeErrors = runtimeErrorsRef.current.length ? runtimeErrorsRef.current : options.runtimeErrors;
+            const roundFiles = currentFiles();
+            const syntheticQuality = buildRenderFailureQuality(captureError, latestRuntimeErrors);
+            setMessages((items) => [
+              ...items,
+              {
+                id: crypto.randomUUID(),
+                role: "system",
+                content: `第 ${round} 轮截图失败，转入 coder 运行错误修复: ${captureError instanceof Error ? captureError.message : String(captureError)}。${latestRuntimeErrors[0]?.message ? `最近运行错误: ${latestRuntimeErrors[0].message}` : ""}`,
+              },
+            ]);
+            if (allowDslRevision) throw captureError;
+            if (runtimeRepairRounds >= 3) {
+              if (best) applySnapshot(best.files);
+              throw new Error("截图失败修复连续未稳定，已回滚 best 并停止，避免继续用坏代码截图。");
+            }
+            runtimeRepairRounds += 1;
+            const coderRevisionResponse = await fetch(`${apiUrl}/api/coder/revise`, {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                sessionId,
+                runId: options.runId,
+                round,
+                userGoal: options.userGoal,
+                files: roundFiles,
+                quality: syntheticQuality,
+                referenceImages: options.referenceImages,
+                screenshots: [],
+                runtimeErrors: latestRuntimeErrors.length
+                  ? latestRuntimeErrors
+                  : [{ message: captureError instanceof Error ? captureError.message : String(captureError), source: "capture" }],
+                qualityHistory,
+                bestRound: best
+                  ? {
+                      round: best.round,
+                      score: best.score,
+                      candidateScore: best.selectionScore,
+                      modelUsed: best.result.modelUsed,
+                    }
+                  : undefined,
+                repairAttempt: runtimeRepairRounds,
+                dualCoderRequested: runtimeRepairRounds >= 2,
+                dualCoderReason: runtimeRepairRounds >= 2 ? `连续 ${runtimeRepairRounds} 次截图/运行错误修复仍未稳定，启用双 coder 会诊` : "",
+              }),
+            });
+            if (!coderRevisionResponse.ok) throw new Error(`截图失败后的 coder 修复请求失败: ${coderRevisionResponse.status}`);
+            const revisionData = (await coderRevisionResponse.json()) as {
+              patch: PatchEvent;
+              modelUsed?: string;
+              fallbackReason?: string;
+              dualCoderUsed?: boolean;
+              discussionModels?: string[];
+              discussionSummary?: string;
+            };
+            applyAgentPatch(revisionData.patch);
+            setLatestPatchGenerator("llm_coder");
+            setMessages((items) => [
+              ...items,
+              {
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content: `${revisionData.dualCoderUsed ? `双 coder 已启用: ${(revisionData.discussionModels ?? []).join(" + ") || "GLM + Doubao"}。${revisionData.discussionSummary ?? ""}\n` : ""}已根据运行错误调用 LLM coder 修复代码。模型: ${revisionData.modelUsed ?? "unknown"}。${revisionData.patch.summary}`,
+              },
+            ]);
+            continue;
+          }
+          const nonBlankRatios = await Promise.all(screenshots.map((screenshot) => estimateNonBlankPixelRatio(screenshot.dataUrl)));
+          const nonBlankRatio = Math.min(...nonBlankRatios);
+          const screenshotPaths = Object.fromEntries(screenshots.map((screenshot) => [screenshot.view, screenshot.path]));
+          const primaryScreenshot = screenshots.find((screenshot) => screenshot.view === "front") ?? screenshots[0]!;
+          const screenshot = {
             sessionId,
             runId: options.runId,
-            dataUrl: screenshotDataUrl,
             view: `workflow-round-${round}`,
-          });
-          const inspectionResponse = await fetch(`${apiUrl}/api/quality/inspect`, {
+            path: primaryScreenshot.path,
+          };
+          const roundFiles = currentFiles();
+          const inspectionResponse = await fetch(`${apiUrl}/api/workflow/review-rounds`, {
             method: "POST",
             headers: { "content-type": "application/json" },
             body: JSON.stringify({
@@ -424,16 +837,37 @@ function Workspace() {
               runId: options.runId,
               round,
               userGoal: options.userGoal,
+              files: roundFiles,
               referenceImages: options.referenceImages,
-              screenshotDataUrl,
+              screenshots: screenshots.map(({ view, dataUrl, path }) => ({ view, dataUrl, path })),
               scene: currentScene,
-              runtimeErrors: options.runtimeErrors,
+              runtimeErrors: runtimeErrorsRef.current.length ? runtimeErrorsRef.current : options.runtimeErrors,
+              patchGenerator: options.patchGenerator,
+              maxRevisionRounds: options.config.maxRevisionRounds,
+              qualityHistory,
+              bestRound: best
+                ? {
+                    round: best.round,
+                    score: best.score,
+                    candidateScore: best.selectionScore,
+                    modelUsed: best.result.modelUsed,
+                  }
+                : undefined,
             }),
           });
-          if (!inspectionResponse.ok) throw new Error(`质检请求失败: ${inspectionResponse.status}`);
-          const inspectionData = (await inspectionResponse.json()) as { result: QualityInspectionResult };
-          let result = inspectionData.result;
-          const roundFiles = currentFiles();
+          if (!inspectionResponse.ok) throw new Error(`质检闭环请求失败: ${inspectionResponse.status}`);
+          const inspectionData = (await inspectionResponse.json()) as {
+            decision: "pass" | "continue" | "ask_user" | "fallback" | "max_rounds";
+            quality: QualityInspectionResult;
+            patch?: PatchEvent;
+            modelUsed?: string;
+            fallbackReason?: string;
+            message?: string;
+            dualCoderUsed?: boolean;
+            discussionModels?: string[];
+            discussionSummary?: string;
+          };
+          let result = inspectionData.quality;
           if (nonBlankRatio < options.config.nonBlankPixelThreshold) {
             result = {
               ...result,
@@ -443,9 +877,37 @@ function Workspace() {
               revisionHints: ["放大主体并确保 renderer 已完成首帧渲染。", ...result.revisionHints],
             };
           }
-          if (!best || result.score > best.score) {
-            best = { round, score: result.score, path: screenshot.path, result, files: roundFiles };
+          if (!allowDslRevision && options.referenceImages.length && result.status === "pass" && result.score < visualReferenceMinScore) {
+            result = {
+              ...result,
+              status: "revise",
+              issues: [
+                `参考图驱动的 LLM coder 结果需要更严格阈值 ${visualReferenceMinScore.toFixed(2)}，当前 ${result.score.toFixed(2)} 不能直接通过。`,
+                ...result.issues,
+              ],
+              revisionHints: [
+                "继续让 coder 对比参考图和当前截图，细化关键几何细节，而不是直接结束质检。",
+                ...result.revisionHints,
+              ],
+            };
           }
+          const selectionScore = computeCandidateSelectionScore(result);
+          const improved = !best || result.score > best.score + 0.02 || selectionScore > best.selectionScore + 0.005;
+          if (improved) {
+            best = { round, score: result.score, selectionScore, path: screenshot.path, screenshotPaths, result, files: roundFiles, scene: currentScene };
+            noImprovementRounds = 0;
+            runtimeRepairRounds = 0;
+          } else {
+            noImprovementRounds += 1;
+          }
+          qualityHistory.push({
+            round,
+            score: result.score,
+            candidateScore: selectionScore,
+            status: result.status,
+            modelUsed: result.modelUsed,
+            selectedBest: improved,
+          });
           await fetch(`${apiUrl}/api/workflow/revision-event`, {
             method: "POST",
             headers: { "content-type": "application/json" },
@@ -454,10 +916,23 @@ function Workspace() {
               runId: options.runId,
               round,
               screenshotPath: screenshot.path,
+              screenshotPaths,
               score: result.score,
+              candidateScore: selectionScore,
+              matchedReferenceView: result.matchedReferenceView,
               status: result.status,
               issues: result.issues,
-              selectedBest: result.status === "pass",
+              scores: result.scores,
+              checks: result.checks,
+              viewResults: result.viewResults,
+              featureMatches: result.featureMatches,
+              embeddingMatches: result.embeddingMatches,
+              structuredIssues: result.structuredIssues,
+              modelUsed: result.modelUsed,
+              selectedBest: improved,
+              dualCoderUsed: inspectionData.dualCoderUsed ?? false,
+              discussionModels: inspectionData.discussionModels ?? [],
+              discussionSummary: inspectionData.discussionSummary ?? "",
             }),
           });
           setMessages((items) => [
@@ -465,10 +940,20 @@ function Workspace() {
             {
               id: crypto.randomUUID(),
               role: "system",
-              content: `第 ${round} 轮质检: ${result.status}，分数 ${result.score.toFixed(2)}。${result.issues.length ? `问题: ${result.issues.join("；")}` : "未发现主要问题。"} 截图: ${screenshot.path}`,
+              content: `第 ${round} 轮质检: ${result.status}/${inspectionData.decision}，overall ${result.score.toFixed(2)}，candidate ${selectionScore.toFixed(2)}，matchedView ${result.matchedReferenceView ?? "-"}，embeddingSim ${formatEmbeddingSimilarity(result)}，featureMatch ${formatFeatureMatchScore(result)}，geometry ${result.scores.geometry.toFixed(2)}，similarity ${result.scores.referenceSimilarity.toFixed(2)}，view ${result.scores.viewMatch.toFixed(2)}，material ${result.scores.material.toFixed(2)}，health ${result.scores.renderHealth.toFixed(2)}。模型: ${result.modelUsed ?? "unknown"}。失败项: ${result.checks.filter((check) => !check.pass).slice(0, 5).map((check) => `${check.view ?? "-"}:${check.item}`).join("；") || "无"}。截图: ${screenshot.path}`,
             },
           ]);
-          if (result.status === "pass") {
+          if (inspectionData.dualCoderUsed) {
+            setMessages((items) => [
+              ...items,
+              {
+                id: crypto.randomUUID(),
+                role: "system",
+                content: `双 coder 已启用: ${(inspectionData.discussionModels ?? []).join(" + ") || "GLM + Doubao"}。${inspectionData.discussionSummary ?? ""}`,
+              },
+            ]);
+          }
+          if (inspectionData.decision === "pass") {
             await finalizeWorkflowSnapshot({
               sessionId,
               runId: options.runId,
@@ -477,6 +962,9 @@ function Workspace() {
               round,
               score: result.score,
               screenshotPath: screenshot.path,
+              screenshotPaths,
+              userGoal: options.userGoal,
+              scene: currentScene,
             });
             setMessages((items) => [
               ...items,
@@ -484,16 +972,57 @@ function Workspace() {
             ]);
             return;
           }
-          if (result.status === "ask_user" || result.status === "fallback") {
+          if (inspectionData.decision === "ask_user" || inspectionData.decision === "fallback") {
             setMessages((items) => [
               ...items,
               {
                 id: crypto.randomUUID(),
                 role: "assistant",
-                content: result.bestEffortReason || "质检认为需要人工确认，自动修订已停止。",
+                content: inspectionData.message || result.bestEffortReason || "质检认为需要人工确认，自动修订已停止。",
               },
             ]);
             return;
+          }
+          if (!allowDslRevision && best && noImprovementRounds >= 4) {
+            const bestSnapshot = best;
+            applySnapshot(bestSnapshot.files);
+            setMessages((items) => [
+              ...items,
+              {
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content: `连续 ${noImprovementRounds} 个有效质检轮候选质量没有提升，已停止继续改坏代码，并恢复到第 ${bestSnapshot.round} 轮最好结果，overall ${bestSnapshot.score.toFixed(2)}，candidate ${bestSnapshot.selectionScore.toFixed(2)}。`,
+              },
+            ]);
+            break;
+          }
+          if (!allowDslRevision) {
+            if (inspectionData.decision === "max_rounds") break;
+            if (!inspectionData.patch) {
+              setMessages((items) => [
+                ...items,
+                {
+                  id: crypto.randomUUID(),
+                  role: "system",
+                  content: `LLM coder 第 ${round} 轮没有可应用修正 patch。${inspectionData.message || "保留当前模型继续下一轮截图。"} 当前代码未改变，下一轮仍会产出截图用于比较。`,
+                },
+              ]);
+              round += 1;
+              continue;
+            }
+            const nextPatch = inspectionData.patch;
+            applyAgentPatch(nextPatch);
+            setLatestPatchGenerator("llm_coder");
+            setMessages((items) => [
+              ...items,
+              {
+                id: crypto.randomUUID(),
+                role: "assistant",
+                content: `已由后端闭环调用 LLM coder 根据第 ${round} 轮质检继续修正代码。模型: ${inspectionData.modelUsed ?? "unknown"}。${nextPatch.summary}`,
+              },
+            ]);
+            round += 1;
+            continue;
           }
           if (round >= options.config.maxRevisionRounds) break;
           const revisionResponse = await fetch(`${apiUrl}/api/scene/revise`, {
@@ -520,6 +1049,7 @@ function Workspace() {
           const patch: PatchEvent = {
             type: "patch",
             summary: `${revisionData.result.summary} ${renderData.summary}`,
+            generator: "runtime_composer",
             operations: (["src/App.tsx", "src/styles.css"] as const).map((path) => ({
               type: "replace_file",
               path,
@@ -527,6 +1057,7 @@ function Workspace() {
             })),
           };
           applyAgentPatch(patch);
+          round += 1;
         }
         if (best) {
           const bestResult = best;
@@ -538,8 +1069,11 @@ function Workspace() {
             files: bestResult.files,
             round: bestResult.round,
             score: bestResult.score,
-            screenshotPath: bestResult.path,
-          });
+              screenshotPath: bestResult.path,
+              screenshotPaths: bestResult.screenshotPaths,
+              userGoal: options.userGoal,
+              scene: bestResult.scene,
+            });
           await fetch(`${apiUrl}/api/workflow/revision-event`, {
             method: "POST",
             headers: { "content-type": "application/json" },
@@ -548,9 +1082,19 @@ function Workspace() {
               runId: options.runId,
               round: bestResult.round,
               screenshotPath: bestResult.path,
+              screenshotPaths: bestResult.screenshotPaths,
               score: bestResult.score,
+              candidateScore: bestResult.selectionScore,
+              matchedReferenceView: bestResult.result.matchedReferenceView,
               status: bestResult.result.status,
               issues: bestResult.result.issues,
+              scores: bestResult.result.scores,
+              checks: bestResult.result.checks,
+              viewResults: bestResult.result.viewResults,
+              featureMatches: bestResult.result.featureMatches,
+              embeddingMatches: bestResult.result.embeddingMatches,
+              structuredIssues: bestResult.result.structuredIssues,
+              modelUsed: bestResult.result.modelUsed,
               selectedBest: true,
             }),
           });
@@ -578,6 +1122,38 @@ function Workspace() {
     },
     [applyAgentPatch, applySnapshot, currentFiles, postPreviewCommand, sessionId],
   );
+
+  useEffect(() => {
+    if (!pendingWorkflowResume || isRunning || isQualityRunning) return;
+    const resume = pendingWorkflowResume;
+    setPendingWorkflowResume(null);
+    setMessages((items) => [
+      ...items,
+      {
+        id: crypto.randomUUID(),
+        role: "system",
+        content: "正在恢复刷新前中断的质检闭环；这次会继续截图、review 和保存过程事件。",
+      },
+    ]);
+    void runQualityWorkflow({
+      scene: resume.scene,
+      config: resume.config,
+      userGoal: resume.userGoal,
+      runId: resume.runId,
+      referenceImages: resume.referenceImages,
+      runtimeErrors: [],
+      patchGenerator: resume.patchGenerator,
+    }).catch((error) => {
+      setMessages((items) => [
+        ...items,
+        {
+          id: crypto.randomUUID(),
+          role: "system",
+          content: `恢复质检闭环失败: ${error instanceof Error ? error.message : String(error)}`,
+        },
+      ]);
+    });
+  }, [isQualityRunning, isRunning, pendingWorkflowResume, runQualityWorkflow]);
 
   const submit = async () => {
     const message = input.trim();
@@ -628,11 +1204,16 @@ function Workspace() {
       let configForWorkflow: RuntimeComposerConfig | null = appSettings?.runtimeComposer ?? null;
       let runIdForWorkflow: string | undefined = currentRunId;
       let patchApplied = false;
+      let patchGenerator: PatchEvent["generator"] = "llm_coder";
       for await (const event of readNdjson(response.body)) {
         if (event.type === "run_id") runIdForWorkflow = event.runId;
         if (event.type === "workflow_config") configForWorkflow = event.config;
         if (event.type === "scene_dsl") sceneForWorkflow = event.scene;
-        if (event.type === "patch") patchApplied = true;
+        if (event.type === "patch") {
+          patchApplied = true;
+          patchGenerator = event.generator;
+          setLatestPatchGenerator(event.generator);
+        }
         handleStreamEvent(event, applyAgentPatch, setMessages, setCurrentRunId, setWorkflowConfig, setLatestSceneDsl);
       }
       if (patchApplied && sceneForWorkflow && configForWorkflow?.autoCaptureAfterPatch) {
@@ -643,6 +1224,7 @@ function Workspace() {
           runId: runIdForWorkflow,
           referenceImages,
           runtimeErrors,
+          patchGenerator,
         });
       }
       setImages([]);
@@ -777,8 +1359,10 @@ function Workspace() {
                 <span>
                   {isQualityRunning
                     ? "正在自动截图质检"
-                    : workflowConfig?.enabled
-                      ? `已启用，多轮上限 ${workflowConfig.maxRevisionRounds}`
+                    : latestPatchGenerator === "llm_coder"
+                      ? `LLM coder 质检闭环，多轮上限 ${workflowConfig?.maxRevisionRounds ?? "-"}`
+                      : workflowConfig?.enabled
+                        ? `Runtime Composer 已启用，多轮上限 ${workflowConfig.maxRevisionRounds}`
                       : "未启用"}
                   {latestSceneDsl ? `；DSL: ${latestSceneDsl.sceneType} / ${latestSceneDsl.renderStyle}` : ""}
                 </span>
@@ -863,8 +1447,6 @@ function Workspace() {
           settings={appSettings}
           skills={skills}
           envStatus={envStatus}
-          apiKeyDraft={apiKeyDraft}
-          onApiKeyDraftChange={setApiKeyDraft}
           onClose={() => setSettingsOpen(false)}
           onChange={setAppSettings}
           onSkillsRefresh={refreshSkills}
@@ -874,14 +1456,12 @@ function Workspace() {
               headers: { "content-type": "application/json" },
               body: JSON.stringify({
                 settings: { ...appSettings, screenshotMode },
-                secrets: apiKeyDraft ? { GITEE_API_KEY: apiKeyDraft } : {},
               }),
             });
             if (!response.ok) throw new Error(`设置保存失败: ${response.status}`);
             const data = (await response.json()) as { settings: AppSettings; env: Record<string, boolean> };
             setAppSettings(data.settings);
             setEnvStatus(data.env);
-            setApiKeyDraft("");
             setSettingsOpen(false);
           }}
         />
@@ -952,8 +1532,6 @@ function SettingsDialog({
   settings,
   skills,
   envStatus,
-  apiKeyDraft,
-  onApiKeyDraftChange,
   onChange,
   onSkillsRefresh,
   onClose,
@@ -962,8 +1540,6 @@ function SettingsDialog({
   settings: AppSettings;
   skills: SkillCard[];
   envStatus: Record<string, boolean>;
-  apiKeyDraft: string;
-  onApiKeyDraftChange: (value: string) => void;
   onChange: (settings: AppSettings) => void;
   onSkillsRefresh: () => Promise<void>;
   onClose: () => void;
@@ -979,22 +1555,48 @@ function SettingsDialog({
   const [skillUrl, setSkillUrl] = useState("https://github.com/CloudAI-X/threejs-skills/tree/main");
   const [ragStatus, setRagStatus] = useState<RagStatus | null>(null);
   const [ragQuery, setRagQuery] = useState("发动机 正面 黑线白图 六视图");
+  const [ragSearchScope, setRagSearchScope] = useState<"imported" | "all">("imported");
   const [ragResults, setRagResults] = useState<RetrievalSearchResult[]>([]);
-  const [ragMode, setRagMode] = useState<"pgvector" | "fallback" | "">("");
+  const [ragMode, setRagMode] = useState<"milvus" | "fallback" | "">("");
   const [ragSource, setRagSource] = useState<RagSourceResult | null>(null);
   const [ragMessage, setRagMessage] = useState("");
   const [ragBusy, setRagBusy] = useState(false);
+  const [ragBusyAction, setRagBusyAction] = useState<"status" | "ingest" | "clear" | "search" | "source" | "">("");
+  const [assetImportJob, setAssetImportJob] = useState<AssetImportJob | null>(null);
+  const [assetImportMessage, setAssetImportMessage] = useState("");
   const updateModel = (index: number, patch: Partial<ModelConfig>) => {
     onChange({
       ...settings,
       models: settings.models.map((model, modelIndex) => (modelIndex === index ? { ...model, ...patch } : model)),
     });
   };
+  const updateVisionReviewModel = (index: number, patch: Partial<AppSettings["visionReview"]["models"][number]>) => {
+    onChange({
+      ...settings,
+      visionReview: {
+        ...settings.visionReview,
+        models: settings.visionReview.models.map((model, modelIndex) => (modelIndex === index ? { ...model, ...patch } : model)),
+      },
+    });
+  };
+  const requiredEnvNames = Array.from(new Set([
+    ...settings.models.map((model) => model.apiKeyEnvName),
+    ...settings.visionReview.models.map((model) => model.apiKeyEnvName),
+  ])).sort();
   const updateRuntimeComposer = (patch: Partial<RuntimeComposerConfig>) => {
     onChange({
       ...settings,
       runtimeComposer: {
         ...settings.runtimeComposer,
+        ...patch,
+      },
+    });
+  };
+  const updateAssetImport = (patch: Partial<AppSettings["assetImport"]>) => {
+    onChange({
+      ...settings,
+      assetImport: {
+        ...settings.assetImport,
         ...patch,
       },
     });
@@ -1052,44 +1654,92 @@ function SettingsDialog({
     await onSkillsRefresh();
   };
   const refreshRagStatus = async () => {
+    setRagBusy(true);
+    setRagBusyAction("status");
     const response = await fetch(`${apiUrl}/api/rag/status`);
-    if (!response.ok) throw new Error(`RAG 状态读取失败: ${response.status}`);
-    setRagStatus((await response.json()) as RagStatus);
+    try {
+      if (!response.ok) throw new Error(`RAG 状态读取失败: ${response.status}`);
+      setRagStatus((await response.json()) as RagStatus);
+    } finally {
+      setRagBusy(false);
+      setRagBusyAction("");
+    }
   };
   const ingestRag = async () => {
     setRagBusy(true);
-    setRagMessage("正在入库资产元数据和六视图说明...");
+    setRagBusyAction("ingest");
+    setRagMessage("正在重建基础 RAG 索引...");
     try {
-      const response = await fetch(`${apiUrl}/api/rag/ingest`, { method: "POST" });
+      const response = await fetch(`${apiUrl}/api/rag/ingest`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: "{}",
+      });
       if (!response.ok) throw new Error(`RAG 入库失败: ${response.status}`);
       const data = (await response.json()) as { result: RagIngestResult };
       setRagMessage(`${data.result.mode}: ${data.result.documentCount} 条。${data.result.message}`);
       await refreshRagStatus();
     } finally {
       setRagBusy(false);
+      setRagBusyAction("");
+    }
+  };
+  const clearKnowledge = async () => {
+    const confirmed = window.confirm(
+      `将清除知识库测试数据：\n\n- 导入目录: ${settings.assetImport.uploadDirectory}\n- SQLite 导入记录/视觉记忆/场景状态\n- Milvus RAG collection\n\n不会删除来源目录。确认继续？`,
+    );
+    if (!confirmed) return;
+    setRagBusy(true);
+    setRagBusyAction("clear");
+    setRagMessage("正在清除知识库...");
+    try {
+      const response = await fetch(`${apiUrl}/api/rag/clear`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          uploadDirectory: settings.assetImport.uploadDirectory,
+          clearImportedFiles: true,
+          clearMilvus: true,
+          clearSqlite: true,
+        }),
+      });
+      if (!response.ok) throw new Error(`清除知识库失败: ${response.status}`);
+      const data = (await response.json()) as { result: KnowledgeClearResult };
+      setRagResults([]);
+      setRagSource(null);
+      setAssetImportJob(null);
+      setAssetImportMessage("");
+      setRagMessage(data.result.message);
+      await refreshRagStatus();
+    } finally {
+      setRagBusy(false);
+      setRagBusyAction("");
     }
   };
   const searchRag = async () => {
     setRagBusy(true);
+    setRagBusyAction("search");
     setRagSource(null);
     setRagMessage("正在检索 RAG...");
     try {
       const response = await fetch(`${apiUrl}/api/rag/search`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ query: ragQuery, topK: 6 }),
+        body: JSON.stringify({ query: ragQuery, topK: 6, scope: ragSearchScope }),
       });
       if (!response.ok) throw new Error(`RAG 检索失败: ${response.status}`);
-      const data = (await response.json()) as { results: RetrievalSearchResult[]; mode: "pgvector" | "fallback" };
+      const data = (await response.json()) as { results: RetrievalSearchResult[]; mode: "milvus" | "fallback" };
       setRagResults(data.results);
       setRagMode(data.mode);
-      setRagMessage(`${data.mode}: 命中 ${data.results.length} 条。`);
+      setRagMessage(`${data.mode}: ${ragSearchScope === "imported" ? "导入/生成知识" : "全部知识"}命中 ${data.results.length} 条。`);
     } finally {
       setRagBusy(false);
+      setRagBusyAction("");
     }
   };
   const resolveRagSource = async (result: RetrievalSearchResult) => {
     setRagBusy(true);
+    setRagBusyAction("source");
     try {
       const response = await fetch(`${apiUrl}/api/rag/source`, {
         method: "POST",
@@ -1100,6 +1750,45 @@ function SettingsDialog({
       setRagSource((await response.json()) as RagSourceResult);
     } finally {
       setRagBusy(false);
+      setRagBusyAction("");
+    }
+  };
+  const refreshActiveImportJob = async () => {
+    const response = await fetch(`${apiUrl}/api/assets/import-jobs/active`);
+    if (!response.ok) throw new Error(`导入任务状态读取失败: ${response.status}`);
+    const data = (await response.json()) as { job: AssetImportJob | null };
+    setAssetImportJob(data.job);
+    return data.job;
+  };
+  const refreshImportJob = async (jobId: string) => {
+    const response = await fetch(`${apiUrl}/api/assets/import-jobs/${encodeURIComponent(jobId)}`);
+    if (!response.ok) throw new Error(`导入任务状态读取失败: ${response.status}`);
+    const data = (await response.json()) as { job: AssetImportJob };
+    setAssetImportJob(data.job);
+    return data.job;
+  };
+  const startImportAssets = async () => {
+    setAssetImportMessage("正在启动后台导入任务...");
+    try {
+      const response = await fetch(`${apiUrl}/api/assets/import-jobs`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          sourceDirectory: settings.assetImport.sourceDirectory,
+          uploadDirectory: settings.assetImport.uploadDirectory,
+        }),
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `资产导入失败: ${response.status}`);
+      }
+      const data = (await response.json()) as { job: AssetImportJob };
+      setAssetImportJob(data.job);
+      setAssetImportMessage(`后台任务已启动: ${data.job.jobId.slice(0, 8)}`);
+      await refreshRagStatus();
+    } catch (startError) {
+      setAssetImportMessage(startError instanceof Error ? startError.message : String(startError));
+      throw startError;
     }
   };
 
@@ -1107,7 +1796,20 @@ function SettingsDialog({
     void refreshRagStatus().catch((statusError) =>
       setRagMessage(statusError instanceof Error ? statusError.message : String(statusError)),
     );
+    void refreshActiveImportJob().catch((jobError) =>
+      setAssetImportMessage(jobError instanceof Error ? jobError.message : String(jobError)),
+    );
   }, []);
+
+  useEffect(() => {
+    if (!assetImportJob || !["queued", "running"].includes(assetImportJob.status)) return;
+    const timer = window.setInterval(() => {
+      void refreshImportJob(assetImportJob.jobId).catch((jobError) =>
+        setAssetImportMessage(jobError instanceof Error ? jobError.message : String(jobError)),
+      );
+    }, 1200);
+    return () => window.clearInterval(timer);
+  }, [assetImportJob?.jobId, assetImportJob?.status]);
 
   return (
     <div className="settings-backdrop">
@@ -1120,24 +1822,28 @@ function SettingsDialog({
           <button onClick={onClose}>关闭</button>
         </header>
         <div className="settings-body">
-          <div className="settings-secret">
-            <label>
-              GITEE_API_KEY
-              <input
-                value={apiKeyDraft}
-                onChange={(event) => onApiKeyDraftChange(event.target.value)}
-                placeholder={envStatus.GITEE_API_KEY ? "已检测到环境变量" : "未检测到，请输入后保存到项目 .env"}
-                type="password"
-              />
-            </label>
-            <span className={envStatus.GITEE_API_KEY ? "env-ok" : "env-missing"}>
-              {envStatus.GITEE_API_KEY ? "已配置" : "未配置"}
-            </span>
+          <div className="settings-secret-list">
+            {requiredEnvNames.map((name) => (
+              <div className="settings-secret" key={name}>
+                <label>
+                  {name}
+                  <span className="env-hint">
+                    {envStatus[name] ? "API 进程已读取到该系统环境变量" : "未检测到，请在系统环境变量中配置后重启 API"}
+                  </span>
+                </label>
+                <span className={envStatus[name] ? "env-ok" : "env-missing"}>
+                  {envStatus[name] ? "已配置" : "未配置"}
+                </span>
+              </div>
+            ))}
           </div>
           <div className="settings-grid">
             {settings.models.map((model, index) => (
               <div className="settings-row" key={model.node}>
-                <strong>{model.node}</strong>
+                <div className="settings-model-label" title={model.node}>
+                  <strong>{modelNodeLabel(model.node)}</strong>
+                  <span>{modelNodeDescription(model.node)}</span>
+                </div>
                 <input value={model.model} onChange={(event) => updateModel(index, { model: event.target.value })} />
                 <input value={model.baseURL} onChange={(event) => updateModel(index, { baseURL: event.target.value })} />
                 <input value={model.apiKeyEnvName} onChange={(event) => updateModel(index, { apiKeyEnvName: event.target.value })} />
@@ -1161,15 +1867,121 @@ function SettingsDialog({
           </div>
           <section className="settings-skills">
             <div className="settings-section-title">
-              <strong>RAG</strong>
-              <span>检索六视图元数据和源码指针</span>
+              <strong>多视角视觉质检模型</strong>
+              <span>Runtime Composer 截 front/side/top/three-quarter 后调用；第 1/2/3 轮按下方列表轮换</span>
             </div>
+            <div className="settings-grid">
+              {settings.visionReview.models.map((model, index) => (
+                <div className="settings-row" key={`vision-review-${index}`}>
+                  <div className="settings-model-label" title={`vision_${index + 1}`}>
+                    <strong>vision_{index + 1}</strong>
+                    <span>{visionReviewDescription(index)}</span>
+                  </div>
+                  <input value={model.model} onChange={(event) => updateVisionReviewModel(index, { model: event.target.value })} />
+                  <input value={model.baseURL} onChange={(event) => updateVisionReviewModel(index, { baseURL: event.target.value })} />
+                  <input value={model.apiKeyEnvName} onChange={(event) => updateVisionReviewModel(index, { apiKeyEnvName: event.target.value })} />
+                  <input
+                    type="number"
+                    value={model.temperature}
+                    step="0.1"
+                    min="0"
+                    max="2"
+                    onChange={(event) => updateVisionReviewModel(index, { temperature: Number(event.target.value) })}
+                  />
+                  <input
+                    type="number"
+                    value={model.maxTokens}
+                    min="128"
+                    max="32768"
+                    onChange={(event) => updateVisionReviewModel(index, { maxTokens: Number(event.target.value) })}
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="rag-message">
+              这里才是看图质检模型；上面的 safety_review 只做补丁安全检查，不负责判断画面好坏。
+            </p>
+          </section>
+          <section className="settings-skills">
+            <div className="settings-section-title">
+              <strong>资产导入</strong>
+              <span>保存资源目录后，后台遍历 GLB/three.js 源码、去重、截图六面图并入库</span>
+            </div>
+            <div className="runtime-settings-grid">
+              <label>
+                <span>来源目录</span>
+                <input
+                  value={settings.assetImport.sourceDirectory}
+                  onChange={(event) => updateAssetImport({ sourceDirectory: event.target.value })}
+                  placeholder="例如 E:\\models\\aircraft 或 D:\\three-scenes"
+                />
+              </label>
+              <label>
+                <span>默认导入目录</span>
+                <input
+                  value={settings.assetImport.uploadDirectory}
+                  onChange={(event) => updateAssetImport({ uploadDirectory: event.target.value })}
+                  placeholder="assets/aircraft/imported"
+                />
+              </label>
+            </div>
+            <div className="rag-status-row">
+              <button
+                onClick={() => {
+                  void onSave().catch((saveError) => setError(saveError instanceof Error ? saveError.message : String(saveError)));
+                }}
+              >
+                保存目录
+              </button>
+              <button
+                disabled={Boolean(assetImportJob && ["queued", "running"].includes(assetImportJob.status)) || !settings.assetImport.sourceDirectory.trim()}
+                onClick={() => {
+                  void startImportAssets().catch((importError) => setError(importError instanceof Error ? importError.message : String(importError)));
+                }}
+              >
+                开始提取入库
+              </button>
+              <small>任务在后端运行，关闭设置面板不会中断。</small>
+            </div>
+            {assetImportJob && (
+              <div className="rag-source-card">
+                <strong>导入进度 · {assetImportJob.status}</strong>
+                <span>{assetImportJob.phase} · {assetImportJob.percent.toFixed(0)}%</span>
+                <progress value={assetImportJob.percent} max={100} />
+                <small>
+                  已处理 {assetImportJob.processed}/{assetImportJob.total}；导入 {assetImportJob.imported}；跳过 {assetImportJob.skipped}；失败 {assetImportJob.failed}
+                </small>
+                {assetImportJob.currentFile && <code>{assetImportJob.currentFile}</code>}
+                {assetImportJob.message && <p className="rag-message">{assetImportJob.message}</p>}
+                {!!assetImportJob.items.filter((item) => !item.ok).length && (
+                  <>
+                    <small>失败项</small>
+                    <pre>{formatJsonPreview(assetImportJob.items.filter((item) => !item.ok).slice(-8))}</pre>
+                  </>
+                )}
+                {!!assetImportJob.items.filter((item) => item.ok && /跳过/.test(item.message)).length && (
+                  <>
+                    <small>最近跳过项</small>
+                    <pre>{formatJsonPreview(assetImportJob.items.filter((item) => item.ok && /跳过/.test(item.message)).slice(-8))}</pre>
+                  </>
+                )}
+              </div>
+            )}
+            {assetImportMessage && <p className="rag-message">{assetImportMessage}</p>}
+          </section>
+          <details className="settings-skills">
+            <summary className="settings-section-title">
+              <strong>RAG 诊断工具</strong>
+              <span>用于手动验证 Milvus 状态、重建基础索引和测试检索</span>
+            </summary>
             <div className="rag-panel">
               <div className="rag-status-row">
                 <span className={ragStatus?.ready ? "env-ok" : "env-missing"}>
-                  {ragStatus?.ready ? "pgvector 已连接" : "pgvector 未连接"}
+                  {ragStatus?.ready ? "Milvus 已连接" : "Milvus 未连接"}
                 </span>
                 <small>{ragStatus?.databaseUrl ?? "正在检测数据库状态..."}</small>
+                {ragStatus?.fallbackForced && <small>RAG_FORCE_FALLBACK=1，当前强制使用本地 fallback。</small>}
+                {!!ragStatus?.lastError && <small>最后错误: {ragStatus.lastError}</small>}
                 <button
                   disabled={ragBusy}
                   onClick={() => {
@@ -1178,6 +1990,7 @@ function SettingsDialog({
                     );
                   }}
                 >
+                  {ragBusyAction === "status" && <span className="mini-spinner" aria-hidden="true" />}
                   刷新状态
                 </button>
                 <button
@@ -1188,11 +2001,27 @@ function SettingsDialog({
                     );
                   }}
                 >
-                  入库
+                  {ragBusyAction === "ingest" && <span className="mini-spinner" aria-hidden="true" />}
+                  重建索引
+                </button>
+                <button
+                  disabled={ragBusy}
+                  onClick={() => {
+                    void clearKnowledge().catch((clearError) =>
+                      setError(clearError instanceof Error ? clearError.message : String(clearError)),
+                    );
+                  }}
+                >
+                  {ragBusyAction === "clear" && <span className="mini-spinner" aria-hidden="true" />}
+                  清除知识库
                 </button>
               </div>
               <div className="rag-search-row">
                 <input value={ragQuery} onChange={(event) => setRagQuery(event.target.value)} placeholder="测试检索，例如：发动机 正面 黑线白图 六视图" />
+                <select value={ragSearchScope} onChange={(event) => setRagSearchScope(event.target.value as "imported" | "all")}>
+                  <option value="imported">仅导入/生成</option>
+                  <option value="all">全部知识</option>
+                </select>
                 <button
                   disabled={ragBusy}
                   onClick={() => {
@@ -1201,10 +2030,16 @@ function SettingsDialog({
                     );
                   }}
                 >
+                  {ragBusyAction === "search" && <span className="mini-spinner" aria-hidden="true" />}
                   检索
                 </button>
               </div>
-              {ragMessage && <p className="rag-message">{ragMessage}</p>}
+              {ragMessage && (
+                <p className="rag-message">
+                  {ragBusy && <span className="mini-spinner" aria-hidden="true" />}
+                  {ragMessage}
+                </p>
+              )}
               {!!ragResults.length && (
                 <div className="rag-results">
                   <div className="rag-results-title">
@@ -1244,7 +2079,7 @@ function SettingsDialog({
                 </div>
               )}
             </div>
-          </section>
+          </details>
           <section className="settings-skills">
             <div className="settings-section-title">
               <strong>Runtime Composer</strong>
@@ -1527,6 +2362,181 @@ function formatJsonPreview(value: unknown, limit = 900): string {
   }
 }
 
+async function fetchWorkflowRunState(runId: string): Promise<WorkflowRunState | undefined> {
+  const response = await fetch(`${apiUrl}/api/workflow/runs/${encodeURIComponent(runId)}`);
+  if (!response.ok) return undefined;
+  return (await response.json()) as WorkflowRunState;
+}
+
+async function fetchRecentInputImages(sessionId: string): Promise<ImageInput[]> {
+  const response = await fetch(`${apiUrl}/api/memory/sessions/${encodeURIComponent(sessionId)}/input-images/recent?limit=4`);
+  if (!response.ok) return [];
+  const data = (await response.json()) as { images: ImageInput[] };
+  return data.images.map((image) => imageInputSchema.parse(image));
+}
+
+function runEventsToChatMessages(events: RunEventRecord[]): ChatMessage[] {
+  return events.map(runEventToChatMessage).filter((message): message is ChatMessage => Boolean(message));
+}
+
+function runEventToChatMessage(event: RunEventRecord): ChatMessage | undefined {
+  const content = parseRunEventContent(event.content);
+  if (event.eventType === "run.start") {
+    const value = asRecord(content);
+    return {
+      id: `run-event-${event.id}`,
+      role: "system",
+      content: `任务开始: ${String(value.message ?? "无文字输入")}；参考图 ${String(value.imageCount ?? 0)} 张。`,
+    };
+  }
+  if (event.eventType === "run.success") {
+    return { id: `run-event-${event.id}`, role: "system", content: "Agent 运行完成。" };
+  }
+  if (event.eventType === "run.error") {
+    return { id: `run-event-${event.id}`, role: "system", content: "Agent 运行失败，已保留当前稳定快照。" };
+  }
+  if (event.eventType === "workflow.review_round") {
+    const value = asRecord(content);
+    const scores = asRecord(value.scores);
+    const failedChecks = Array.isArray(value.checks)
+      ? value.checks
+          .map(asRecord)
+          .filter((check) => check.pass === false)
+          .slice(0, 5)
+          .map((check) => `${String(check.view ?? "-")}:${String(check.item ?? "检查项")}`)
+      : [];
+    return {
+      id: `run-event-${event.id}`,
+      role: "system",
+      content: `第 ${String(value.round ?? "?")} 轮质检: ${String(value.status ?? "unknown")}/${String(value.decision ?? "-")}，overall ${formatMaybeNumber(value.score)}，candidate ${formatMaybeNumber(value.candidateScore)}，matchedView ${String(value.matchedReferenceView ?? "-")}，geometry ${formatMaybeNumber(scores.geometry)}，similarity ${formatMaybeNumber(scores.referenceSimilarity)}。模型: ${String(value.modelUsed ?? "unknown")}。失败项: ${failedChecks.join("；") || "无"}。`,
+    };
+  }
+  if (event.eventType === "coder.revise") {
+    const value = asRecord(content);
+    return {
+      id: `run-event-${event.id}`,
+      role: "assistant",
+      content: `${value.dualCoderUsed ? `双 coder 已启用: ${Array.isArray(value.discussionModels) ? value.discussionModels.join(" + ") : "GLM + Doubao"}。${String(value.discussionSummary ?? "")}\n` : ""}已根据运行/质检问题调用 coder 修复。模型: ${String(value.modelUsed ?? "unknown")}。${String(value.summary ?? "")}`,
+    };
+  }
+  if (event.eventType === "workflow.finalize") {
+    const value = asRecord(content);
+    return {
+      id: `run-event-${event.id}`,
+      role: "assistant",
+      content: `已保存最终/最佳结果: ${String(value.label ?? "workflow-final")}，第 ${String(value.round ?? "?")} 轮，分数 ${formatMaybeNumber(value.score)}，截图 ${String(value.screenshotPath ?? "-")}。`,
+    };
+  }
+
+  const streamEvent = tryParseStreamEvent(content);
+  if (!streamEvent) return undefined;
+  if (streamEvent.type === "workflow_config") {
+    return {
+      id: `run-event-${event.id}`,
+      role: "system",
+      content: `工作流配置: 自动质检${streamEvent.config.autoCaptureAfterPatch ? "开启" : "关闭"}，最多 ${streamEvent.config.maxRevisionRounds} 轮，阈值 ${streamEvent.config.minQualityScore}。`,
+    };
+  }
+  if (streamEvent.type === "scene_dsl") {
+    return {
+      id: `run-event-${event.id}`,
+      role: "system",
+      content: `Scene DSL: ${streamEvent.scene.sceneType} / ${streamEvent.scene.cameraPreset} / ${streamEvent.scene.renderStyle}。`,
+    };
+  }
+  if (streamEvent.type === "patch") {
+    return {
+      id: `run-event-${event.id}`,
+      role: "system",
+      content: `已应用补丁: ${streamEvent.summary}${describePatchOperations(streamEvent)}`,
+    };
+  }
+  if (streamEvent.type === "assistant_message") {
+    return { id: `run-event-${event.id}`, role: "assistant", content: streamEvent.message };
+  }
+  if (streamEvent.type === "status" || streamEvent.type === "reasoning_summary" || streamEvent.type === "coder_input_summary" || streamEvent.type === "error") {
+    return { id: `run-event-${event.id}`, role: "system", content: streamEvent.message };
+  }
+  if (streamEvent.type === "run_status") {
+    return {
+      id: `run-event-${event.id}`,
+      role: "system",
+      content: streamEvent.message ?? `运行状态: ${streamEvent.status}`,
+    };
+  }
+  if (streamEvent.type === "snapshot_saved") {
+    return {
+      id: `run-event-${event.id}`,
+      role: "system",
+      content: `已保存${streamEvent.stable ? "稳定" : ""}快照: ${streamEvent.label}`,
+    };
+  }
+  return undefined;
+}
+
+function deriveLatestWorkflowState(events: RunEventRecord[]): {
+  config?: RuntimeComposerConfig;
+  scene?: SceneDsl;
+  userGoal: string;
+  patchGenerator: PatchEvent["generator"];
+} {
+  const result: {
+    config?: RuntimeComposerConfig;
+    scene?: SceneDsl;
+    userGoal: string;
+    patchGenerator: PatchEvent["generator"];
+  } = {
+    userGoal: "",
+    patchGenerator: "llm_coder",
+  };
+  for (const event of events) {
+    const content = parseRunEventContent(event.content);
+    if (event.eventType === "run.start") {
+      const value = asRecord(content);
+      result.userGoal = String(value.message ?? result.userGoal);
+    }
+    const streamEvent = tryParseStreamEvent(content);
+    if (streamEvent?.type === "workflow_config") result.config = streamEvent.config;
+    if (streamEvent?.type === "scene_dsl") result.scene = streamEvent.scene;
+    if (streamEvent?.type === "patch") result.patchGenerator = streamEvent.generator;
+  }
+  return result;
+}
+
+function shouldResumeWorkflowAfterRefresh(runState: WorkflowRunState): boolean {
+  if (runState.run.status !== "success") return false;
+  if (!runState.run.updatedAt) return false;
+  const ageMs = Date.now() - new Date(runState.run.updatedAt).getTime();
+  if (!Number.isFinite(ageMs) || ageMs > 20 * 60 * 1000) return false;
+  if (runState.events.some((event) => event.eventType === "workflow.finalize")) return false;
+  const reviewRounds = runState.events.filter((event) => event.eventType === "workflow.review_round");
+  const lastReview = reviewRounds.at(-1);
+  if (!lastReview) return true;
+  const lastDecision = String(asRecord(parseRunEventContent(lastReview.content)).decision ?? "");
+  return lastDecision === "continue";
+}
+
+function parseRunEventContent(content: string): unknown {
+  try {
+    return JSON.parse(content);
+  } catch {
+    return content;
+  }
+}
+
+function tryParseStreamEvent(content: unknown): StreamEvent | undefined {
+  const parsed = streamEventSchema.safeParse(content);
+  return parsed.success ? parsed.data : undefined;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : {};
+}
+
+function formatMaybeNumber(value: unknown): string {
+  return typeof value === "number" && Number.isFinite(value) ? value.toFixed(2) : "-";
+}
+
 function handleStreamEvent(
   event: StreamEvent,
   applyAgentPatch: (patch: PatchEvent) => void,
@@ -1628,7 +2638,7 @@ import * as THREE from "three";
 import "./src/styles.css";
 import UserApp from "./src/App";
 
-type ViewName = "front" | "back" | "left" | "right" | "top" | "bottom";
+type ViewName = "front" | "back" | "left" | "right" | "side" | "top" | "bottom" | "three_quarter";
 
 function readView() {
   return (window as any).__AGENTIC_THREE_VIEW__;
@@ -1675,8 +2685,10 @@ function setView(name: ViewName) {
     back: [0, radius * 0.12, -distance],
     left: [-distance, radius * 0.12, 0],
     right: [distance, radius * 0.12, 0],
+    side: [distance, radius * 0.12, 0],
     top: [0, distance, 0.01],
     bottom: [0, -distance, 0.01],
+    three_quarter: [distance * 0.72, radius * 0.35, distance * 0.72],
   };
   const [x, y, z] = offsets[name];
   view.camera.position.set(target.x + x, target.y + y, target.z + z);
@@ -1785,7 +2797,7 @@ function requestPreviewCapture(postPreviewCommand: (payload: Record<string, unkn
     const timeout = window.setTimeout(() => {
       window.removeEventListener("message", handler);
       reject(new Error("截图超时，请确认预览已经渲染完成。"));
-    }, 3500);
+    }, 10000);
     const handler = (event: MessageEvent) => {
       const data = event.data as { type?: string; requestId?: string; dataUrl?: string; error?: string };
       if (data.type !== "agentic-three:capture-result" || data.requestId !== requestId) return;
@@ -1828,6 +2840,156 @@ async function saveWorkflowScreenshot(input: {
   return data.artifact;
 }
 
+async function captureWorkflowScreenshots(input: {
+  sessionId: string;
+  runId?: string;
+  round: number;
+  postPreviewCommand: (payload: Record<string, unknown>) => void;
+}): Promise<Array<{ view: QualityReviewView; dataUrl: string; path: string; fileName: string; url: string }>> {
+  const screenshots: Array<{ view: QualityReviewView; dataUrl: string; path: string; fileName: string; url: string }> = [];
+  for (const view of QUALITY_REVIEW_VIEWS) {
+    input.postPreviewCommand({ type: "agentic-three:set-view", view });
+    await delay(180);
+    const dataUrl = await requestPreviewCapture(input.postPreviewCommand);
+    const artifact = await saveWorkflowScreenshot({
+      sessionId: input.sessionId,
+      runId: input.runId,
+      dataUrl,
+      view: `workflow-round-${input.round}-${view}`,
+    });
+    screenshots.push({ view, dataUrl, ...artifact });
+  }
+  return screenshots;
+}
+
+function buildRenderFailureQuality(error: unknown, runtimeErrors: RuntimeError[]): QualityInspectionResult {
+  const message = error instanceof Error ? error.message : String(error);
+  const runtimeMessage = runtimeErrors.map((item) => item.message).filter(Boolean).join("；");
+  const note = [message, runtimeMessage].filter(Boolean).join("；");
+  return {
+    status: "revise",
+    score: 0,
+    scores: {
+      geometry: 0,
+      viewMatch: 0,
+      material: 0,
+      referenceSimilarity: 0,
+      embeddingSimilarity: 0,
+      renderHealth: 0,
+      overall: 0,
+    },
+    checks: [
+      {
+        dimension: "renderHealth",
+        item: "当前代码必须能渲染并完成截图",
+        pass: false,
+        confidence: 1,
+        note,
+        severity: "critical",
+        suggestedFix:
+          "只做运行健康最小修复：修复运行时错误、变量初始化顺序、renderer 初始化、render loop 和 __AGENTIC_THREE_VIEW__，确保下一轮能截图；不要重构模型外观。",
+      },
+    ],
+    viewResults: [],
+    featureMatches: [],
+    embeddingMatches: [],
+    issues: [`截图失败或运行时错误: ${note}`],
+    structuredIssues: [
+      {
+        severity: "critical",
+        problem: `截图失败或运行时错误: ${note}`,
+      },
+    ],
+    revisionHints: [
+      "运行健康修复模式：只修错误，不做视觉重构，不替换成新的示例模型。",
+      "先修复运行时错误，尤其是 Cannot access 'x' before initialization / ReferenceError 这类变量作用域和初始化顺序问题。",
+      "确保 renderer、scene、camera 初始化成功，并设置 window.__AGENTIC_THREE_VIEW__。",
+    ],
+    bestEffortReason: "当前预览无法截图，必须先修代码。",
+    modelUsed: "render-health-guard",
+    constraintStatus: "pass",
+    constraintResiduals: {},
+    constraintChecks: [],
+  };
+}
+
+async function repairRuntimeErrorBeforeCapture(input: {
+  sessionId: string;
+  round: number;
+  runId?: string;
+  userGoal: string;
+  files: FileMap;
+  referenceImages: ImageInput[];
+  runtimeErrors: RuntimeError[];
+  qualityHistory: QualityHistoryEntry[];
+  bestRound?: WorkflowBestRound;
+  repairAttempt: number;
+  dualCoderRequested: boolean;
+  dualCoderReason: string;
+  applyAgentPatch: (patch: PatchEvent) => void;
+  setLatestPatchGenerator: Dispatch<SetStateAction<PatchEvent["generator"] | null>>;
+  setMessages: Dispatch<SetStateAction<ChatMessage[]>>;
+}): Promise<boolean> {
+  const quality = buildRenderFailureQuality(new Error("截图前运行健康检查发现 runtime error"), input.runtimeErrors);
+  input.setMessages((items) => [
+    ...items,
+    {
+      id: crypto.randomUUID(),
+      role: "system",
+      content: `第 ${input.round} 轮截图前发现运行错误，先调用 coder 修复，不进入视觉截图。最近错误: ${input.runtimeErrors[0]?.message ?? "unknown"}`,
+    },
+  ]);
+  const response = await fetch(`${apiUrl}/api/coder/revise`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      sessionId: input.sessionId,
+      runId: input.runId,
+      round: input.round,
+      userGoal: input.userGoal,
+      files: input.files,
+      quality,
+      referenceImages: input.referenceImages,
+      screenshots: [],
+      runtimeErrors: input.runtimeErrors,
+      qualityHistory: input.qualityHistory,
+      bestRound: input.bestRound,
+      repairAttempt: input.repairAttempt,
+      dualCoderRequested: input.dualCoderRequested,
+      dualCoderReason: input.dualCoderReason,
+    }),
+  });
+  if (!response.ok) {
+    input.setMessages((items) => [
+      ...items,
+      {
+        id: crypto.randomUUID(),
+        role: "system",
+        content: `截图前运行错误修复失败: ${response.status}`,
+      },
+    ]);
+    return false;
+  }
+  const data = (await response.json()) as {
+    patch: PatchEvent;
+    modelUsed?: string;
+    dualCoderUsed?: boolean;
+    discussionModels?: string[];
+    discussionSummary?: string;
+  };
+  input.applyAgentPatch(data.patch);
+  input.setLatestPatchGenerator("llm_coder");
+  input.setMessages((items) => [
+    ...items,
+    {
+      id: crypto.randomUUID(),
+      role: "assistant",
+      content: `${data.dualCoderUsed ? `双 coder 已启用: ${(data.discussionModels ?? []).join(" + ") || "GLM + Doubao"}。${data.discussionSummary ?? ""}\n` : ""}已在截图前修复运行错误。模型: ${data.modelUsed ?? "unknown"}。${data.patch.summary}`,
+    },
+  ]);
+  return true;
+}
+
 async function finalizeWorkflowSnapshot(input: {
   sessionId: string;
   runId?: string;
@@ -1836,6 +2998,9 @@ async function finalizeWorkflowSnapshot(input: {
   round: number;
   score: number;
   screenshotPath: string;
+  screenshotPaths: Record<string, string>;
+  userGoal: string;
+  scene: SceneDsl;
 }): Promise<void> {
   const response = await fetch(`${apiUrl}/api/workflow/finalize`, {
     method: "POST",

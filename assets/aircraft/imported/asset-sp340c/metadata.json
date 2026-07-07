@@ -1,0 +1,123 @@
+{
+  "id": "asset-sp340c",
+  "category": "engine",
+  "title": "简化版喷气发动机单轴流式压缩机侧边切图",
+  "description": "自动从 简化版喷气发动机单轴流式压缩机侧边切图.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "engine",
+    "简化版喷气发动机单轴流式压缩机侧边切图",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/asset-sp340c/model.glb",
+  "previewPath": "assets/aircraft/imported/asset-sp340c/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/asset-sp340c/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/asset-sp340c/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/asset-sp340c/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/asset-sp340c/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/asset-sp340c/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/asset-sp340c/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: 简化版喷气发动机单轴流式压缩机侧边切图 (简化版喷气发动机单轴流式压缩机侧边切图.glb)。\n类别: engine; 标签: imported, aircraft, engine, 简化版喷气发动机单轴流式压缩机侧边切图, glb。\n自动从 简化版喷气发动机单轴流式压缩机侧边切图.glb 导入。\n结构要点: 正面应有外涵道/机匣大圆环和内涵道圆环。；中心应有整流锥或轮毂，周围放射状风扇叶片。；侧面可用短圆筒机匣、唇口厚度和后部收缩表达发动机体积。；工程黑线白图优先使用 Torus/Cylinder/Sphere/EdgesGeometry/LineSegments 组合。\n结构分析失败: Cannot resolve external images with binaryToJSON().\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "正面应有外涵道/机匣大圆环和内涵道圆环。",
+    "中心应有整流锥或轮毂，周围放射状风扇叶片。",
+    "侧面可用短圆筒机匣、唇口厚度和后部收缩表达发动机体积。",
+    "工程黑线白图优先使用 Torus/Cylinder/Sphere/EdgesGeometry/LineSegments 组合。"
+  ],
+  "structureAnalysis": {
+    "status": "error",
+    "error": "Cannot resolve external images with binaryToJSON().",
+    "nodeCount": 0,
+    "meshCount": 0,
+    "materialCount": 0,
+    "meshStats": [],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

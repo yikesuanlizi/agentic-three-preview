@@ -1,0 +1,272 @@
+{
+  "id": "c-130-15dnc7",
+  "category": "environment",
+  "title": "C 130雷达罩组件（运输机）",
+  "description": "自动从 C-130雷达罩组件（运输机）.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "environment",
+    "130雷达罩组件",
+    "运输机",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/c-130-15dnc7/model.glb",
+  "previewPath": "assets/aircraft/imported/c-130-15dnc7/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [
+    "Scene - Root"
+  ],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/c-130-15dnc7/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/c-130-15dnc7/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/c-130-15dnc7/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/c-130-15dnc7/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/c-130-15dnc7/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/c-130-15dnc7/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: C 130雷达罩组件（运输机） (C-130雷达罩组件（运输机）.glb)。\n类别: environment; 标签: imported, aircraft, environment, 130雷达罩组件, 运输机, glb。\n自动从 C-130雷达罩组件（运输机）.glb 导入。\n结构要点: 提取主体外轮廓、主轴方向、对称关系和重复结构。；优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。\n结构分析: node=9, mesh=7, material=7。 候选主轴: +Y。 整体尺寸: 62.300 x 73.327 x 73.096。\n模板参数: generic_model, confidence=0.35, turbofan={}。\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "提取主体外轮廓、主轴方向、对称关系和重复结构。",
+    "优先把 GLB 作为真实几何基底，再用模板参数和程序化补件做可控微调。"
+  ],
+  "structureAnalysis": {
+    "status": "success",
+    "nodeCount": 9,
+    "meshCount": 7,
+    "materialCount": 7,
+    "bounds": {
+      "center": [
+        61.9808,
+        176.1116,
+        179.424
+      ],
+      "size": [
+        62.2995,
+        73.3273,
+        73.0961
+      ]
+    },
+    "dominantAxis": "+Y",
+    "meshStats": [
+      {
+        "name": "Scene_Root",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          62.982,
+          176.1117,
+          178.0822
+        ],
+        "size": [
+          60.2969,
+          67.4045,
+          66.1065
+        ],
+        "radiusEstimate": 33.702232360839844,
+        "materials": [
+          "Scene - Root"
+        ]
+      },
+      {
+        "name": "Scene_Root",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          62.984,
+          176.0596,
+          190.1954
+        ],
+        "size": [
+          60.2931,
+          68.9253,
+          41.8801
+        ],
+        "radiusEstimate": 34.46265411376953,
+        "materials": [
+          "Scene - Root"
+        ]
+      },
+      {
+        "name": "Scene_Root",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          62.9823,
+          176.1117,
+          186.0898
+        ],
+        "size": [
+          60.2965,
+          69.0294,
+          56.3547
+        ],
+        "radiusEstimate": 34.514686584472656,
+        "materials": [
+          "Scene - Root"
+        ]
+      },
+      {
+        "name": "Scene_Root",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          58.0158,
+          171.6511,
+          178.3524
+        ],
+        "size": [
+          53.6049,
+          56.9555,
+          64.4957
+        ],
+        "radiusEstimate": 28.47772979736328,
+        "materials": [
+          "Scene - Root"
+        ]
+      },
+      {
+        "name": "Scene_Root",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          62.1719,
+          177.2064,
+          178.5665
+        ],
+        "size": [
+          61.9171,
+          70.6692,
+          71.3809
+        ],
+        "radiusEstimate": 35.334617614746094,
+        "materials": [
+          "Scene - Root"
+        ]
+      },
+      {
+        "name": "Scene_Root",
+        "vertexCount": 65531,
+        "triangleCount": 0,
+        "center": [
+          61.9808,
+          176.1116,
+          179.424
+        ],
+        "size": [
+          62.2995,
+          73.3273,
+          73.0961
+        ],
+        "radiusEstimate": 36.66365051269531,
+        "materials": [
+          "Scene - Root"
+        ]
+      },
+      {
+        "name": "Scene_Root",
+        "vertexCount": 61559,
+        "triangleCount": 0,
+        "center": [
+          61.9808,
+          175.8193,
+          179.5683
+        ],
+        "size": [
+          62.2995,
+          72.4879,
+          72.7754
+        ],
+        "radiusEstimate": 36.243934631347656,
+        "materials": [
+          "Scene - Root"
+        ]
+      }
+    ],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "template": "generic_model",
+    "confidence": 0.35,
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

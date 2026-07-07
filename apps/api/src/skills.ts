@@ -3,7 +3,6 @@ import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import OpenAI from "openai";
 import {
   type AppSettings,
   type ImageInput,
@@ -14,13 +13,17 @@ import {
 } from "@agentic-three/shared";
 import { projectRoot } from "./memory.js";
 import { resolveModelConfig } from "./settings.js";
+import { supportsImageInput } from "./modelCapabilities.js";
+import { streamModelCompletion } from "./modelRuntime.js";
+import { readEnvValue } from "./env.js";
 
 const execFileAsync = promisify(execFile);
 const CORE_SKILL_ORDER = ["three-scene", "camera-light", "material-animation", "performance-safety"];
-const MAX_SELECTED_SKILLS = 4;
+const MAX_SELECTED_SKILLS = 6;
 const MAX_SKILL_CONTENT_CHARS = 1800;
 const MAX_SKILL_CONTEXT_CHARS = 8000;
 const MAX_SKILL_SAVE_CHARS = 12000;
+const SKILL_SELECTION_TIMEOUT_MS = 12_000;
 
 export type SkillCard = {
   id: string;
@@ -65,12 +68,9 @@ export async function inferSkill(input: unknown): Promise<SkillCreateRequest> {
   const heuristic = inferSkillHeuristic(parsed.content);
   try {
     const model = resolveModelConfig("default");
-    const apiKey = process.env[model.apiKeyEnvName];
-    if (!apiKey) return heuristic;
-    const client = new OpenAI({ apiKey, baseURL: model.baseURL });
-    const response = await client.chat.completions.create({
-      model: model.model,
-      messages: [
+    const { text } = await streamModelCompletion(
+      { ...model, temperature: 0.1, maxTokens: 1600 },
+      [
         {
           role: "system",
           content:
@@ -81,10 +81,7 @@ export async function inferSkill(input: unknown): Promise<SkillCreateRequest> {
           content: `请根据以下 skill 正文生成 id、title、description。content 必须原样返回，不要翻译正文。\n\n${parsed.content}`,
         },
       ],
-      temperature: 0.1,
-      max_tokens: 1600,
-    } as never);
-    const text = response.choices[0]?.message?.content || "";
+    );
     const objectText = extractJsonObject(text);
     return skillCreateRequestSchema.parse({ ...JSON.parse(objectText), content: parsed.content });
   } catch {
@@ -157,7 +154,7 @@ export async function selectSkillContextDynamic(input: {
 
   try {
     const model = resolveModelConfig("coder_agent", input.settings);
-    const apiKey = process.env[model.apiKeyEnvName];
+    const apiKey = readEnvValue(model.apiKeyEnvName);
     if (!apiKey) {
       return {
         context: formatSkillContext(fallback),
@@ -187,35 +184,31 @@ export async function selectSkillContextDynamic(input: {
     }
     userContent.push({
       type: "text",
-      text: `根据用户需求和参考图，从 skill 目录中选择最多 ${MAX_SELECTED_SKILLS} 个最有用的 skill。只返回 JSON，不要解释额外文本。\n\n用户需求:\n${input.message}\n\nskill 目录:\n${catalog}\n\n返回格式:\n{"skillIds":["id-1","id-2"],"reason":"一句中文理由"}`,
+      text: `根据用户需求和参考图，从 skill 目录中选择最多 ${MAX_SELECTED_SKILLS} 个最有用的 skill。复杂航空建模、曲面、叶片、机翼、机身、起落架任务必须优先包含 threejs-geometry，并尽量包含 threejs-materials/threejs-lighting/threejs-fundamentals。只返回 JSON，不要解释额外文本。\n\n用户需求:\n${input.message}\n\nskill 目录:\n${catalog}\n\n返回格式:\n{"skillIds":["id-1","id-2"],"reason":"一句中文理由"}`,
     });
 
-    const client = new OpenAI({
-      apiKey,
-      baseURL: model.baseURL,
-      defaultHeaders: { "X-Failover-Enabled": "true" },
-    });
-    const response = await client.chat.completions.create({
-      model: model.model,
-      messages: [
+    const messages = [
         {
           role: "system",
           content:
-            "你是 three.js skill 动态选择器。你只能从给定目录中选 skill id，最多选择 4 个。优先选择能帮助当前图片建模、线稿、相机、材质和安全渲染的 skill。只输出 JSON。",
+            `你是 three.js skill 动态选择器。你只能从给定目录中选 skill id，最多选择 ${MAX_SELECTED_SKILLS} 个。复杂航空建模、曲面、叶片、机翼、机身、起落架任务必须优先包含 threejs-geometry，并尽量包含 threejs-materials/threejs-lighting/threejs-fundamentals。只输出 JSON。`,
         },
         {
           role: "user",
-          content: userContent,
+          content: supportsImageInput(model)
+            ? userContent
+            : userContent.filter((part) => part.type === "text"),
         },
-      ],
-      temperature: 0.1,
-      max_tokens: 500,
-      top_p: 0.7,
-      top_k: 50,
-      frequency_penalty: 1,
-    } as never);
+      ] as const;
 
-    const text = response.choices[0]?.message?.content || "";
+    const { text } = await withTimeout(
+      streamModelCompletion(
+        { ...model, temperature: 0.1, maxTokens: 500 },
+        [...messages],
+      ),
+      SKILL_SELECTION_TIMEOUT_MS,
+      `动态 skill 选择超过 ${Math.round(SKILL_SELECTION_TIMEOUT_MS / 1000)} 秒`,
+    );
     const selection = parseSkillSelection(text, enabled);
     const selected = selection.skillIds
       .map((id) => enabled.find((skill) => skill.id === id))
@@ -237,6 +230,16 @@ export async function selectSkillContextDynamic(input: {
       source: "heuristic",
     };
   }
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+  return Promise.race([promise, timeout]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
 }
 
 function selectSkillsHeuristic(message: string, enabledSkillIds?: string[]): SkillCard[] {
@@ -306,6 +309,12 @@ function scoreSkill(id: string, lowerMessage: string): number {
   if ((lowerMessage.includes("geometry") || lowerMessage.includes("mesh") || lowerMessage.includes("结构") || lowerMessage.includes("线稿") || lowerMessage.includes("工程草图")) && lowerId.includes("geometry")) {
     score += 45;
   }
+  const complexAircraft = /engine|turbofan|fan|blade|wing|airfoil|fuselage|landing|gear|发动机|涡扇|涡轮|扇叶|叶片|机翼|翼型|机身|起落架|曲面|扭转|厚度/.test(lowerMessage);
+  if (complexAircraft && lowerId.includes("aircraft-parametric-modeling")) score += 160;
+  if (complexAircraft && lowerId.includes("geometry")) score += 120;
+  if (complexAircraft && lowerId.includes("fundamentals")) score += 70;
+  if (complexAircraft && lowerId.includes("materials")) score += 60;
+  if (complexAircraft && lowerId.includes("lighting")) score += 55;
   if ((lowerMessage.includes("animation") || lowerMessage.includes("动画")) && lowerId.includes("animation")) {
     score += 35;
   }

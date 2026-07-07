@@ -81,6 +81,22 @@ button:disabled {
   opacity: 0.45;
 }
 
+.mini-spinner {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  border: 2px solid rgba(148, 163, 184, 0.35);
+  border-top-color: #38bdf8;
+  border-radius: 999px;
+  animation: mini-spin 0.75s linear infinite;
+}
+
+@keyframes mini-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .workspace {
   flex: 1;
   min-height: 0;
@@ -486,12 +502,17 @@ button:disabled {
   padding: 14px;
 }
 
+.settings-secret-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
 .settings-secret {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 12px;
-  margin-bottom: 14px;
 }
 
 .settings-secret label {
@@ -501,7 +522,14 @@ button:disabled {
   color: #cbd5e1;
 }
 
-.settings-dialog input {
+.env-hint {
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.settings-dialog input,
+.settings-dialog select {
   min-height: 34px;
   min-width: 0;
   border: 1px solid #334155;
@@ -535,6 +563,27 @@ button:disabled {
 .settings-row strong {
   color: #38bdf8;
   font-size: 12px;
+}
+
+.settings-model-label {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.settings-model-label strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-model-label span {
+  overflow: hidden;
+  color: #94a3b8;
+  font-size: 11px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .settings-error {
@@ -609,7 +658,7 @@ button:disabled {
 }
 
 .rag-search-row {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 140px auto;
 }
 
 .rag-status-row small,
@@ -621,6 +670,9 @@ button:disabled {
 }
 
 .rag-message {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   margin: 0;
 }
 

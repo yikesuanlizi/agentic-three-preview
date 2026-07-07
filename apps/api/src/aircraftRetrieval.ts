@@ -2,9 +2,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import {
   type AircraftAssetCategory,
+  type RagSearchRequest,
   type RetrievalSearchRequest,
   type RetrievalSearchResult,
-  retrievalSearchRequestSchema,
+  ragSearchRequestSchema,
 } from "@agentic-three/shared";
 import { projectRoot } from "./memory.js";
 import { listAircraftAssets } from "./aircraftAssets.js";
@@ -51,7 +52,7 @@ export const SCENE_TEMPLATES: RetrievalSearchResult[] = [
 ];
 
 export function searchAircraftKnowledge(input: unknown): { results: RetrievalSearchResult[] } {
-  const request = retrievalSearchRequestSchema.parse(input);
+  const request = ragSearchRequestSchema.parse(input);
   const query = request.query.toLowerCase();
   const categories = new Set<AircraftAssetCategory>(request.categories);
   const assetResults: RetrievalSearchResult[] = listAircraftAssets()
@@ -67,7 +68,21 @@ export function searchAircraftKnowledge(input: unknown): { results: RetrievalSea
       sourceId: asset.id,
       sourcePath: asset.assetPath,
       imagePath: asset.previewPath,
-      metadata: { category: asset.category, previewPath: asset.previewPath, hasModel: asset.hasModel },
+      metadata: {
+        category: asset.category,
+        metadataPath: asset.metadataPath,
+        assetPath: asset.assetPath,
+        previewPath: asset.previewPath,
+        hasModel: asset.hasModel,
+        hasPreview: asset.hasPreview,
+        codeSummary: asset.codeSummary,
+        keySnippets: asset.keySnippets,
+        detectedPatterns: asset.detectedPatterns,
+        shapeSummary: asset.shapeSummary,
+        viewFeatures: asset.viewFeatures,
+        skeletonHints: asset.skeletonHints,
+        viewImages: asset.viewImages,
+      },
     }));
 
   const templateResults = SCENE_TEMPLATES.map((template) => ({
@@ -88,7 +103,7 @@ export function searchAircraftKnowledge(input: unknown): { results: RetrievalSea
     metadata: {},
   }));
 
-  const results = [...assetResults, ...templateResults, ...wikiResults]
+  const results = filterByKnowledgeScope([...assetResults, ...templateResults, ...wikiResults], request.scope)
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, request.topK);
@@ -102,6 +117,18 @@ export function defaultRetrievalForIntent(query: string, category?: AircraftAsse
     categories: category ? [category] : [],
     topK: 6,
   } satisfies RetrievalSearchRequest).results;
+}
+
+function filterByKnowledgeScope(results: RetrievalSearchResult[], scope: RagSearchRequest["scope"]): RetrievalSearchResult[] {
+  if (scope === "all") return results;
+  return results.filter(isImportedKnowledgeResult);
+}
+
+function isImportedKnowledgeResult(result: RetrievalSearchResult): boolean {
+  if (result.kind === "generated_scene") return true;
+  if (result.kind !== "asset" && result.kind !== "asset_view") return false;
+  const path = result.sourcePath ?? result.imagePath ?? "";
+  return path.startsWith("assets/aircraft/imported/") || result.tags.includes("imported");
 }
 
 function readWikiChunks(): Array<{ title: string; body: string }> {

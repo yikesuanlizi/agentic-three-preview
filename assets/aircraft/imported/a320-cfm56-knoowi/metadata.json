@@ -1,0 +1,615 @@
+{
+  "id": "a320-cfm56-knoowi",
+  "category": "engine",
+  "title": "空中客机A320发动机  CFM56 ",
+  "description": "自动从 空中客机A320发动机 _CFM56 .glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "engine",
+    "空中客机a320发动机",
+    "cfm56",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/a320-cfm56-knoowi/model.glb",
+  "previewPath": "assets/aircraft/imported/a320-cfm56-knoowi/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [
+    "Body_uv_2",
+    "Material.025",
+    "Material.007",
+    "Material.011",
+    "Carbon_Fiber_Procedural",
+    "Material.014",
+    "Material.015",
+    "Brushed_used_metal_silver",
+    "Iron_Metal",
+    "Material.020",
+    "Material.023",
+    "Light_iron",
+    "Metal.002",
+    "Material.009",
+    "Material.010",
+    "Material.022",
+    "Old_Metal__Old_Iron",
+    "Material.013",
+    "material_0"
+  ],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/a320-cfm56-knoowi/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/a320-cfm56-knoowi/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/a320-cfm56-knoowi/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/a320-cfm56-knoowi/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/a320-cfm56-knoowi/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/a320-cfm56-knoowi/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: 空中客机A320发动机  CFM56  (空中客机A320发动机 _CFM56 .glb)。\n类别: engine; 标签: imported, aircraft, engine, 空中客机a320发动机, cfm56, glb。\n自动从 空中客机A320发动机 _CFM56 .glb 导入。\n结构要点: 正面应有外涵道/机匣大圆环和内涵道圆环。；中心应有整流锥或轮毂，周围放射状风扇叶片。；侧面可用短圆筒机匣、唇口厚度和后部收缩表达发动机体积。；工程黑线白图优先使用 Torus/Cylinder/Sphere/EdgesGeometry/LineSegments 组合。\n结构分析: node=38, mesh=24, material=19。 候选主轴: +Z。 整体尺寸: 3.275 x 3.369 x 7.598。\n模板参数: generic_model, confidence=0.35, turbofan={}。\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "正面应有外涵道/机匣大圆环和内涵道圆环。",
+    "中心应有整流锥或轮毂，周围放射状风扇叶片。",
+    "侧面可用短圆筒机匣、唇口厚度和后部收缩表达发动机体积。",
+    "工程黑线白图优先使用 Torus/Cylinder/Sphere/EdgesGeometry/LineSegments 组合。"
+  ],
+  "structureAnalysis": {
+    "status": "success",
+    "nodeCount": 38,
+    "meshCount": 24,
+    "materialCount": 19,
+    "bounds": {
+      "center": [
+        0.012,
+        1.6842,
+        0.7744
+      ],
+      "size": [
+        3.2749,
+        3.3685,
+        7.5985
+      ]
+    },
+    "dominantAxis": "+Z",
+    "meshStats": [
+      {
+        "name": "Object_4",
+        "vertexCount": 280,
+        "triangleCount": 438,
+        "center": [
+          -1.0804,
+          1.8402,
+          0.3641
+        ],
+        "size": [
+          1.0468,
+          2.576,
+          1.0703
+        ],
+        "radiusEstimate": 1.288009201152497,
+        "materials": [
+          "Body_uv_2"
+        ]
+      },
+      {
+        "name": "Object_5",
+        "vertexCount": 193,
+        "triangleCount": 184,
+        "center": [
+          -1.0794,
+          1.8399,
+          0.3641
+        ],
+        "size": [
+          1.0494,
+          2.5787,
+          1.075
+        ],
+        "radiusEstimate": 1.2893321661983816,
+        "materials": [
+          "Material.025"
+        ]
+      },
+      {
+        "name": "Object_7",
+        "vertexCount": 282,
+        "triangleCount": 439,
+        "center": [
+          1.1039,
+          1.8399,
+          0.3641
+        ],
+        "size": [
+          1.0486,
+          2.5787,
+          1.075
+        ],
+        "radiusEstimate": 1.2893351805484237,
+        "materials": [
+          "Material.007"
+        ]
+      },
+      {
+        "name": "Object_8",
+        "vertexCount": 238,
+        "triangleCount": 238,
+        "center": [
+          1.103,
+          1.8398,
+          0.3641
+        ],
+        "size": [
+          1.0506,
+          2.5799,
+          1.0773
+        ],
+        "radiusEstimate": 1.2899676389919574,
+        "materials": [
+          "Material.025"
+        ]
+      },
+      {
+        "name": "Object_10",
+        "vertexCount": 4708,
+        "triangleCount": 8399,
+        "center": [
+          0.1829,
+          1.7305,
+          -0.4891
+        ],
+        "size": [
+          2.9332,
+          3.2758,
+          4.3709
+        ],
+        "radiusEstimate": 1.6378779595936108,
+        "materials": [
+          "Material.007"
+        ]
+      },
+      {
+        "name": "Object_11",
+        "vertexCount": 4096,
+        "triangleCount": 7936,
+        "center": [
+          0.012,
+          1.7082,
+          -2.7688
+        ],
+        "size": [
+          2.9829,
+          2.9814,
+          0.5121
+        ],
+        "radiusEstimate": 1.4914511065042402,
+        "materials": [
+          "Material.011"
+        ]
+      },
+      {
+        "name": "Object_12",
+        "vertexCount": 952,
+        "triangleCount": 1536,
+        "center": [
+          0.012,
+          1.7098,
+          -2.4807
+        ],
+        "size": [
+          2.41,
+          2.4048,
+          0.8572
+        ],
+        "radiusEstimate": 1.2050142282092038,
+        "materials": [
+          "Carbon_Fiber_Procedural"
+        ]
+      },
+      {
+        "name": "Object_13",
+        "vertexCount": 620,
+        "triangleCount": 864,
+        "center": [
+          0.0162,
+          1.7095,
+          -1.745
+        ],
+        "size": [
+          2.3444,
+          2.3309,
+          1.0838
+        ],
+        "radiusEstimate": 1.1721933623311913,
+        "materials": [
+          "Material.014"
+        ]
+      },
+      {
+        "name": "Object_14",
+        "vertexCount": 656,
+        "triangleCount": 720,
+        "center": [
+          0.012,
+          1.7095,
+          -2.0256
+        ],
+        "size": [
+          2.3375,
+          2.3324,
+          0.5205
+        ],
+        "radiusEstimate": 1.1687392197189774,
+        "materials": [
+          "Material.015"
+        ]
+      },
+      {
+        "name": "Object_15",
+        "vertexCount": 1449,
+        "triangleCount": 2560,
+        "center": [
+          0.012,
+          1.7204,
+          1.076
+        ],
+        "size": [
+          1.9736,
+          1.9736,
+          2.2877
+        ],
+        "radiusEstimate": 0.9868213056639359,
+        "materials": [
+          "Brushed_used_metal_silver"
+        ]
+      },
+      {
+        "name": "Object_16",
+        "vertexCount": 3659,
+        "triangleCount": 5118,
+        "center": [
+          0.012,
+          1.5064,
+          2.4808
+        ],
+        "size": [
+          1.7552,
+          2.1832,
+          4.1857
+        ],
+        "radiusEstimate": 1.0915790093496462,
+        "materials": [
+          "Iron_Metal"
+        ]
+      },
+      {
+        "name": "Object_17",
+        "vertexCount": 256,
+        "triangleCount": 256,
+        "center": [
+          0.012,
+          1.7204,
+          2.2702
+        ],
+        "size": [
+          0.9486,
+          0.9486,
+          0
+        ],
+        "radiusEstimate": 0.4742765249902111,
+        "materials": [
+          "Material.020"
+        ]
+      },
+      {
+        "name": "Object_18",
+        "vertexCount": 1960,
+        "triangleCount": 3430,
+        "center": [
+          -0.8067,
+          1.7314,
+          -0.4996
+        ],
+        "size": [
+          1.6375,
+          3.2739,
+          4.35
+        ],
+        "radiusEstimate": 1.6369644795016531,
+        "materials": [
+          "Body_uv_2"
+        ]
+      },
+      {
+        "name": "Object_19",
+        "vertexCount": 193,
+        "triangleCount": 256,
+        "center": [
+          0.012,
+          1.7095,
+          -1.2791
+        ],
+        "size": [
+          2.3081,
+          2.3031,
+          0.1521
+        ],
+        "radiusEstimate": 1.1540634361078292,
+        "materials": [
+          "Material.023"
+        ]
+      },
+      {
+        "name": "Object_20",
+        "vertexCount": 138,
+        "triangleCount": 124,
+        "center": [
+          -0.0001,
+          0.6922,
+          1.0052
+        ],
+        "size": [
+          0.2327,
+          0.5547,
+          1.2344
+        ],
+        "radiusEstimate": 0.2773642150608934,
+        "materials": [
+          "Light_iron"
+        ]
+      },
+      {
+        "name": "Object_22",
+        "vertexCount": 20431,
+        "triangleCount": 28617,
+        "center": [
+          -0.0001,
+          1.7147,
+          -1.6437
+        ],
+        "size": [
+          2.3745,
+          2.3745,
+          0.1014
+        ],
+        "radiusEstimate": 1.1872576923586924,
+        "materials": [
+          "Metal.002"
+        ]
+      },
+      {
+        "name": "Object_24",
+        "vertexCount": 288,
+        "triangleCount": 542,
+        "center": [
+          -0.0001,
+          1.7147,
+          -1.8932
+        ],
+        "size": [
+          0.5105,
+          0.5105,
+          0.1834
+        ],
+        "radiusEstimate": 0.25524677893483183,
+        "materials": [
+          "Material.009"
+        ]
+      },
+      {
+        "name": "Object_25",
+        "vertexCount": 128,
+        "triangleCount": 158,
+        "center": [
+          -0.0001,
+          1.7147,
+          -0.8907
+        ],
+        "size": [
+          0.554,
+          0.554,
+          1.8214
+        ],
+        "radiusEstimate": 0.2769832622942833,
+        "materials": [
+          "Material.010"
+        ]
+      },
+      {
+        "name": "Object_27",
+        "vertexCount": 528,
+        "triangleCount": 264,
+        "center": [
+          -0.0001,
+          1.7147,
+          0.0508
+        ],
+        "size": [
+          2.9979,
+          2.9979,
+          0.2397
+        ],
+        "radiusEstimate": 1.4989513887580117,
+        "materials": [
+          "Material.022"
+        ]
+      },
+      {
+        "name": "Object_29",
+        "vertexCount": 864,
+        "triangleCount": 432,
+        "center": [
+          0.0108,
+          1.7263,
+          3.4924
+        ],
+        "size": [
+          1.3399,
+          1.3399,
+          0.2065
+        ],
+        "radiusEstimate": 0.6699260837188195,
+        "materials": [
+          "Old_Metal__Old_Iron"
+        ]
+      },
+      {
+        "name": "Object_31",
+        "vertexCount": 142,
+        "triangleCount": 208,
+        "center": [
+          -0.0001,
+          3.1398,
+          1.385
+        ],
+        "size": [
+          0.4015,
+          0.3725,
+          2.2215
+        ],
+        "radiusEstimate": 0.2007749075344771,
+        "materials": [
+          "Material.013"
+        ]
+      },
+      {
+        "name": "Object_33",
+        "vertexCount": 36,
+        "triangleCount": 20,
+        "center": [
+          -0.0001,
+          0.0896,
+          -0.796
+        ],
+        "size": [
+          0.0041,
+          0.1793,
+          0.2945
+        ],
+        "radiusEstimate": 0.08964582992584437,
+        "materials": [
+          "Metal.002"
+        ]
+      },
+      {
+        "name": "Object_35",
+        "vertexCount": 528,
+        "triangleCount": 264,
+        "center": [
+          -0.0001,
+          1.7147,
+          -0.0749
+        ],
+        "size": [
+          2.8201,
+          2.8201,
+          0.0811
+        ],
+        "radiusEstimate": 1.410063161624305,
+        "materials": [
+          "Material.022"
+        ]
+      },
+      {
+        "name": "Object_37",
+        "vertexCount": 24,
+        "triangleCount": 12,
+        "center": [
+          -0.0001,
+          0.7913,
+          -0.257
+        ],
+        "size": [
+          0.4696,
+          0.4696,
+          0.4696
+        ],
+        "radiusEstimate": 0.23481235998468727,
+        "materials": [
+          "material_0"
+        ]
+      }
+    ],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "template": "generic_model",
+    "confidence": 0.35,
+    "turbofan": {}
+  },
+  "constraintHints": []
+}

@@ -1,0 +1,254 @@
+{
+  "id": "asset-r94y3w",
+  "category": "engine",
+  "title": "高细节喷气发动机横截面",
+  "description": "自动从 高细节喷气发动机横截面.glb 导入。",
+  "tags": [
+    "imported",
+    "aircraft",
+    "engine",
+    "高细节喷气发动机横截面",
+    "glb"
+  ],
+  "assetPath": "assets/aircraft/imported/asset-r94y3w/model.glb",
+  "previewPath": "assets/aircraft/imported/asset-r94y3w/preview.png",
+  "scale": 1,
+  "pivot": "center",
+  "forward": "+Z",
+  "animations": [],
+  "materials": [
+    "DefaultMaterial"
+  ],
+  "compatibleWith": [
+    "runtime_renderer",
+    "rag_import"
+  ],
+  "viewImages": [
+    {
+      "view": "front",
+      "imagePath": "assets/aircraft/imported/asset-r94y3w/views/front.png",
+      "title": "正面六视图参考",
+      "description": "自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "front",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "back",
+      "imagePath": "assets/aircraft/imported/asset-r94y3w/views/back.png",
+      "title": "背面六视图参考",
+      "description": "自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "back",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "left",
+      "imagePath": "assets/aircraft/imported/asset-r94y3w/views/left.png",
+      "title": "左侧六视图参考",
+      "description": "自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "left",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "right",
+      "imagePath": "assets/aircraft/imported/asset-r94y3w/views/right.png",
+      "title": "右侧六视图参考",
+      "description": "自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "right",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "top",
+      "imagePath": "assets/aircraft/imported/asset-r94y3w/views/top.png",
+      "title": "俯视六视图参考",
+      "description": "自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "top",
+        "auto-screenshot",
+        "six-view"
+      ]
+    },
+    {
+      "view": "bottom",
+      "imagePath": "assets/aircraft/imported/asset-r94y3w/views/bottom.png",
+      "title": "仰视六视图参考",
+      "description": "自动渲染的 仰视，用于 RAG 视觉检索和结构参考。",
+      "tags": [
+        "bottom",
+        "auto-screenshot",
+        "six-view"
+      ]
+    }
+  ],
+  "codeSummary": "",
+  "keySnippets": [],
+  "detectedPatterns": [],
+  "shapeSummary": "GLB 形体摘要: 高细节喷气发动机横截面 (高细节喷气发动机横截面.glb)。\n类别: engine; 标签: imported, aircraft, engine, 高细节喷气发动机横截面, glb。\n自动从 高细节喷气发动机横截面.glb 导入。\n结构要点: 正面应有外涵道/机匣大圆环和内涵道圆环。；中心应有整流锥或轮毂，周围放射状风扇叶片。；侧面可用短圆筒机匣、唇口厚度和后部收缩表达发动机体积。；工程黑线白图优先使用 Torus/Cylinder/Sphere/EdgesGeometry/LineSegments 组合。\n结构分析: node=9, mesh=6, material=6。 候选主轴: +X。 整体尺寸: 1312.878 x 762.191 x 743.398。\n模板参数: generic_model, confidence=0.35, turbofan={}。\n六视图数量 6，可用于判断正面/侧面/俯视比例。",
+  "viewFeatures": [
+    "正面: 自动渲染的 正面，用于 RAG 视觉检索和结构参考。",
+    "背面: 自动渲染的 背面，用于 RAG 视觉检索和结构参考。",
+    "左侧: 自动渲染的 左侧，用于 RAG 视觉检索和结构参考。",
+    "右侧: 自动渲染的 右侧，用于 RAG 视觉检索和结构参考。",
+    "俯视: 自动渲染的 俯视，用于 RAG 视觉检索和结构参考。",
+    "仰视: 自动渲染的 仰视，用于 RAG 视觉检索和结构参考。"
+  ],
+  "skeletonHints": [
+    "正面应有外涵道/机匣大圆环和内涵道圆环。",
+    "中心应有整流锥或轮毂，周围放射状风扇叶片。",
+    "侧面可用短圆筒机匣、唇口厚度和后部收缩表达发动机体积。",
+    "工程黑线白图优先使用 Torus/Cylinder/Sphere/EdgesGeometry/LineSegments 组合。"
+  ],
+  "structureAnalysis": {
+    "status": "success",
+    "nodeCount": 9,
+    "meshCount": 6,
+    "materialCount": 6,
+    "bounds": {
+      "center": [
+        546.5608,
+        0.0023,
+        -41.7771
+      ],
+      "size": [
+        1312.8776,
+        762.1906,
+        743.3978
+      ]
+    },
+    "dominantAxis": "+X",
+    "meshStats": [
+      {
+        "name": "DefaultMaterial",
+        "vertexCount": 59082,
+        "triangleCount": 0,
+        "center": [
+          406.2182,
+          0.1565,
+          -18.1555
+        ],
+        "size": [
+          983.5633,
+          471.0677,
+          502.205
+        ],
+        "radiusEstimate": 491.7816581726074,
+        "materials": [
+          "DefaultMaterial"
+        ]
+      },
+      {
+        "name": "DefaultMaterial",
+        "vertexCount": 57717,
+        "triangleCount": 0,
+        "center": [
+          478.912,
+          55.9196,
+          -89.8244
+        ],
+        "size": [
+          1148.176,
+          650.356,
+          647.3032
+        ],
+        "radiusEstimate": 574.088020324707,
+        "materials": [
+          "DefaultMaterial"
+        ]
+      },
+      {
+        "name": "DefaultMaterial",
+        "vertexCount": 65317,
+        "triangleCount": 0,
+        "center": [
+          553.9118,
+          -0.0003,
+          30.3319
+        ],
+        "size": [
+          1298.1757,
+          538.5161,
+          599.1798
+        ],
+        "radiusEstimate": 649.0878372192383,
+        "materials": [
+          "DefaultMaterial"
+        ]
+      },
+      {
+        "name": "DefaultMaterial",
+        "vertexCount": 63062,
+        "triangleCount": 0,
+        "center": [
+          471.561,
+          0.0411,
+          -18.7003
+        ],
+        "size": [
+          1162.878,
+          558.5542,
+          521.1944
+        ],
+        "radiusEstimate": 581.4389991760254,
+        "materials": [
+          "DefaultMaterial"
+        ]
+      },
+      {
+        "name": "DefaultMaterial",
+        "vertexCount": 60136,
+        "triangleCount": 0,
+        "center": [
+          538.6336,
+          18.2771,
+          3.8847
+        ],
+        "size": [
+          1287.2675,
+          463.4451,
+          462.6904
+        ],
+        "radiusEstimate": 643.6337356567383,
+        "materials": [
+          "DefaultMaterial"
+        ]
+      },
+      {
+        "name": "DefaultMaterial",
+        "vertexCount": 47552,
+        "triangleCount": 0,
+        "center": [
+          473.9999,
+          0.0022,
+          -41.7773
+        ],
+        "size": [
+          1158.0001,
+          762.1904,
+          743.3974
+        ],
+        "radiusEstimate": 579.0000686645508,
+        "materials": [
+          "DefaultMaterial"
+        ]
+      }
+    ],
+    "radialPatterns": []
+  },
+  "templateParams": {
+    "template": "generic_model",
+    "confidence": 0.35,
+    "turbofan": {}
+  },
+  "constraintHints": []
+}
